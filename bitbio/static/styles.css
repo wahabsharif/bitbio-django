@@ -23,6 +23,9 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+a {
+  text-decoration: none;
+}
 header {
   position: sticky;
   top: 0;

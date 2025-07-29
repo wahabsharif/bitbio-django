@@ -7,3 +7,9 @@ def home(request):
 
 def account(request):
     return render(request, "account.html")
+
+
+def registration(request):
+    from .countries import COUNTRIES
+
+    return render(request, "registration.html", {"countries": COUNTRIES})

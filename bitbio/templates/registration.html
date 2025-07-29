@@ -1,0 +1,328 @@
+{% extends 'layout.html' %} {% load static %} {% block title %} Registration
+{%endblock %} {% block content %}
+
+<style>
+  section {
+    border-top: solid 1px #d2d3d5;
+  }
+  h1,
+  h3 {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 42px;
+    margin: 0;
+  }
+  p > a {
+    border-bottom: 1px solid #e9500d;
+    padding-bottom: 2px;
+    color: black;
+  }
+  a:hover {
+    color: #e9500d;
+    border: none;
+  }
+  p {
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: 0.4px;
+    margin-bottom: 15px;
+    margin-top: 0;
+    font-weight: 350;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .reg-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #d2d3d5;
+    padding-bottom: 2.5rem;
+    padding-top: 65px;
+  }
+
+  .reg-container > * {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  label,
+  .checkbox-wrapper > span {
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 26px;
+    margin-bottom: 7px;
+    color: #4a5157;
+  }
+  .checkbox-wrapper span {
+    cursor: pointer;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    padding-bottom: 4px;
+    border: none;
+    border-bottom: 1px solid #d1d5db;
+    padding: 12px 0;
+    font-size: 16px;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s ease;
+    width: 90%;
+    margin-bottom: 2em;
+  }
+  .reg-container > div > button {
+    background: linear-gradient(90deg, #f6a11e, #e91b0d);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 22px;
+    margin-top: 30px;
+    max-width: 348px;
+    padding: 19px;
+    text-align: center;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .reg-container > div > button:hover {
+    background: white;
+    border: 1px solid #e91b0d;
+    color: #e91b0d;
+  }
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2em 0;
+  }
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    height: 20px;
+    width: 20px;
+  }
+  .custom-checkbox input[type="checkbox"] {
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .custom-checkbox .checkmark {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border: 1px solid #000;
+    transition: background 0.2s;
+    box-sizing: border-box;
+    z-index: 1;
+    position: relative;
+  }
+  .custom-checkbox .checkmark::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 3.2px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    background: #000;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    opacity: 1;
+  }
+</style>
+
+<section>
+  <div class="reg-container">
+    <div><h1>Register for an account</h1></div>
+    <div>
+      <p>Welcome!</p>
+      <p>
+        You are about to register for an account that will enable you to
+        purchase online through our website.
+      </p>
+      <p>
+        Our ioCells products are for research use only (RUO) therefore all new
+        customers must be reviewed before their first order can be fulfilled.
+        Please ensure that the information you provide us is complete and
+        accurate as it will be used to verify and approve your account.
+      </p>
+      <p>
+        This information will not be requested on your future orders, you will
+        only have to provide it once.
+      </p>
+      <p>
+        We aim to review your account application and get back to you within 24
+        hours. If we have any questions regarding your application, we will
+        contact you.
+      </p>
+      <p>
+        If you have questions or need help completing this form please contact
+        <a href="mailto:orders@bit.bio">orders@bit.bio</a>
+      </p>
+      <p>
+        If you would like to pay by Purchase Order (PO), please contact our team
+        at <a href="mailto:orders@bit.bio">orders@bit.bio</a>
+      </p>
+    </div>
+  </div>
+  <div class="reg-container">
+    <div><h3>Your details</h3></div>
+    <div>
+      <label for="first_name">First Name*</label><input type="text" required />
+      <label for="last_name">Last Name*</label><input type="text" required />
+      <label for="email">Email*</label><input type="email" required />
+      <label for="job_title">Job Title*</label><input type="text" required />
+    </div>
+  </div>
+  <div class="reg-container">
+    <div><h3>Your billing information</h3></div>
+    <div>
+      <label for="Company_trading_name">Company trading name*</label
+      ><input type="text" required />
+      <label for="address_line_1">Address line 1*</label
+      ><input type="text" required />
+      <label for="address_line_2">Address line 2</label
+      ><input type="text" required /> <label for="City">City*</label
+      ><input type="text" required /> <label for="Postcode">Postal code*</label
+      ><input type="text" required /> <label for="State">State*</label
+      ><input type="text" required /> <label for="Country">Country*</label>
+      <select name="country" id="country" required>
+        <option value="" disabled selected></option>
+        {% for country in countries %}
+        <option value="{{ country }}">{{ country }}</option>
+        {% endfor %}
+      </select>
+      <label for="Country">Phone Number*</label><input type="text" required />
+      <label for="Country"
+        >Please indicate if your institution is tax or VAT exempt by ticking the
+        box below.</label
+      >
+      <div class="checkbox-wrapper">
+        <label class="custom-checkbox">
+          <input type="checkbox" required />
+          <span class="checkmark"></span>
+        </label>
+        <span
+          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+          >Our institution is tax/VAT exempt</span
+        >
+      </div>
+    </div>
+  </div>
+  <div class="reg-container">
+    <div><h3>Your shipping information</h3></div>
+    <div>
+      <label for="address_line_1">Address line 1*</label
+      ><input type="text" required />
+      <label for="address_line_2">Address line 2</label
+      ><input type="text" required /> <label for="City">City*</label
+      ><input type="text" required /> <label for="Postcode">Postal code*</label
+      ><input type="text" required /> <label for="State">State*</label
+      ><input type="text" required /> <label for="Country">Country*</label>
+      <select name="country" id="country" required>
+        <option value="" disabled selected></option>
+        {% for country in countries %}
+        <option value="{{ country }}">{{ country }}</option>
+        {% endfor %}
+      </select>
+      <label for="Country">Phone Number*</label><input type="text" required />
+      <label for="Country"
+        >Do you have any specific instructions or restrictions on shipping? For
+        example, deliveries are only accepted from Monday to Thursday or no
+        deliveries before 9am..</label
+      >
+      <textarea
+        name="shipping_instructions"
+        id="shipping_instructions"
+        rows="4"
+      ></textarea>
+    </div>
+  </div>
+  <div class="reg-container">
+    <div><h3>Use intent</h3></div>
+    <div>
+      <label for="use_intent">How will you use our products?*</label>
+      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+        <label class="custom-checkbox">
+          <input type="checkbox" required />
+          <span class="checkmark"></span>
+        </label>
+        <span
+          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+          >Research use only (RUO): in vitro</span
+        >
+      </div>
+      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+        <label class="custom-checkbox">
+          <input type="checkbox" required />
+          <span class="checkmark"></span>
+        </label>
+        <span
+          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+          >Research use only (RUO): in vivo</span
+        >
+      </div>
+    </div>
+  </div>
+  <div class="reg-container">
+    <div><h3>Consent</h3></div>
+    <div>
+      <label for="use_intent"
+        >bit.bio is committed to protecting and respecting your privacy, and
+        we’ll only use your personal information to administer your account and
+        to provide the products and services you requested from us. From time to
+        time, we would like to contact you about our products and services, as
+        well as other content that may be of interest to you. If you consent to
+        us contacting you for this purpose, please tick below to say how you
+        would like us to contact you:</label
+      >
+      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+        <label class="custom-checkbox">
+          <input type="checkbox" required />
+          <span class="checkmark"></span>
+        </label>
+        <span
+          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+          >I agree to receive other communications from Bit Bio.</span
+        >
+      </div>
+      <p>
+        You can unsubscribe from these communications at any time. For more
+        information on how to unsubscribe, our privacy practices, and how we are
+        committed to protecting and respecting your privacy, please review our
+        <a href="#">Privacy Policy</a>.
+      </p>
+      <p>
+        By clicking submit below, you consent to allow bit.bio to store and
+        process the personal information submitted above to provide you the
+        content requested.
+      </p>
+      <button type="submit">Submit</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

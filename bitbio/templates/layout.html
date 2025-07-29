@@ -5,89 +5,9 @@
     <title>{% block title %}BitBio Django{% endblock %}</title>
     {% load static %}
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
-    <style>
-      @font-face {
-        font-family: "BitBioSans";
-        src: url("{% static "BitBioSans.ttf" %}") format("truetype");
-        font-weight: normal;
-        font-style: normal;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: "BitBioSans", "Segoe UI", Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        width: 100%;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: white;
-        width: 100%;
-        padding: 1em 0;
-        border-image: linear-gradient(
-            116.38deg,
-            #fcb71d,
-            #e9500d 29.69%,
-            #d32a78 66%,
-            #47b8ed
-          )
-          1;
-        border-top: 4px solid;
-      }
-      .container > .nav-items {
-        display: flex;
-        align-items: center;
-        color: #000;
-        text-align: center;
-        gap: 2em;
-      }
-      img {
-        max-width: 100px;
-        width: 100%;
-        margin-bottom: 0.5em;
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        gap: 2em;
-      }
-      .nav-links > li > a {
-        color: black;
-        text-decoration: none;
-        font-weight: normal;
-        font-weight: 500;
-        font-size: 14px;
-      }
-
-      .icons {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 2em;
-      }
-      .icons > a > img {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
   </head>
+
   <body>
     <header>
       <div class="container">
@@ -135,5 +55,277 @@
       </div>
     </header>
     <main>{% block content %}{% endblock %}</main>
+    <footer>
+      <div
+        style="
+          background-image: linear-gradient(90deg, #353a42 50%, #293038 50%);
+        "
+      >
+        <div class="cta">
+          <div class="newsletter-section">
+            <div>
+              <div
+                style="
+                  color: #fff;
+                  font-size: 32px;
+                  font-weight: 300;
+                  letter-spacing: 0;
+                  line-height: 42px;
+                "
+              >
+                <span
+                  ><strong>Subscribe to<br />our newsletter</strong></span
+                >
+              </div>
+              <button class="cta-btn">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </span>
+                Subscribe
+              </button>
+            </div>
+          </div>
+          <div class="team-section">
+            <div>
+              <div
+                style="
+                  color: #fff;
+                  font-size: 32px;
+                  font-weight: 300;
+                  letter-spacing: 0;
+                  line-height: 42px;
+                "
+              >
+                <span
+                  ><strong>Join our<br />pioneering team</strong></span
+                >
+              </div>
+              <button class="cta-btn">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </span>
+                Learn more
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-items">
+        <div>
+          <span><strong>The cell coding company</strong></span>
+        </div>
+        <div class="footer-links-container">
+          <div>
+            <ul>
+              <li>
+                <a href="#">Platform</a>
+              </li>
+              <li>
+                <a href="#">Therapeutics</a>
+              </li>
+              <li>
+                <a href="#">Discover ioCells™</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">ioCells™</a>
+                    </li>
+                    <li>
+                      <a href="#">ioWild Type Cells™</a>
+                    </li>
+                    <li>
+                      <a href="#">ioDisease Model Cells™</a>
+                    </li>
+                    <li>
+                      <a href="#">Custom cell development</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <a href="#">About</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">About us</a>
+                    </li>
+                    <li>
+                      <a href="#">Sustainability</a>
+                    </li>
+                    <li>
+                      <a href="#">Partners</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <ul>
+              <li>
+                <a href="#">General Resources</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">Application notes</a>
+                    </li>
+                    <li>
+                      <a href="#">bits of bio</a>
+                    </li>
+                    <li>
+                      <a href="#">Infographic</a>
+                    </li>
+                    <li>
+                      <a href="#">Posters</a>
+                    </li>
+                    <li>
+                      <a href="#">Publications</a>
+                    </li>
+                    <li>
+                      <a href="#">Talks</a>
+                    </li>
+                    <li>
+                      <a href="#">Videos</a>
+                    </li>
+                    <li>
+                      <a href="#">Video tutorials</a>
+                    </li>
+                    <li>
+                      <a href="#">Webinars</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <a href="#">Product information</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">User manuals</a>
+                    </li>
+                    <li>
+                      <a href="#">Brochures</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <ul>
+              <li>
+                <a href="#">Careers</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">Open Roles</a>
+                    </li>
+                    <li>
+                      <a href="#">Working at bit.bio</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <a href="#">Contact</a>
+              </li>
+              <li>
+                <a href="#">Follow us</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">LinkedIn</a>
+                    </li>
+                    <li>
+                      <a href="#">Twitter</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <a href="#">Policies</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">Cookies Policy</a>
+                    </li>
+                    <li>
+                      <a href="#">Diversity & Inclusion</a>
+                    </li>
+                    <li>
+                      <a href="#">Privacy Policy</a>
+                    </li>
+                    <li>
+                      <a href="#">Terms & Conditions</a>
+                    </li>
+                    <li>
+                      <a href="#">Statement of Use</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <ul>
+              <li>
+                <a href="#">Contact</a>
+              </li>
+              <li>
+                <a href="#">Follow us</a>
+                <div>
+                  <ul>
+                    <li>
+                      <a href="#">LinkedIn</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div style="min-width: 247px">
+          <a href="/"
+            ><img
+              src="{% static 'bit_bio_logo.svg' %}"
+              alt="BitBio Logo"
+              style="max-width: 150px; width: 100%; margin-bottom: 0.5em"
+          /></a>
+        </div>
+        <div>
+          <p class="caption">
+            bit.bio © <span class="footer-year">2023</span> | All rights
+            reserved
+          </p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

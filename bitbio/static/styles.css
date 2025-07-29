@@ -1,0 +1,233 @@
+@font-face {
+  font-family: "BitBioSans";
+  src: url("{% static 'BitBioSans.ttf' %}") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  font-family: "BitBioSans", "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
+}
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  width: 100%;
+  padding: 1em 0;
+  border-top: 4px solid;
+  border-image: linear-gradient(
+      116.38deg,
+      #fcb71d,
+      #e9500d 29.69%,
+      #d32a78 66%,
+      #47b8ed
+    )
+    1;
+}
+.container > .nav-items {
+  display: flex;
+  align-items: center;
+  color: #000;
+  text-align: center;
+  gap: 2em;
+}
+img {
+  max-width: 100px;
+  width: 100%;
+  margin-bottom: 0.5em;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+}
+.nav-links > li > a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+.icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2em;
+}
+.icons > a > img {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cta {
+  display: flex;
+  width: 1400px;
+  max-width: 100%;
+  line-height: 42px;
+  margin: 0 auto;
+}
+.newsletter-section,
+.team-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.newsletter-section {
+  align-items: start;
+  padding: 109px 0 255px;
+}
+.team-section {
+  align-items: flex-start;
+  padding: 109px 124px 268px;
+}
+.cta-btn {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1rem;
+  color: #fff;
+  background: none;
+  border: none;
+  outline: none;
+  transition: color 0.2s;
+}
+.cta-btn > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  transition: background 0.2s, border 0.2s;
+}
+.cta-btn > span svg {
+  color: #fff;
+  width: 16px;
+  height: 16px;
+  transition: color 0.2s;
+}
+.cta-btn:hover > span {
+  background: #fff;
+  border-color: #fff;
+}
+.cta-btn:hover > span svg {
+  color: #393e44;
+}
+
+footer {
+  width: 100%;
+  background: #1e252d;
+}
+
+.footer-items {
+  display: flex;
+  justify-content: space-between;
+  padding: 2em 0;
+  color: #fff;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 10em;
+}
+.footer-bottom {
+  padding-bottom: 3rem;
+  padding-top: 0.25rem;
+  color: #fff;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
+  align-items: center;
+  gap: 10em;
+}
+
+.footer-links-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: start;
+  gap: 4em;
+  width: 100%;
+}
+
+.footer-items > div:first-child {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.footer-links-container > div {
+  flex: 1 1 0;
+}
+
+.footer-links-container ul {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2em;
+  margin-bottom: 1.5em;
+}
+
+.footer-links-container ul ul {
+  margin-top: 0.5em;
+  gap: 0.25em;
+}
+
+.footer-links-container li > a {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 300;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links-container li > a strong,
+.footer-links-container li > a b {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.footer-links-container li {
+  margin-bottom: 0.25em;
+}
+
+.footer-items {
+  align-items: flex-start;
+}
+
+.footer-items > div:first-child span {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 0;
+  line-height: 42px;
+}
+
+.caption {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 20px;
+}

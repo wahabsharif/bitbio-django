@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "app_users",
+    "calculator",
 ]
 
 MIDDLEWARE = [
@@ -47,6 +49,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "app_users.middleware.ApprovalStatusMiddleware",
+    "bitbio.admin_middleware.AdminAccessMiddleware",
 ]
 
 ROOT_URLCONF = "bitbio.urls"
@@ -80,8 +84,27 @@ DATABASES = {
         "PASSWORD": "",
         "HOST": "localhost",
         "PORT": "3306",
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'; SET foreign_key_checks=0;",
+            "charset": "utf8mb4",
+            "autocommit": True,
+            "use_unicode": True,
+            "sql_mode": "STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
+        },
     }
 }
+
+# MySQL configuration (commented out for now)
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "bit_bio_django",
+#         "USER": "root",
+#         "PASSWORD": "",
+#         "HOST": "localhost",
+#         "PORT": "3306",
+#     }
+# }
 
 
 # Password validation
@@ -120,8 +143,40 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "bitbio" / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Custom user model
+AUTH_USER_MODEL = "app_users.User"
+
+# Custom authentication backends
+AUTHENTICATION_BACKENDS = [
+    "app_users.backends.EmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# Login URL for @login_required decorator
+LOGIN_URL = "/"
+
+# Admin Security Settings
+ADMIN_SITE_HEADER = "🧬 BitBio Administration"
+ADMIN_SITE_TITLE = "BitBio Admin Portal"
+ADMIN_INDEX_TITLE = "Welcome to BitBio Administration"
+
+# Security settings for admin access
+ADMIN_LOGIN_REDIRECT_URL = "/admin/"
+ADMIN_LOGOUT_REDIRECT_URL = "/"
+
+# Session security for admin users
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 3600  # 1 hour session timeout
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# CSRF protection
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = True

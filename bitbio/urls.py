@@ -9,19 +9,24 @@ Function views
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+    2. Add a URL to urlpatterns:  path('other_app/', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from . import views
+from .admin import admin_site
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", views.home, name="home"),
-    path("account/", views.account, name="account"),
+    path("admin/", admin_site.urls),
+    path("", views.account, name="account"),
+    path("logout/", views.logout_view, name="logout"),
     path("registration/", views.registration, name="registration"),
+    path(
+        "registration-success/", views.registration_success, name="registration_success"
+    ),
+    path("users/", include("app_users.urls")),
+    path("calculator/", include("calculator.urls")),
 ]

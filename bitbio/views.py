@@ -87,9 +87,13 @@ def account(request):
                         else:
                             messages.error(request, "Invalid email or password.")
                     else:
-                        messages.error(request, "Invalid email or password.")
+                        # Incorrect password for existing account
+                        messages.error(request, "Incorrect password.")
+                        form.add_error("password", "Incorrect password.")
                 except User.DoesNotExist:
-                    messages.error(request, "Invalid email or password.")
+                    # Email not found
+                    messages.error(request, "No account found with that email.")
+                    form.add_error("email", "No account found with that email.")
         else:
             print(f"DEBUG: Form errors: {form.errors}")
     else:

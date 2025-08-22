@@ -78,6 +78,21 @@ function resetCalculator() {
         input.classList.add('default-input');
     });
 
+    // Restore default values for specific fields that have explicit defaults
+    const defaultFieldIds = ['suspension_volume', 'num_wells', 'buffer'];
+    defaultFieldIds.forEach(function(id){
+        const el = document.getElementById(id);
+        if (!el) return;
+        const defaultValue = (el.dataset && typeof el.dataset.defaultValue !== 'undefined')
+            ? el.dataset.defaultValue
+            : (el.getAttribute('value') || '');
+        if (defaultValue !== '') {
+            el.value = defaultValue;
+        }
+        // Trigger change to refresh any styling linked to default values
+        try { el.dispatchEvent(new Event('change')); } catch (e) {}
+    });
+
     // Reset dropdowns to default state
     const cellTypeDropdown = document.getElementById('cell_type_dropdown');
     const cultureVesselDropdown = document.getElementById('culture_vessel_dropdown');

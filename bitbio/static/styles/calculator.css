@@ -307,6 +307,7 @@ p {
   padding: 0.5rem;
   font-size: 12px;
   transition: all 0.2s;
+  font-size: 14px;
 }
 
 .form-input:focus {
@@ -322,6 +323,7 @@ p {
   padding: 0.5rem;
   font-size: 12px;
   transition: all 0.2s;
+  font-size: 14px;
 }
 
 .form-input-small:focus {
@@ -338,6 +340,7 @@ p {
   transition: all 0.2s;
   color: #9ca3af;
   font-size: 12px;
+  font-size: 14px;
 }
 
 .form-input-number:focus {
@@ -520,7 +523,7 @@ p {
 .required-text {
   font-size: 0.75rem;
   position: relative;
-  bottom: -2.25rem;
+  bottom: -1.25rem;
 }
 
 .calculate-button-container {

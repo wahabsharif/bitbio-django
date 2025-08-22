@@ -130,7 +130,6 @@ textarea {
   min-width: 180px;
   background: #fff;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
   padding: 8px 0;
@@ -277,7 +276,6 @@ textarea {
   width: 32px;
   height: 32px;
   margin-right: 12px;
-  border-radius: 50%;
   border: 1.5px solid #fff;
   transition: background 0.2s, border 0.2s;
 }

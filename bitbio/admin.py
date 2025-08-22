@@ -308,15 +308,15 @@ class CustomUserAdmin(admin.ModelAdmin):
     def status_badge(self, obj):
         if obj.status == "approved":
             return format_html(
-                '<span style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">✓ Approved</span>'
+                '<span style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">✓ Approved</span>'
             )
         elif obj.status == "pending":
             return format_html(
-                '<span style="background: #f39c12; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">⏳ Pending</span>'
+                '<span style="background: #f39c12; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">⏳ Pending</span>'
             )
         else:
             return format_html(
-                '<span style="background: #e74c3c; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">✗ Rejected</span>'
+                '<span style="background: #e74c3c; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">✗ Rejected</span>'
             )
 
     status_badge.short_description = "Status"

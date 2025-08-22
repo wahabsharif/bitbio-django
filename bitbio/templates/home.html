@@ -6,7 +6,7 @@
     <div class="messages-container" style="margin-bottom: 20px;">
       {% for message in messages %}
         <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}" 
-             style="padding: 12px 16px; margin-bottom: 10px; border-radius: 4px; font-size: 14px; font-weight: 500;">
+             style="padding: 12px 16px; margin-bottom: 10px; font-size: 14px; font-weight: 500;">
           {% if message.tags == 'error' %}
             <div style="color: #e74c3c; background-color: #fdf2f2; border: 1px solid #fecaca;">
               {{ message }}
@@ -32,7 +32,7 @@
   <h1 style="color: #333; margin-bottom: 20px;">Welcome to BitBio</h1>
   
   {% if user.is_authenticated %}
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <div style="background: #f8f9fa; padding: 20px; margin-bottom: 20px;">
       <h2 style="color: #333; margin-bottom: 15px;">Hello, {{ user.first_name }}!</h2>
       <p style="color: #666; margin-bottom: 10px;">You are successfully logged in to your BitBio account.</p>
       <p style="color: #666; margin-bottom: 10px;">Account Status: 
@@ -42,16 +42,16 @@
     </div>
     
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-      <a href="/" style="background: #e91b0d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500;">
+      <a href="/" style="background: #e91b0d; color: white; padding: 12px 24px; text-decoration: none; font-weight: 500;">
         Account Settings
       </a>
-      <a href="/logout" style="background: #6c757d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500;">
+      <a href="/logout" style="background: #6c757d; color: white; padding: 12px 24px; text-decoration: none; font-weight: 500;">
         Logout
       </a>
     </div>
   {% else %}
     <p style="color: #666; margin-bottom: 20px;">Please log in to access your BitBio account.</p>
-    <a href="/" style="background: #e91b0d; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: 500;">
+    <a href="/" style="background: #e91b0d; color: white; padding: 12px 24px; text-decoration: none; font-weight: 500;">
       Sign In
     </a>
   {% endif %}

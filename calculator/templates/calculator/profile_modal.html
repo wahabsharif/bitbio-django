@@ -1,0 +1,178 @@
+{% load static %}
+<style>
+    #settingsModal input, #settingsModal select, #settingsModal textarea {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #D1D5DB;
+    }
+    #settingsModal .form-section {
+        margin-bottom: 16px;
+        width: 100%;
+    }
+    #settingsModal .full-span {
+        width: 100%;
+    }
+    #settingsModal .form-row label {
+        width: 30%;
+    }
+    #settingsModal .form-row input,
+    #settingsModal .form-row select,
+    #settingsModal .form-row textarea {
+        width: 70%;
+        text-align: left;
+    }
+    #settingsModal .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 0;
+    }
+    #settingsModal .checkbox-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+    #settingsModal .section-heading {
+        margin: 0 0 8px 0 !important;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+    }
+    #settingsModal .error-text {
+        color: #DC2626;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+    }
+    #settingsModal .field-error-below {
+        margin-left: 30%;
+        width: 70%;
+        margin-top: -20px;
+        padding-left: 15px;
+    }
+    #settingsModal .help-text {
+        color: #6B7280;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    #settingsModal .field-helper-below {
+        margin-left: 30%;
+        width: 70%;
+        margin-top: -20px;
+        padding-left: 15px;
+    }
+</style>
+<div class="modal-overlay" id="settingsModal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-header">
+            <h3 id="settingsTitle">Update Settings</h3>
+            <button class="modal-close" id="closeSettings" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+            {% if request.user.is_authenticated %}
+            <form id="settingsForm">
+                {% csrf_token %}
+                <!-- Basic -->
+                <div class="form-section">
+                    <div class="form-row full-span"><label for="email">Email</label><input type="email" id="email" name="email" value="{{ request.user.email }}" readonly style="cursor: not-allowed !important; background-color: #F3F4F6;" /></div>
+                    <div class="form-row full-span"><label for="first_name">First name</label><input type="text" id="first_name" name="first_name" value="{{ request.user.first_name }}" /></div>
+                    <div class="form-row full-span"><label for="last_name">Last name</label><input type="text" id="last_name" name="last_name" value="{{ request.user.last_name }}" /></div>
+                    <div class="form-row full-span"><label for="job_title">Job title</label><input type="text" id="job_title" name="job_title" value="{{ request.user.job_title }}" /></div>
+                </div>
+                <!-- Password -->
+                <div class="form-section">
+                    <h4 class="section-heading">Change password</h4>
+                    <div class="form-row full-span"><label for="current_password">Current password</label><input type="password" id="current_password" name="current_password" autocomplete="current-password" /></div>
+                    <div class="form-row full-span"><label for="new_password1">New password</label><input type="password" id="new_password1" name="new_password1" autocomplete="new-password" /></div>
+                    <ul class="help-text field-helper-below">
+                        <li>At least 8 characters long.</li>
+                        <li>Not a commonly used password.</li>
+                        <li>Not entirely numeric.</li>
+                        <li>Not too similar to your personal information (name, email, job title).</li>
+                        <li>Recommended: use a mix of letters, numbers, and symbols.</li>
+                    </ul>
+                    <div class="form-row full-span"><label for="new_password2">Confirm new password</label><input type="password" id="new_password2" name="new_password2" autocomplete="new-password" /></div>
+
+                </div>
+                <!-- Flags -->
+                <div class="form-section" 
+                style="display: grid; grid-template-columns: repeat(2, 1fr);">
+               <label class="checkbox-row">
+                   <input type="checkbox" id="institution_tax_vat" name="institution_tax_vat" 
+                          {% if request.user.institution_tax_vat %}checked{% endif %}/> 
+                   Institution tax/VAT exemption
+               </label>
+               <label class="checkbox-row">
+                   <input type="checkbox" id="in_vitro" name="in_vitro" 
+                          {% if request.user.in_vitro %}checked{% endif %}/> 
+                   Intended use: in vitro
+               </label>
+               <label class="checkbox-row">
+                   <input type="checkbox" id="in_vivo" name="in_vivo" 
+                          {% if request.user.in_vivo %}checked{% endif %}/> 
+                   Intended use: in vivo
+               </label>
+               <label class="checkbox-row">
+                   <input type="checkbox" id="communications_agreement" name="communications_agreement" 
+                          {% if request.user.communications_agreement %}checked{% endif %}/> 
+                   Receive communications
+               </label>
+           </div>
+           
+
+                <!-- Billing -->
+                {% with billing=request.user.get_billing_info %}
+                <div class="form-section">
+                    <h4 class="section-heading">Billing information</h4>
+                    <div class="form-row full-span"><label for="company_trading_name">Company trading name</label><input type="text" id="company_trading_name" name="company_trading_name" value="{{ billing.company_trading_name|default:'' }}" /></div>
+                    <div class="form-row full-span"><label for="billing_address_line_1">Address line 1</label><textarea rows="3" id="billing_address_line_1" name="billing_address_line_1" >{{ billing.address_line_1|default:'' }}</textarea></div>
+                    <div class="form-row full-span"><label for="billing_address_line_2">Address line 2</label><textarea rows="3" id="billing_address_line_2" name="billing_address_line_2" >{{ billing.address_line_2|default:'' }}</textarea></div>
+                    <div class="form-row"><label for="billing_city">City</label><input type="text" id="billing_city" name="billing_city" value="{{ billing.city|default:'' }}" /></div>
+                    <div class="form-row"><label for="billing_state">State/Province</label><input type="text" id="billing_state" name="billing_state" value="{{ billing.state|default:'' }}" /></div>
+                    <div class="form-row"><label for="billing_postal_code">Postal code</label><input type="text" id="billing_postal_code" name="billing_postal_code" value="{{ billing.postal_code|default:'' }}" /></div>
+                    <div class="form-row"><label for="billing_country">Country</label>
+                        <select id="billing_country" name="billing_country">
+                            <option value="">Select a country</option>
+                            {% for country in countries %}
+                            <option value="{{ country }}" {% if billing.country == country %}selected{% endif %}>{{ country }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row full-span"><label for="billing_phone">Phone</label><input type="text" id="billing_phone" name="billing_phone" value="{{ billing.phone_number|default:'' }}" /></div>
+
+                </div>
+                {% endwith %}
+
+                <!-- Shipping -->
+                {% with shipping=request.user.get_shipping_info %}
+                <div class="form-section">
+                    <h4 class="section-heading">Shipping information</h4>
+                    <div class="form-row full-span"><label for="shipping_address_line_1">Address line 1</label><textarea rows="3" id="shipping_address_line_1" name="shipping_address_line_1" >{{ shipping.address_line_1|default:'' }}</textarea></div>
+                    <div class="form-row full-span"><label for="shipping_address_line_2">Address line 2</label><textarea rows="3" id="shipping_address_line_2" name="shipping_address_line_2" >{{ shipping.address_line_2|default:'' }}</textarea></div>
+                    <div class="form-row"><label for="shipping_city">City</label><input type="text" id="shipping_city" name="shipping_city" value="{{ shipping.city|default:'' }}" /></div>
+                    <div class="form-row"><label for="shipping_state">State/Province</label><input type="text" id="shipping_state" name="shipping_state" value="{{ shipping.state|default:'' }}" /></div>
+                    <div class="form-row"><label for="shipping_postal_code">Postal code</label><input type="text" id="shipping_postal_code" name="shipping_postal_code" value="{{ shipping.postal_code|default:'' }}" /></div>
+                    <div class="form-row"><label for="shipping_country">Country</label>
+                        <select id="shipping_country" name="shipping_country">
+                            <option value="">Select a country</option>
+                            {% for country in countries %}
+                            <option value="{{ country }}" {% if shipping.country == country %}selected{% endif %}>{{ country }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row"><label for="shipping_phone">Phone</label><input type="text" id="shipping_phone" name="shipping_phone" value="{{ shipping.phone_number|default:'' }}" /></div>
+                    <div class="form-row full-span"><label for="shipping_instructions">Instructions</label><textarea id="shipping_instructions" name="shipping_instructions" rows="3">{{ shipping.instructions_restrictions|default:'' }}</textarea></div>
+
+                </div>
+                {% endwith %}
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelSettings">Cancel</button>
+                    <button type="submit" class="btn-grad" id="saveSettings">Save</button>
+                </div>
+            </form>
+            {% else %}
+            <p>Please sign in to update your profile.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,33 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block search %}
+    {% if cl.search_fields %}
+        <div id="toolbar">
+            <form id="changelist-search" method="get">
+                <div><!-- DIV needed for valid HTML -->
+                    <label for="searchbar"><img src="{% static 'admin/img/search.svg' %}" alt="Search"></label>
+                    <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" autofocus>
+                    <input type="submit" value="{% translate 'Search' %}">
+                    {% if cl.query %}
+                        <a href="?{% if cl.is_popup %}_popup=1{% endif %}{% if cl.save_on_top %}_save=1{% endif %}{% if is_popup %}_popup=1{% endif %}{% if cl.show_full_result_count %}_full=1{% endif %}{% if cl.extra_params %}{{ cl.extra_params|urlencode }}{% endif %}" class="button">{% translate 'Clear' %}</a>
+                    {% endif %}
+                </div>
+                {% if show_result_count %}
+                    <p class="paginator">
+                        {% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %}
+                        {% if cl.show_full_result_count %}
+                            {% blocktranslate with full_result_count=cl.full_result_count %} of {{ full_result_count }}{% endblocktranslate %}
+                        {% endif %}
+                        {% if cl.query %}
+                            {% blocktranslate with query=cl.query %} for "{{ query }}"{% endblocktranslate %}
+                        {% endif %}
+                    </p>
+                {% endif %}
+                {% for pair in cl.params.items %}
+                    {% if pair.0 != search_var %}<input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">{% endif %}
+                {% endfor %}
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

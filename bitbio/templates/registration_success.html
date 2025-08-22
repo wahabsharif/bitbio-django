@@ -1,0 +1,67 @@
+{% extends 'layout.html' %} {% load static %} {% block title %} Registration
+Success {% endblock %} {% block content %}
+
+<style>
+  .success-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .success-icon {
+    font-size: 4rem;
+    color: #28a745;
+    margin-bottom: 2rem;
+  }
+
+  .success-title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .success-message {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(90deg, #f6a11e, #e91b0d);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .back-link:hover {
+    background: white;
+    border: 1px solid #e91b0d;
+    color: #e91b0d;
+  }
+</style>
+
+<div class="success-container">
+  <div class="success-icon">✓</div>
+  <h1 class="success-title">Registration Successful!</h1>
+  <div class="success-message">
+    <p>Thank you for registering with Bit Bio!</p>
+    <p>
+      Your account application has been submitted and is currently pending
+      approval. Our team will review your information and get back to you within
+      24 hours.
+    </p>
+    <p>
+      If you have any questions, please contact us at
+      <a href="mailto:orders@bit.bio">orders@bit.bio</a>
+    </p>
+  </div>
+  <a href="{% url 'account' %}" class="back-link">Return to Home</a>
+</div>
+
+{% endblock %}

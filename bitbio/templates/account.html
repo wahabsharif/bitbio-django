@@ -7,7 +7,7 @@ bit.bio{% endblock %} {% block content %}
     height: 100vh;
   }
   .signin-container {
-    max-width: 1400px;
+    max-width: 1100px;
     margin: 0 auto;
     display: flex;
     align-items: flex-start;
@@ -158,36 +158,49 @@ bit.bio{% endblock %} {% block content %}
     background-color: #d2d3d5;
     margin: 0 40px;
   }
+  
+  .error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 26px;
+    margin-bottom: 7px;
+    color: #4a5157;
+  }
 </style>
 
 <section>
   <div class="signin-container">
     <h1 class="title">Sign in to your account</h1>
+    
+    
     <div class="form-container">
-      <div class="signin-left">
-        <form class="form" method="post">
-          {% csrf_token %}
+              <div class="signin-left">
+          <form class="form" method="post">
+           {% csrf_token %}
 
           <div class="form-group">
-            <label for="username" class="form-label">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              class="form-input"
-              required
-            />
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="error-message">{{ form.email.errors.0 }}</div>
+            {% endif %}
           </div>
 
           <div class="form-group">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="form-input"
-              required
-            />
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+              <div class="error-message">{{ form.password.errors.0 }}</div>
+            {% endif %}
           </div>
 
           <a href="#" class="forgot-link">Forgot your password?</a>

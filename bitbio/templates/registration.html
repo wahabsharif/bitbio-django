@@ -1,5 +1,7 @@
-{% extends 'layout.html' %} {% load static %} {% block title %} Registration
-{%endblock %} {% block content %}
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %} Registration {% endblock %}
+{% block content %}
 
 <style>
   section {
@@ -32,7 +34,7 @@
   }
 
   .reg-container {
-    max-width: 1400px;
+    max-width: 1100px;
     margin: 0 auto;
     display: flex;
     align-items: start;
@@ -153,6 +155,39 @@
   .custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
     opacity: 1;
   }
+
+  .error-message {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  .field-error {
+    color: #c33;
+    font-size: 14px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+  }
+
+  .form-input {
+    padding-bottom: 4px;
+    border: none;
+    border-bottom: 1px solid #d1d5db;
+    padding: 12px 0;
+    font-size: 16px;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s ease;
+    width: 90%;
+    margin-bottom: 2em;
+  }
+
+  .form-input:focus {
+    border-bottom-color: #e91b0d;
+  }
 </style>
 
 <section>
@@ -189,140 +224,258 @@
       </p>
     </div>
   </div>
-  <div class="reg-container">
-    <div><h3>Your details</h3></div>
-    <div>
-      <label for="first_name">First Name*</label><input type="text" required />
-      <label for="last_name">Last Name*</label><input type="text" required />
-      <label for="email">Email*</label><input type="email" required />
-      <label for="job_title">Job Title*</label><input type="text" required />
+  <form method="post" novalidate>
+    {% csrf_token %} {% if form.non_field_errors %}
+    <div class="error-message">
+      {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+      {% endfor %}
     </div>
-  </div>
-  <div class="reg-container">
-    <div><h3>Your billing information</h3></div>
-    <div>
-      <label for="Company_trading_name">Company trading name*</label
-      ><input type="text" required />
-      <label for="address_line_1">Address line 1*</label
-      ><input type="text" required />
-      <label for="address_line_2">Address line 2</label
-      ><input type="text" required /> <label for="City">City*</label
-      ><input type="text" required /> <label for="Postcode">Postal code*</label
-      ><input type="text" required /> <label for="State">State*</label
-      ><input type="text" required /> <label for="Country">Country*</label>
-      <select name="country" id="country" required>
-        <option value="" disabled selected></option>
-        {% for country in countries %}
-        <option value="{{ country }}">{{ country }}</option>
-        {% endfor %}
-      </select>
-      <label for="Country">Phone Number*</label><input type="text" required />
-      <label for="Country"
-        >Please indicate if your institution is tax or VAT exempt by ticking the
-        box below.</label
-      >
-      <div class="checkbox-wrapper">
-        <label class="custom-checkbox">
-          <input type="checkbox" required />
-          <span class="checkmark"></span>
-        </label>
-        <span
-          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-          >Our institution is tax/VAT exempt</span
-        >
+    {% endif %}
+
+    <div class="reg-container">
+      <div><h3>Your details</h3></div>
+      <div>
+        <label for="{{ form.first_name.id_for_label }}">First Name*</label>
+        {{ form.first_name }} {% if form.first_name.errors %}
+        <div class="field-error">{{ form.first_name.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.last_name.id_for_label }}">Last Name*</label>
+        {{ form.last_name }} {% if form.last_name.errors %}
+        <div class="field-error">{{ form.last_name.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.email.id_for_label }}">Email*</label>
+        {{ form.email }} {% if form.email.errors %}
+        <div class="field-error">{{ form.email.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.job_title.id_for_label }}">Job Title*</label>
+        {{ form.job_title }} {% if form.job_title.errors %}
+        <div class="field-error">{{ form.job_title.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.password1.id_for_label }}">Password*</label>
+        {{ form.password1 }} {% if form.password1.errors %}
+        <div class="field-error">{{ form.password1.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.password2.id_for_label }}">Confirm Password*</label>
+        {{ form.password2 }} {% if form.password2.errors %}
+        <div class="field-error">{{ form.password2.errors.0 }}</div>
+        {% endif %}
       </div>
     </div>
-  </div>
-  <div class="reg-container">
-    <div><h3>Your shipping information</h3></div>
-    <div>
-      <label for="address_line_1">Address line 1*</label
-      ><input type="text" required />
-      <label for="address_line_2">Address line 2</label
-      ><input type="text" required /> <label for="City">City*</label
-      ><input type="text" required /> <label for="Postcode">Postal code*</label
-      ><input type="text" required /> <label for="State">State*</label
-      ><input type="text" required /> <label for="Country">Country*</label>
-      <select name="country" id="country" required>
-        <option value="" disabled selected></option>
-        {% for country in countries %}
-        <option value="{{ country }}">{{ country }}</option>
-        {% endfor %}
-      </select>
-      <label for="Country">Phone Number*</label><input type="text" required />
-      <label for="Country"
-        >Do you have any specific instructions or restrictions on shipping? For
-        example, deliveries are only accepted from Monday to Thursday or no
-        deliveries before 9am..</label
-      >
-      <textarea
-        name="shipping_instructions"
-        id="shipping_instructions"
-        rows="4"
-      ></textarea>
-    </div>
-  </div>
-  <div class="reg-container">
-    <div><h3>Use intent</h3></div>
-    <div>
-      <label for="use_intent">How will you use our products?*</label>
-      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
-        <label class="custom-checkbox">
-          <input type="checkbox" required />
-          <span class="checkmark"></span>
-        </label>
-        <span
-          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-          >Research use only (RUO): in vitro</span
+    <div class="reg-container">
+      <div><h3>Your billing information</h3></div>
+      <div>
+        <label for="{{ form.company_trading_name.id_for_label }}"
+          >Company trading name*</label
         >
-      </div>
-      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
-        <label class="custom-checkbox">
-          <input type="checkbox" required />
-          <span class="checkmark"></span>
-        </label>
-        <span
-          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-          >Research use only (RUO): in vivo</span
+        {{ form.company_trading_name }} {% if form.company_trading_name.errors %}
+        <div class="field-error">{{ form.company_trading_name.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.billing_address_line_1.id_for_label }}"
+          >Address line 1*</label
         >
+        {{ form.billing_address_line_1 }} {% if form.billing_address_line_1.errors %}
+        <div class="field-error">
+          {{ form.billing_address_line_1.errors.0 }}
+        </div>
+        {% endif %}
+
+        <label for="{{ form.billing_address_line_2.id_for_label }}"
+          >Address line 2</label
+        >
+        {{ form.billing_address_line_2 }} {% if form.billing_address_line_2.errors %}
+        <div class="field-error">
+          {{ form.billing_address_line_2.errors.0 }}
+        </div>
+        {% endif %}
+
+        <label for="{{ form.billing_city.id_for_label }}">City*</label>
+        {{ form.billing_city }} {% if form.billing_city.errors %}
+        <div class="field-error">{{ form.billing_city.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.billing_postal_code.id_for_label }}"
+          >Postal code*</label
+        >
+        {{ form.billing_postal_code }} {% if form.billing_postal_code.errors %}
+        <div class="field-error">{{ form.billing_postal_code.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.billing_state.id_for_label }}">State*</label>
+        {{ form.billing_state }} {% if form.billing_state.errors %}
+        <div class="field-error">{{ form.billing_state.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.billing_country.id_for_label }}">Country*</label>
+        {{ form.billing_country }} {% if form.billing_country.errors %}
+        <div class="field-error">{{ form.billing_country.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.billing_phone.id_for_label }}">Phone Number*</label>
+        {{ form.billing_phone }} {% if form.billing_phone.errors %}
+        <div class="field-error">{{ form.billing_phone.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.institution_tax_vat.id_for_label }}"
+          >Please indicate if your institution is tax or VAT exempt by ticking
+          the box below.</label
+        >
+        <div class="checkbox-wrapper">
+          <label class="custom-checkbox">
+            {{ form.institution_tax_vat }}
+            <span class="checkmark"></span>
+          </label>
+          <span
+            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+            >Our institution is tax/VAT exempt</span
+          >
+        </div>
+        {% if form.institution_tax_vat.errors %}
+        <div class="field-error">{{ form.institution_tax_vat.errors.0 }}</div>
+        {% endif %}
       </div>
     </div>
-  </div>
-  <div class="reg-container">
-    <div><h3>Consent</h3></div>
-    <div>
-      <label for="use_intent"
-        >bit.bio is committed to protecting and respecting your privacy, and
-        we’ll only use your personal information to administer your account and
-        to provide the products and services you requested from us. From time to
-        time, we would like to contact you about our products and services, as
-        well as other content that may be of interest to you. If you consent to
-        us contacting you for this purpose, please tick below to say how you
-        would like us to contact you:</label
-      >
-      <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
-        <label class="custom-checkbox">
-          <input type="checkbox" required />
-          <span class="checkmark"></span>
-        </label>
-        <span
-          onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-          >I agree to receive other communications from Bit Bio.</span
+    <div class="reg-container">
+      <div><h3>Your shipping information</h3></div>
+      <div>
+        <label for="{{ form.shipping_address_line_1.id_for_label }}"
+          >Address line 1*</label
         >
+        {{ form.shipping_address_line_1 }} {% if form.shipping_address_line_1.errors %}
+        <div class="field-error">
+          {{ form.shipping_address_line_1.errors.0 }}
+        </div>
+        {% endif %}
+
+        <label for="{{ form.shipping_address_line_2.id_for_label }}"
+          >Address line 2</label
+        >
+        {{ form.shipping_address_line_2 }} {% if form.shipping_address_line_2.errors %}
+        <div class="field-error">
+          {{ form.shipping_address_line_2.errors.0 }}
+        </div>
+        {% endif %}
+
+        <label for="{{ form.shipping_city.id_for_label }}">City*</label>
+        {{ form.shipping_city }} {% if form.shipping_city.errors %}
+        <div class="field-error">{{ form.shipping_city.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.shipping_postal_code.id_for_label }}"
+          >Postal code*</label
+        >
+        {{ form.shipping_postal_code }} {% if form.shipping_postal_code.errors %}
+        <div class="field-error">{{ form.shipping_postal_code.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.shipping_state.id_for_label }}">State*</label>
+        {{ form.shipping_state }} {% if form.shipping_state.errors %}
+        <div class="field-error">{{ form.shipping_state.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.shipping_country.id_for_label }}">Country*</label>
+        {{ form.shipping_country }} {% if form.shipping_country.errors %}
+        <div class="field-error">{{ form.shipping_country.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.shipping_phone.id_for_label }}"
+          >Phone Number*</label
+        >
+        {{ form.shipping_phone }} {% if form.shipping_phone.errors %}
+        <div class="field-error">{{ form.shipping_phone.errors.0 }}</div>
+        {% endif %}
+
+        <label for="{{ form.shipping_instructions.id_for_label }}"
+          >Do you have any specific instructions or restrictions on shipping?
+          For example, deliveries are only accepted from Monday to Thursday or
+          no deliveries before 9am..</label
+        >
+        {{ form.shipping_instructions }} {% if form.shipping_instructions.errors %}
+        <div class="field-error">{{ form.shipping_instructions.errors.0 }}</div>
+        {% endif %}
       </div>
-      <p>
-        You can unsubscribe from these communications at any time. For more
-        information on how to unsubscribe, our privacy practices, and how we are
-        committed to protecting and respecting your privacy, please review our
-        <a href="#">Privacy Policy</a>.
-      </p>
-      <p>
-        By clicking submit below, you consent to allow bit.bio to store and
-        process the personal information submitted above to provide you the
-        content requested.
-      </p>
-      <button type="submit">Submit</button>
     </div>
-  </div>
+    <div class="reg-container">
+      <div><h3>Use intent</h3></div>
+      <div>
+        <label for="use_intent">How will you use our products?*</label>
+        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+          <label class="custom-checkbox">
+            {{ form.in_vitro }}
+            <span class="checkmark"></span>
+          </label>
+          <span
+            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+            >Research use only (RUO): in vitro</span
+          >
+        </div>
+        {% if form.in_vitro.errors %}
+        <div class="field-error">{{ form.in_vitro.errors.0 }}</div>
+        {% endif %}
+
+        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+          <label class="custom-checkbox">
+            {{ form.in_vivo }}
+            <span class="checkmark"></span>
+          </label>
+          <span
+            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+            >Research use only (RUO): in vivo</span
+          >
+        </div>
+        {% if form.in_vivo.errors %}
+        <div class="field-error">{{ form.in_vivo.errors.0 }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="reg-container">
+      <div><h3>Consent</h3></div>
+      <div>
+        <label for="use_intent"
+          >bit.bio is committed to protecting and respecting your privacy, and
+          we’ll only use your personal information to administer your account
+          and to provide the products and services you requested from us. From
+          time to time, we would like to contact you about our products and
+          services, as well as other content that may be of interest to you. If
+          you consent to us contacting you for this purpose, please tick below
+          to say how you would like us to contact you:</label
+        >
+        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+          <label class="custom-checkbox">
+            {{ form.communications_agreement }}
+            <span class="checkmark"></span>
+          </label>
+          <span
+            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
+            >I agree to receive other communications from Bit Bio.</span
+          >
+        </div>
+        {% if form.communications_agreement.errors %}
+        <div class="field-error">
+          {{ form.communications_agreement.errors.0 }}
+        </div>
+        {% endif %}
+        <p>
+          You can unsubscribe from these communications at any time. For more
+          information on how to unsubscribe, our privacy practices, and how we
+          are committed to protecting and respecting your privacy, please review
+          our
+          <a href="#">Privacy Policy</a>.
+        </p>
+        <p>
+          By clicking submit below, you consent to allow bit.bio to store and
+          process the personal information submitted above to provide you the
+          content requested.
+        </p>
+        <button type="submit">Submit</button>
+      </div>
+    </div>
+  </form>
 </section>
 {% endblock %}

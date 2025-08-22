@@ -1,0 +1,202 @@
+    {% extends "admin/base.html" %}
+    {% load static %}
+
+    {% block title %}{{ title }} | {{ site_title|default:_('BitBio Admin') }}{% endblock %}
+
+    {% block extrastyle %}
+        {{ block.super }}
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+        <style>
+            /* Hide the theme toggle button */
+            .theme-toggle {
+                display: none !important;
+            }
+            
+            /* Style user-tools and add spacing between items */
+            #user-tools, #logout-form button {
+                padding: 0;
+                font-weight: 300;
+                font-size: 0.6875rem;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            
+            /* Add spacing between user-tools items */
+            #user-tools > * {
+                margin-right: 15px;
+            }
+            
+            #user-tools > *:last-child {
+                margin-right: 0;
+            }
+            
+            /* Style the logout button specifically */
+            #logout-form button {
+                background: none;
+                border: none;
+                color: inherit;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            
+            #logout-form button:hover {
+                opacity: 0.8;
+            }
+
+            #main{
+            margin: 0 auto;
+            }
+            /* ====== custom styles for django admin ====== */
+                
+            #main{
+                width: 100%;
+            }
+            
+            #id_new_password1_helptext ul {
+                margin: 0;
+                padding: 0;
+            }
+            
+            #id_new_password1_helptext li {
+                list-style-type: circle !important;
+                margin-bottom: 0.3em;
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0;
+                line-height: 20px;
+                color: #666;
+                margin-top: 0.5em;
+            }
+            
+            .dashboard #content{
+                width: auto;
+            }
+            /* Fix boolean field icon sizing consistency */
+            .field-institution_tax_vat img,
+            .field-in_vitro img,
+            .field-in_vivo img,
+            .field-communications_agreement img,
+            .field-is_active img,
+            .field-is_staff img,
+            .field-is_superuser img {
+                width: 16px !important;
+                height: 16px !important;
+                vertical-align: middle;
+            }
+
+            /* Ensure all boolean field icons have consistent sizing */
+            .results img[alt="True"],
+            .results img[alt="False"] {
+                width: 16px !important;
+                height: 16px !important;
+                vertical-align: middle;
+            }
+
+            /* Alternative approach: target all admin boolean icons */
+            .field-boolean img,
+            .field-boolean_field img {
+                width: 16px !important;
+                height: 16px !important;
+                vertical-align: middle;
+            }
+            .field-status_badge span{
+                white-space: nowrap;
+
+            }
+
+            /* Style billing and shipping information display */
+            .field-billing_info_display,
+            .field-shipping_info_display {
+                max-width: 250px;
+            }
+
+            .field-billing_info_display div,
+            .field-shipping_info_display div {
+                line-height: 1.4;
+                font-size: 12px;
+            }
+
+            .field-billing_info_display strong,
+            .field-shipping_info_display strong {
+                color: #333;
+                font-weight: 600;
+            }
+
+            .field-billing_info_display span,
+            .field-shipping_info_display span {
+                font-size: 11px;
+            }
+
+
+            #toolbar{
+                border-radius: 10px;
+            }
+
+            #changelist-search > div > label > img {
+                width: 20px !important;
+            }
+
+
+            #toolbar form input[type="submit"] {
+                height: 2rem !important;
+                padding: 2px 10px !important;
+                vertical-align: middle !important;            }
+          
+            #toolbar #searchbar {
+                height: 2rem !important;
+                padding: 2px 10px !important;
+                vertical-align: middle !important;
+            }
+
+            /* Style for the clear button */
+            #toolbar .button {
+                display: inline-block;
+                text-decoration: none;
+                padding: 5px 15px;
+                background: #79aec8;
+                color: white;
+                font-size: 12px;
+                transition: background-color 0.2s ease;
+            }
+
+            #toolbar .button:hover {
+                background: #417690;
+                color: white;
+                text-decoration: none;
+            }
+
+            /* Ensure proper spacing in the search form */
+            #toolbar form > div {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            /* Additional styling for the search form elements */
+            #toolbar #changelist-search {
+                margin-bottom: 20px;
+            }
+
+            #toolbar #changelist-search input[type="text"] {
+                min-width: 200px;
+            }
+
+            /* Ensure the clear button is properly styled */
+            #toolbar .button {
+                white-space: nowrap;
+                vertical-align: middle;
+            }
+
+
+        </style>
+    {% endblock %}
+
+    {% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            BitBio Administration
+        </a>
+    </h1>
+    {% endblock %}
+
+    {% block nav-global %}{% endblock %}

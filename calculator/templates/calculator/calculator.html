@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BitBio - Calculator</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon-32x32.webp' %}" />
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/calculator.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+</head>
+<body>
+<!-- Calculator Page -->
+<div class="grad-bg no-print w-full h-4 top-0 left-0 z-50"></div>
+<!-- Banner Text -->
+<div class="calculator-container" style="margin-top: 3rem; display: flex; flex-direction: column; align-items: start;">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+        <img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo"
+            style="width: full; height: 55px; flex-shrink: 0;" />
+        <div class="profile-dropdown" id="profileDropdown">
+            <button class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false">
+                <img src="{% static 'images/user-icon.svg' %}" alt="Profile" />
+            </button>
+            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                {% if request.user.is_authenticated %}
+                <div class="profile-header">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                <a href="#" id="openSettings" role="menuitem">Settings</a>
+                <a href="{% url 'logout' %}" role="menuitem">Logout</a>
+                {% else %}
+                <a href="{% url 'account' %}" role="menuitem">Sign in</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div style="
+    margin: 0 auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;">
+        <div style="display: flex; flex-direction: column; align-items: start; width: 75%;">
+            <h1 style="font-size: 2rem; font-weight: 600; margin-bottom: 10px !important;">Cell seeding calculator</h1>
+            <p style="margin-bottom: 20px; font-size: 1rem; margin-top: 0px !important;">
+                This calculator helps scientists to quickly determine how much cell stock solution and culture media
+                is needed for seeding cells in a variety of different culture vessels. By following this simple
+                step-by-step guide, you can get your results instantly!
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="calculator-container">
+    <!-- Main Calculator Form -->
+    <div class="calculator-main">
+        <div class="calculator-form-section">
+            <!-- Cell Stock Volume -->
+            <div class="form-row" >
+                <label for="suspension_volume" class="form-label">
+                    Cell stock volume <span class="required-field">*</span>
+                    <span class="tooltip-container cursor-help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                            <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(5.12,5.12)">
+                                    <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="custom-tooltip tooltip-box-narrow">
+                            <div class="tooltip-row">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                                        <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.12,5.12)">
+                                                <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="tooltip-actions">
+                                    <p>Please refer to the ioCell user manual for your cell type for guidance on thawing and recommended initial suspension volume.</p>
+                                    <button type="button" class="muted-action">
+                                        <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </label>
+                <div class="input-container">
+                    <input id="suspension_volume" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" value="1" class="form-input">
+                    <span class="unit-label">mL</span>
+                </div>
+            </div>
+
+            <!-- Live Cell Count -->
+            <div class="form-row-start">
+                <label class="form-label">
+                    Live cell count
+                    <span class="tooltip-container cursor-help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                            <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(5.12,5.12)">
+                                    <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="custom-tooltip tooltip-box-wide">
+                            <div class="tooltip-row">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                                        <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.12,5.12)">
+                                                <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="tooltip-actions">
+                                    <p>Please count the number of cells using a viability marker. We recommend performing the count in triplicates - this calculator will automatically calculate the average value. If you have an outlier, best practice is to resuspend the cells carefully and repeat the triplicates count from the beginning. Please do not enter the number of total cells, the value should reflect the viable number of cells only.</p>
+                                    <button type="button" class="muted-action">
+                                        <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </label>
+                <div class="input-container-full">
+                    <div class="counts-grid">
+                        <div class="count-item">
+                            <div class="count-label">Count 1<span class="required-field">*</span></div>
+                            <input id="count1" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" required class="form-input">
+                            <div class="mobile-only symbol">x 10<sup>6</sup> cells/mL</div>
+                        </div>
+                        <div class="count-item">
+                            <div class="count-label">Count 2</div>
+                            <input id="count2" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" class="form-input">
+                            <div class="mobile-only symbol">x 10<sup>6</sup> cells/mL</div>
+                        </div>
+                        <div class="count-item">
+                            <div class="count-label">Count 3</div>
+                            <input id="count3" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" class="form-input">
+                            <div class="mobile-only symbol">x 10<sup>6</sup> cells/mL</div>
+                        </div>
+                        <div class="desktop-only symbol">x 10<sup>6</sup> cells/mL</div>
+                    </div>
+                    <div id="cellCountWarning" class="warning-container">
+                        <div class="warning-content">
+                            <div class="warning-icon">
+                                <svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"></path>
+                                </svg>
+                            </div>
+                            <p class="warning-text">The variability in your live cell count exceeds 10%, we recommend that you re-suspend your cell suspension and perform a recount.</p>
+                            <button type="button" class="warning-close" onclick="document.getElementById('cellCountWarning').classList.add('hidden')">
+                                <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cell Viability -->
+            <div class="form-row-start">
+                <label class="form-label">Cell viability</label>
+                <div class="input-container-full">
+                    <div class="counts-grid">
+                        <div class="count-item">
+                            <div class="count-label-xs">Count 1<span class="required-field">*</span></div>
+                            <input id="viability1" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" max="100" class="form-input-small">
+                            <div class="mobile-only symbol">%</div>
+                        </div>
+                        <div class="count-item">
+                            <div class="count-label-xs">Count 2</div>
+                            <input id="viability2" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" max="100" class="form-input-small">
+                            <div class="mobile-only symbol">%</div>
+                        </div>
+                        <div class="count-item">
+                            <div class="count-label-xs">Count 3</div>
+                            <input id="viability3" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" min="0" max="100" class="form-input-small">
+                            <div class="mobile-only symbol">%</div>
+                        </div>
+                        <div class="desktop-only symbol">%</div>
+                    </div>
+                    <div id="viabilityWarning" class="warning-container">
+                        <div class="warning-content">
+                            <div class="warning-icon">
+                                <svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z" />
+                                </svg>
+                            </div>
+                            <p class="warning-text">If there is high variability in your cell viability percentage, or if this value is below 80%, we recommend that you re-suspend your cell suspension and perform a recount.</p>
+                            <button type="button" class="warning-close" onclick="document.getElementById('viabilityWarning').classList.add('hidden')">
+                                <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cell Type -->
+            <div class="form-row-start">
+                <label for="cell_type" class="form-label">Cell type</label>
+                <div class="input-container-full">
+                    <div class="ui fluid search selection dropdown searchable-input" id="cell_type_dropdown">
+                        <input type="hidden" id="cell_type">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">- - Select your cell type - -</div>
+                        <div class="menu">
+                            <!-- Options will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seeding Density -->
+            <div class="form-row-start">
+                <label for="seeding_density" class="form-label">
+                    Seeding density <span class="required-field">*</span>
+                    <span class="tooltip-container cursor-help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                            <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(5.12,5.12)">
+                                    <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="custom-tooltip tooltip-box-narrow">
+                            <div class="tooltip-row">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                                        <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.12,5.12)">
+                                                <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="tooltip-actions">
+                                    <p>Please note that the default seeding density has been optimised by bit.bio for ioCell monocultures. We recommend adjusting it as needed based on your assay or application.</p>
+                                    <button type="button" class="muted-action">
+                                        <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </label>
+                <div class="input-container">
+                    <input id="seeding_density" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" class="form-input">
+                    <span class="unit-label">cells/cm²</span>
+                </div>
+            </div>
+
+            <!-- Culture Vessel -->
+            <div class="form-row-start">
+                <label for="culture_vessel" class="form-label">
+                    Culture vessel
+                    <span class="tooltip-container cursor-help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                            <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(5.12,5.12)">
+                                    <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="custom-tooltip tooltip-box-wide">
+                            <div class="tooltip-row">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                                        <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.12,5.12)">
+                                                <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="tooltip-actions">
+                                    <p>Please select the appropriate culture vessel for your experimental setup. The options and values provided are for reference only, based on the most widely used formats - be sure to confirm them and adjust surface area and volume according to the supplier's recommendations.</p>
+                                    <button type="button" class="muted-action">
+                                        <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </label>
+                <div class="input-container-full">
+                    <div class="ui fluid search selection dropdown" id="culture_vessel_dropdown">
+                        <input type="hidden" id="culture_vessel">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">- - Select your culture vessel - -</div>
+                        <div class="menu">
+                            <!-- Options will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surface Area -->
+            <div class="form-row-center">
+                <label for="surface_area" class="form-label">
+                    Surface area <span class="required-field">*</span>
+                </label>
+                <div class="input-container">
+                    <input id="surface_area" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.01" min="0" class="form-input">
+                    <span class="unit-label">cm²/well</span>
+                </div>
+            </div>
+
+            <!-- Media Volume -->
+            <div class="form-row-center">
+                <label for="media_volume" class="form-label">
+                    Volume <span class="required-field">*</span>
+                </label>
+                <div class="input-container">
+                    <input id="media_volume" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.01" min="0" class="form-input">
+                    <span class="unit-label">mL/well</span>
+                </div>
+            </div>
+
+            <!-- Number of Wells -->
+            <div class="form-row-center">
+                <label for="num_wells" class="form-label">
+                    Number of wells to seed <span class="required-field">*</span>
+                </label>
+                <div class="input-container">
+                    <input id="num_wells" type="number" min="1" step="1" value="0" class="form-input-number">
+                    <span class="unit-label">wells</span>
+                </div>
+            </div>
+
+            <!-- Dead Volume Allowance -->
+            <div class="form-row-start">
+                <label for="buffer" class="form-label">
+                    Dead volume allowance
+                    <span class="tooltip-container cursor-help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                            <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                <g transform="scale(5.12,5.12)">
+                                    <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                        <div class="custom-tooltip tooltip-box-narrow">
+                            <div class="tooltip-row">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
+                                        <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.12,5.12)">
+                                                <path d="M25,2c-12.703,0 -23,10.297 -23,23c0,12.703 10.297,23 23,23c12.703,0 23,-10.297 23,-23c0,-12.703 -10.297,-23 -23,-23zM25,11c1.657,0 3,1.343 3,3c0,1.657 -1.343,3 -3,3c-1.657,0 -3,-1.343 -3,-3c0,-1.657 1.343,-3 3,-3zM29,38h-2h-4h-2v-2h2v-13h-2v-2h2h4v2v13h2z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="tooltip-actions">
+                                    <p>Include contingency (typically 10–20%) to account for dead volume. If unsure on what values to use, you can also change this value to zero, and instead add a few extra wells into your experimental plan.</p>
+                                    <button type="button" class="muted-action">
+                                        <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </label>
+                <div class="input-container">
+                    <input id="buffer" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" step="0.1" value="10" min="0" max="100" class="form-input">
+                    <span class="unit-label-left">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <p class="mobile-only">* Required field</p>
+            <!-- Calculate Button -->
+            <div class="calculate-section">
+                <p class="required-text desktop-only">* Required field</p>
+                <div class="calculate-button-container">
+                    <!-- Missing Fields Popup -->
+                    <div id="missingFieldsPopup" class="missing-fields-popup">
+                        <div class="popup-header">
+                            <div class="grow-1">
+                                <div class="warning-row">
+                                    <div class="warning-icon">
+                                        <svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="popup-title">Please fill in the following required fields:</h4>
+                                    <button type="button" id="closeMissingFieldsPopup" class="popup-close">
+                                        <svg class="icon-16" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <ul id="missingFieldsList" class="missing-fields-list">
+                                    <!-- Missing fields will be populated here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="calculateBtn" class="btn-grad calculate-btn">
+                        Calculate results
+                    </button>
+                    <div id="actionButtons" class="action-buttons">
+                        <div class="action-buttons-grid">
+                            <button id="resetBtn" class="btn-secondary">Reset</button>
+                            <button id="recalculateBtn" class="btn-grad">Recalculate Results</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    {% include 'calculator/result_section.html' %}
+</div>
+
+<!-- Useful Resources -->
+{% include 'calculator/useful_resources.html' %}
+
+<!-- Include JavaScript files -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="{% static 'js/ui-handlers.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% include 'calculator/profile_modal.html' %}
+<script>
+// Format numbers with thousands separators while preserving decimal precision
+function formatWithThousands(value) {
+    if (value === null || value === undefined) return '';
+    var str = String(value);
+    if (!str) return '';
+    var numeric = Number(str.replace(/,/g, ''));
+    if (isNaN(numeric)) return str;
+    var decimalPart = str.indexOf('.') >= 0 ? str.split('.')[1] : '';
+    var fractionDigits = decimalPart.length;
+    return numeric.toLocaleString('en-US', {
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits
+    });
+}
+// Lightweight UI helpers to show warnings above the Calculate button
+function showMissingFieldsPopup(missingFields) {
+    var popup = document.getElementById('missingFieldsPopup');
+    var list = document.getElementById('missingFieldsList');
+    if (!popup || !list) return;
+    list.innerHTML = '';
+    (missingFields || []).forEach(function (field) {
+        var text = (typeof field === 'string') ? field : (field && (field.name || field.id)) || '';
+        var li = document.createElement('li');
+        li.textContent = text;
+        list.appendChild(li);
+    });
+    popup.style.display = 'block';
+    // Auto-hide after ~3.5 seconds
+    try { setTimeout(hideMissingFieldsPopup, 2500); } catch (e) {}
+}
+
+function hideMissingFieldsPopup() {
+    var popup = document.getElementById('missingFieldsPopup');
+    if (popup) popup.style.display = 'none';
+}
+
+// Map human-readable names to input IDs for highlighting
+var requiredFieldNameToId = {
+    'Seeding Density': 'seeding_density',
+    'Number of Wells': 'num_wells',
+    'Surface Area': 'surface_area',
+    'Media Volume': 'media_volume',
+    'Cell Count 1': 'count1',
+    'Viability 1': 'viability1',
+    'Buffer Percentage': 'buffer',
+    'Suspension Volume': 'suspension_volume'
+};
+
+function clearMissingFieldHighlights() {
+    var ids = Object.values(requiredFieldNameToId);
+    ids.forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('error-field');
+        el.style.border = '';
+    });
+}
+
+function highlightMissingFields(missingFields) {
+    var firstEl = null;
+    (missingFields || []).forEach(function(name){
+        var id = requiredFieldNameToId[name] || name; // fallback if server ever sends ids
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.classList.add('error-field');
+        el.style.border = '0.1rem solid #dc2626';
+        if (!firstEl) firstEl = el;
+        // Remove highlight when user starts typing
+        if (!el._missingBind) {
+            el.addEventListener('input', function(){
+                el.classList.remove('error-field');
+                el.style.border = '';
+            });
+            el._missingBind = true;
+        }
+    });
+}
+
+// Minimal validation error banner (used by existing main.js pre-checks)
+function showValidationError(message) {
+    hideValidationError();
+    var calculateBtn = document.getElementById('calculateBtn');
+    if (!calculateBtn) return;
+    var errorDiv = document.createElement('div');
+    errorDiv.id = 'validationError';
+    errorDiv.style.cssText = 'background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 16px;border-radius:6px;margin:16px 0;font-size:14px;display:flex;align-items:center;gap:8px;';
+    var icon = document.createElement('span');
+    icon.textContent = '⚠️';
+    var text = document.createElement('span');
+    text.textContent = message || 'Please check your inputs.';
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = '×';
+    closeBtn.style.cssText = 'margin-left:auto;background:none;border:none;color:#dc2626;font-size:18px;cursor:pointer;';
+    closeBtn.addEventListener('click', hideValidationError);
+    errorDiv.appendChild(icon); errorDiv.appendChild(text); errorDiv.appendChild(closeBtn);
+    calculateBtn.parentNode.insertBefore(errorDiv, calculateBtn);
+}
+
+function hideValidationError() {
+    var existing = document.getElementById('validationError');
+    if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var closeBtn = document.getElementById('closeMissingFieldsPopup');
+    if (closeBtn) closeBtn.addEventListener('click', hideMissingFieldsPopup);
+    // Profile dropdown + settings modal wiring
+    var trigger = document.getElementById('profileTrigger');
+    var menu = document.getElementById('profileMenu');
+    var dropdown = document.getElementById('profileDropdown');
+    var settingsBtn = document.getElementById('openSettings');
+    var modal = document.getElementById('settingsModal');
+    var modalCloseBtn = document.getElementById('closeSettings');
+    var cancelBtn = document.getElementById('cancelSettings');
+    var form = document.getElementById('settingsForm');
+
+    function closeMenus(e){
+        if (!dropdown || !menu || !trigger) return;
+        if (!dropdown.contains(e.target)) {
+            menu.classList.remove('visible');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    if (trigger && menu) {
+        trigger.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var isOpen = menu.classList.contains('visible');
+            document.querySelectorAll('.profile-menu.visible').forEach(function(el){ el.classList.remove('visible'); });
+            if (!isOpen) {
+                menu.classList.add('visible');
+                trigger.setAttribute('aria-expanded', 'true');
+                menu.setAttribute('aria-hidden', 'false');
+            } else {
+                trigger.setAttribute('aria-expanded', 'false');
+                menu.setAttribute('aria-hidden', 'true');
+            }
+        });
+        document.addEventListener('click', closeMenus);
+        document.addEventListener('keydown', function(e){
+            if (e.key === 'Escape') {
+                menu.classList.remove('visible');
+                menu.setAttribute('aria-hidden', 'true');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    function openModal(){
+        if (!modal) return;
+        modal.classList.add('visible');
+        modal.setAttribute('aria-hidden', 'false');
+        if (menu) { menu.classList.remove('visible'); menu.setAttribute('aria-hidden', 'true'); }
+        try { document.getElementById('first_name')?.focus(); } catch (e) {}
+    }
+    function closeModal(){
+        if (!modal) return;
+        modal.classList.remove('visible');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+    if (settingsBtn) settingsBtn.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            var data = new FormData(form);
+            // Clear previous field errors
+            try {
+                Array.from(form.querySelectorAll('.error-text')).forEach(function(el){ el.remove(); });
+                Array.from(form.querySelectorAll('.form-row input, .form-row select, .form-row textarea')).forEach(function(el){ el.style.border = ''; });
+            } catch (e) {}
+            fetch('{% url "app_users:update_profile" %}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                credentials: 'same-origin',
+                body: data
+            }).then(function(res){
+                if (!res.ok) return res.json().then(function(err){ throw err; });
+                return res.json();
+            }).then(function(){
+                closeModal();
+                if (menu) menu.classList.remove('visible');
+            }).catch(function(err){
+                try {
+                    if (err && err.errors) {
+                        var firstErrorTarget = null;
+                        Object.keys(err.errors).forEach(function(field){
+                            var messages = err.errors[field];
+                            var input = document.getElementById(field);
+                            if (!input) {
+                                // Handle Django non-field errors or fields with different DOM ids
+                                if (field === '__all__') return; // could add a top banner if desired
+                                // Map form field names to DOM ids where they differ
+                                var map = {
+                                    'billing_address_line_1': 'billing_address_line_1',
+                                    'billing_address_line_2': 'billing_address_line_2',
+                                    'billing_city': 'billing_city',
+                                    'billing_postal_code': 'billing_postal_code',
+                                    'billing_state': 'billing_state',
+                                    'billing_country': 'billing_country',
+                                    'billing_phone': 'billing_phone',
+                                    'shipping_address_line_1': 'shipping_address_line_1',
+                                    'shipping_address_line_2': 'shipping_address_line_2',
+                                    'shipping_city': 'shipping_city',
+                                    'shipping_postal_code': 'shipping_postal_code',
+                                    'shipping_state': 'shipping_state',
+                                    'shipping_country': 'shipping_country',
+                                    'shipping_phone': 'shipping_phone',
+                                    'shipping_instructions': 'shipping_instructions',
+                                    'current_password': 'current_password',
+                                    'new_password1': 'new_password1',
+                                    'new_password2': 'new_password2'
+                                };
+                                input = document.getElementById(map[field]);
+                            }
+                            if (input && messages && messages.length) {
+                                input.style.border = '0.1rem solid #dc2626';
+                                // Build bullet list for messages
+                                var errorList = document.createElement('ul');
+                                errorList.className = 'error-text field-error-below';
+                                var items = Array.isArray(messages) ? messages : [String(messages)];
+                                items.forEach(function(msg){
+                                    var li = document.createElement('li');
+                                    li.textContent = String(msg);
+                                    errorList.appendChild(li);
+                                });
+                                // Insert after the entire form-row to ensure it appears below the input row
+                                var row = input.closest('.form-row') || input.closest('.checkbox-row');
+                                if (row && row.parentNode) {
+                                    row.parentNode.insertBefore(errorList, row.nextSibling);
+                                } else if (input.parentNode) {
+                                    // Fallback
+                                    input.parentNode.insertBefore(errorList, input.nextSibling);
+                                }
+                                if (!firstErrorTarget) {
+                                    firstErrorTarget = errorList;
+                                    try { input.focus(); } catch (e) {}
+                                }
+                            }
+                        });
+                        // Auto-scroll to the first error for visibility
+                        if (firstErrorTarget && typeof firstErrorTarget.scrollIntoView === 'function') {
+                            try { firstErrorTarget.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                        }
+                        return;
+                    }
+                } catch (e) {}
+                console.error('Update failed', err);
+                alert('Failed to update profile. Please check your inputs.');
+            });
+        });
+    }
+});
+
+// Override calculation to use server-side Python without changing UI
+window.performCalculation = async function () {
+    try {
+        const helpContent = document.getElementById('helpContent');
+        const resultsContent = document.getElementById('resultsContent');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const actionButtons = document.getElementById('actionButtons');
+        const downloadOptions = document.getElementById('downloadOptions');
+
+        // Build payload from inputs
+        const payload = {
+            suspension_volume: document.getElementById('suspension_volume')?.value || '',
+            count1: document.getElementById('count1')?.value || '',
+            count2: document.getElementById('count2')?.value || '',
+            count3: document.getElementById('count3')?.value || '',
+            viability1: document.getElementById('viability1')?.value || '',
+            viability2: document.getElementById('viability2')?.value || '',
+            viability3: document.getElementById('viability3')?.value || '',
+            seeding_density: document.getElementById('seeding_density')?.value || '',
+            surface_area: document.getElementById('surface_area')?.value || '',
+            media_volume: document.getElementById('media_volume')?.value || '',
+            num_wells: document.getElementById('num_wells')?.value || '',
+            buffer: document.getElementById('buffer')?.value || ''
+        };
+
+        // Strip thousands separators from numeric fields before submission
+        ['suspension_volume','count1','count2','count3','viability1','viability2','viability3','seeding_density','surface_area','media_volume','num_wells','buffer']
+            .forEach(function(key){
+                if (Object.prototype.hasOwnProperty.call(payload, key) && typeof payload[key] === 'string') {
+                    payload[key] = payload[key].replace(/,/g, '');
+                }
+            });
+
+        // Request server-side calculation
+        const response = await fetch('/calculator/calculate/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': (typeof getCSRFToken === 'function') ? getCSRFToken() : ''
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            if (data && data.validation && Array.isArray(data.validation.missingFields) && data.validation.missingFields.length) {
+                if (typeof clearMissingFieldHighlights === 'function') clearMissingFieldHighlights();
+                if (typeof highlightMissingFields === 'function') highlightMissingFields(data.validation.missingFields);
+                if (typeof showMissingFieldsPopup === 'function') showMissingFieldsPopup(data.validation.missingFields);
+                return;
+            }
+            if (typeof showValidationError === 'function') {
+                showValidationError(data && data.message ? data.message : 'Please check your inputs.');
+            }
+            return;
+        }
+
+        const result = data.result || {};
+
+        // Show results panel
+        if (helpContent) helpContent.style.display = 'none';
+        if (resultsContent) resultsContent.style.display = 'block';
+        if (calculateBtn) calculateBtn.style.display = 'none';
+        if (actionButtons) actionButtons.classList.add('visible');
+        if (downloadOptions) downloadOptions.style.display = 'block';
+
+        // Update numeric fields
+        const wellCountEl = document.getElementById('wellCount');
+        const volumeToDiluteEl = document.getElementById('volume_to_dilute');
+        const volumeToSeedEl = document.getElementById('volume_to_seed');
+        const volumePlatePerWellEl = document.getElementById('volume_plate_perwell_simple');
+        const cellDensityFormattedEl = document.getElementById('cell_density_formatted');
+        const requiredCellsFormattedEl = document.getElementById('required_cells_total_formatted');
+        const cellsPerWellFormattedEl = document.getElementById('cells_per_well_formatted');
+
+        if (wellCountEl) wellCountEl.textContent = formatWithThousands(result.wells);
+        if (volumeToDiluteEl) volumeToDiluteEl.textContent = formatWithThousands(result.volume_to_dilute || '0.00');
+        if (volumeToSeedEl) volumeToSeedEl.textContent = formatWithThousands(result.volume_to_seed || '0.00');
+        if (volumePlatePerWellEl) volumePlatePerWellEl.textContent = formatWithThousands(result.volume_plate_per_well || '0');
+        if (cellDensityFormattedEl) cellDensityFormattedEl.textContent = result.cell_density_formatted || '';
+        if (requiredCellsFormattedEl) requiredCellsFormattedEl.textContent = result.required_cells_total_formatted || '';
+        if (cellsPerWellFormattedEl) cellsPerWellFormattedEl.textContent = result.cells_per_well_formatted || '';
+
+        // Narrative
+        const narrative = result.narrative || {};
+        const narrativeMap = {
+            narrativeWellCount: narrative.narrativeWellCount,
+            narrativeVolumeSeed: narrative.narrativeVolumeSeed,
+            narrativeVolumeDilute: narrative.narrativeVolumeDilute,
+            narrativeVolumePerWell: narrative.narrativeVolumePerWell,
+            narrativeCellDensity: narrative.narrativeCellDensity,
+            narrativeCellsPerWell: narrative.narrativeCellsPerWell
+        };
+        Object.keys(narrativeMap).forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el && typeof narrativeMap[id] !== 'undefined') {
+                el.textContent = narrativeMap[id];
+            }
+        });
+
+        // Click-to-copy
+        const narrativeText = document.getElementById('narrativeText');
+        if (narrativeText && !narrativeText._copyBound) {
+            narrativeText.addEventListener('click', function () {
+                const copyIndicator = document.getElementById('copyIndicator');
+                navigator.clipboard.writeText(this.textContent.trim().replace('Copied!', ''))
+                    .then(function () {
+                        if (copyIndicator) {
+                            copyIndicator.classList.remove('hidden');
+                            setTimeout(function () { copyIndicator.classList.add('hidden'); }, 2000);
+                        }
+                    })
+                    .catch(function (err) { console.error('Failed to copy text: ', err); });
+            });
+            narrativeText._copyBound = true;
+        }
+
+        // Warnings
+        (function () {
+            const container = document.getElementById('warnings');
+            if (!container) return;
+            const list = Array.isArray(result.warnings) ? result.warnings : [];
+            if (!list.length) {
+                container.classList.add('hidden');
+                container.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = list.map(function (msg, index) {
+                return (
+                    '<div id="warning-' + index + '" class="warning-row no-print">' +
+                        '<div class="warning-icon">' +
+                            '<svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">' +
+                                '<path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z" />' +
+                            '</svg>' +
+                        '</div>' +
+                        '<p class="warning-message">' + msg + '</p>' +
+                        '<button type="button" class="push-right muted-action" onclick="document.getElementById(\'warning-' + index + '\').remove(); if (typeof checkRemainingWarnings === \'function\') { checkRemainingWarnings(); }">' +
+                            '<svg class="icon-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' +
+                            '</svg>' +
+                        '</button>' +
+                    '</div>'
+                );
+            }).join('');
+            container.classList.remove('hidden');
+            container.style.display = 'block';
+        })();
+
+    } catch (err) {
+        console.error('Calculation error:', err);
+        if (typeof showValidationError === 'function') {
+            showValidationError('An unexpected error occurred. Please try again.');
+        }
+    }
+}
+</script>
+</body>
+</html>

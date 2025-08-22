@@ -1,0 +1,89 @@
+<div class="results-section">
+    <div id="results">
+        <!-- Initial help content shown before calculation -->
+        <div id="helpContent" style="max-width: 205px;">
+            <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 1.25rem;">How to get started?</h3>
+            <ul style="list-style-type: disc; padding-left: 1.25rem; margin-top: 0.75rem; font-size: 0.875rem; font-weight: 300;">
+                <li style="margin-bottom: 0.75rem;">Start by entering your cell stock volume.</li>
+                <li style="margin-bottom: 0.75rem;">Add live cell count and viability, ideally perform your count three times.</li>
+                <li style="margin-bottom: 0.75rem;">Select your cell type and adjust the seeding density as needed. The default values are optimised for monocultures.</li>
+                <li style="margin-bottom: 0.75rem;">Choose your vessel format and enter the number of wells.</li>
+                <li style="margin-bottom: 0.75rem;">Include a 10–20% dead volume contingency or add extra wells.</li>
+            </ul>
+        </div>
+
+        <!-- Results content hidden initially, shown after calculation -->
+        <div id="resultsContent" style="display: none;">
+            <h2 style="font-weight: 600; font-size: 20px; margin-bottom: 0.5rem;">Results</h2>
+            <div id="narrativeText" style="font-size: 14px; padding: 0.5rem; cursor: pointer; transition: colors 0.2s; border-radius: 0.25rem; position: relative;" title="Click to copy to clipboard">
+                Your results for seeding <span id="narrativeWellCount">XYZ</span> wells, prepare a dilution by combining <span id="narrativeVolumeSeed">0</span> mL of cell stock with <span id="narrativeVolumeDilute">0</span> mL of media. Add <span id="narrativeVolumePerWell">0</span> μL of the final dilution to each well for a density of <span id="narrativeCellDensity">0</span> cells/mL, resulting in <span id="narrativeCellsPerWell">0</span> cells per well.
+                <span id="copyIndicator" style="display: none; position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.75rem; color: #059669; background-color: #d1fae5; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">Copied!</span>
+            </div>
+
+            <div class="spaced-block">
+                <label class="label-14">Volume of media for dilution</label>
+                <div class="value-box border-accent-narrow align-right">
+                    <span id="volume_to_dilute" class="value-strong">9.98</span> mL
+                </div>
+            </div>
+
+            <div class="spaced-block">
+                <label class="label-14">From your initial cell stock volume, pipette</label>
+                <div class="value-box border-accent-narrow align-right">
+                    <span id="volume_to_seed" class="value-strong">1.06</span> mL
+                </div>
+            </div>
+
+            <div class="spaced-block">
+                <label class="label-14">Add <span id="volume_plate_perwell_simple">XYZ</span> μL of the final dilution to each well</label>
+                <p class="hint-13">Review the values below and adjust if needed for your experiment</p>
+            </div>
+
+            <div class="spaced-block">
+                <label class="label-14">Cell density</label>
+                <div class="value-box border-blue align-right nowrap fixed-146">
+                    <span id="cell_density_formatted" class="value-strong margin-right-xs">1.00 x 10⁶</span> cells/mL
+                </div>
+            </div>
+
+            <!-- Required number of cells -->
+            <div class="spaced-block">
+                <label class="label-14">Required number of cells</label>
+                <div class="two-col-grid">
+                    <div class="value-box border-muted">
+                        <p class="margin-bottom-xs">Total</p>
+                        <div class="nowrap"><span id="required_cells_total_formatted" class="text-14 value-strong">1.10 x 10⁶</span> cells</div>
+                    </div>
+                    <div class="value-box border-muted">
+                        <p class="margin-bottom-xs">per well</p>
+                        <span id="cells_per_well_formatted" class="text-14 value-strong">9,600</span> cells
+                    </div>
+                </div>
+            </div>
+
+            <div id="warnings" style="display: none; font-size: 0.875rem; border: 1px solid #d4dbe6; padding: 0.75rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; color: #ea580c;">
+                    <svg style="height: 1.25rem; width: 1.25rem; color: #ea580c; margin-right: 0.5rem; flex-shrink: 0;" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 11c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Download buttons for results -->
+            <div id="downloadOptions" style="display: none; margin-top: 1rem;">
+                <button id="downloadExcel" style="width: 100%; padding: 9px 1rem; font-size: 0.875rem; cursor: pointer; background-color: #e5e7eb; color: #374151; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; border: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; margin-right: 0.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download as Excel
+                </button>
+                <button id="downloadPdf" style="width: 100%; padding: 9px 1rem; font-size: 0.875rem; background-image: linear-gradient(134deg, #33a9ff, #5f49fe, #9333ea); color: white; display: flex; align-items: center; justify-content: center; border: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; margin-right: 0.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    </svg>
+                    Download as PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

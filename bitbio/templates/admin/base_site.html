@@ -7,6 +7,116 @@
         {{ block.super }}
         <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
         <style>
+            /* Force light theme for admin */
+            html[data-theme="auto"] {
+                --primary: #0C4B33 !important;
+                --primary-fg: #fff !important;
+
+                --body-fg: #333333 !important;
+                --body-bg: #ffffff !important;
+                --body-quiet-color: #666666 !important;
+                --body-medium-color: #999999 !important;
+                --body-loud-color: #000000 !important;
+
+                --breadcrumbs-link-fg: #333333 !important;
+                --breadcrumbs-bg: #f8f9fa !important;
+
+                --link-fg: #007cba !important;
+                --link-hover-color: #005577 !important;
+                --link-selected-fg: #5b80b2 !important;
+
+                --hairline-color: #e1e1e1 !important;
+                --border-color: #ccc !important;
+
+                --error-fg: #ba2121 !important;
+                --message-success-bg: #dfd !important;
+                --message-warning-bg: #ffc !important;
+                --message-error-bg: #ffefef !important;
+
+                --darkened-bg: #f8f9fa !important;
+                --selected-bg: #e4e4e4 !important;
+                --selected-row: #ffffcc !important;
+
+                --close-button-bg: #888888 !important;
+                --close-button-hover-bg: #747474 !important;
+
+                color-scheme: light !important;
+            }
+            
+            /* Override dark mode completely */
+            html[data-theme="dark"] {
+                --primary: #0C4B33 !important;
+                --primary-fg: #fff !important;
+
+                --body-fg: #333333 !important;
+                --body-bg: #ffffff !important;
+                --body-quiet-color: #666666 !important;
+                --body-medium-color: #999999 !important;
+                --body-loud-color: #000000 !important;
+
+                --breadcrumbs-link-fg: #333333 !important;
+                --breadcrumbs-bg: #f8f9fa !important;
+
+                --link-fg: #007cba !important;
+                --link-hover-color: #005577 !important;
+                --link-selected-fg: #5b80b2 !important;
+
+                --hairline-color: #e1e1e1 !important;
+                --border-color: #ccc !important;
+
+                --error-fg: #ba2121 !important;
+                --message-success-bg: #dfd !important;
+                --message-warning-bg: #ffc !important;
+                --message-error-bg: #ffefef !important;
+
+                --darkened-bg: #f8f9fa !important;
+                --selected-bg: #e4e4e4 !important;
+                --selected-row: #ffffcc !important;
+
+                --close-button-bg: #888888 !important;
+                --close-button-hover-bg: #747474 !important;
+
+                color-scheme: light !important;
+            }
+            
+            /* Override system preference for dark mode */
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --primary: #0C4B33 !important;
+                    --primary-fg: #fff !important;
+
+                    --body-fg: #333333 !important;
+                    --body-bg: #ffffff !important;
+                    --body-quiet-color: #666666 !important;
+                    --body-medium-color: #999999 !important;
+                    --body-loud-color: #000000 !important;
+
+                    --breadcrumbs-link-fg: #333333 !important;
+                    --breadcrumbs-bg: #f8f9fa !important;
+
+                    --link-fg: #007cba !important;
+                    --link-hover-color: #005577 !important;
+                    --link-selected-fg: #5b80b2 !important;
+
+                    --hairline-color: #e1e1e1 !important;
+                    --border-color: #ccc !important;
+
+                    --error-fg: #ba2121 !important;
+                    --message-success-bg: #dfd !important;
+                    --message-warning-bg: #ffc !important;
+                    --message-error-bg: #ffefef !important;
+
+                    --darkened-bg: #f8f9fa !important;
+                    --selected-bg: #e4e4e4 !important;
+                    --selected-row: #ffffcc !important;
+
+                    --close-button-bg: #888888 !important;
+                    --close-button-hover-bg: #747474 !important;
+
+                    color-scheme: light !important;
+                }
+            }
+            
             /* Hide the theme toggle button */
             .theme-toggle {
                 display: none !important;

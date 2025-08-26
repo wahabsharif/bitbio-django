@@ -52,9 +52,15 @@ def format_exponential(num: float) -> str:
     if num == 0:
         return "0"
     base, exp_str = f"{num:.2e}".split("e")
-    exp = exp_str.replace("+", "")
-    superscript = "".join(SUPERSCRIPT_MAP.get(d, "") for d in exp)
-    return f"{base} x 10{superscript}"
+    exp = int(exp_str)  # Convert to int to remove leading zeros and handle sign
+
+    # For common single-digit exponents (positive only), use superscript
+    if 0 <= exp <= 9:
+        superscript = SUPERSCRIPT_MAP.get(str(exp), str(exp))
+        return f"{base} x 10{superscript}"
+    else:
+        # For multi-digit or negative exponents, use regular notation
+        return f"{base} x 10^{exp}"
 
 
 @dataclass

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cell Seeding Calculator - Results</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body,
+        * {
+            font-family: "Inter", sans-serif !important;
+            font-size: 12px;
+            line-height: 1.1;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Force everything to stay on one page */
+        * {
+            page-break-inside: avoid !important;
+            page-break-before: avoid !important;
+            page-break-after: avoid !important;
+        }
+
+        /* Additional page break prevention */
+        html,
+        body,
+        .page-content,
+        .main-table,
+        .input-section,
+        .results-section,
+        .results-box,
+        .footer {
+            page-break-inside: avoid !important;
+            page-break-before: avoid !important;
+            page-break-after: avoid !important;
+        }
+
+        /* Force single page layout */
+        @page {
+            margin: 10mm;
+            size: A4 landscape;
+        }
+
+        body {
+            overflow: visible;
+            height: auto;
+            width: 100%;
+            color: #000 !important
+        }
+
+        .info-icon {
+            margin-left: 6px;
+            vertical-align: text-bottom;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #6d7e93;
+            color: white;
+            font-size: 7px;  /* Keep small for icon */
+            text-align: center;
+            line-height: 10px;
+            font-weight: bold;
+        }
+
+        /* Container around the two‐column table */
+        .page-content {
+            margin: 0 auto;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        /* Main two‐column layout */
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            height: 300px;
+        }
+
+        /* Prevent the row splitting across pages */
+        .main-table tr {
+            page-break-inside: avoid;
+        }
+
+        /* Left panel: input */
+        .input-section {
+            width: 75%;
+            vertical-align: top;
+            padding-right: 8px;
+            height: 100%;
+            min-height: 500px;
+        }
+
+        /* Right panel: results */
+        .results-section {
+            width: 25%;
+            vertical-align: top;
+            height: 100%;
+            min-height: 500px;
+        }
+
+        /* Compact table styles */
+        table {
+            margin-bottom: 1px !important;
+        }
+
+        label {
+            font-size: 12px !important;
+            vertical-align: baseline;
+            display: inline;
+        }
+
+        /* Font weight helpers */
+        .font-normal {
+            font-weight: 400;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        /* Text size helpers - standardized to 12px except headings */
+        .text-sm {
+            font-size: 12px;
+        }
+
+        .text-base {
+            font-size: 12px;
+        }
+
+        .text-lg {
+            font-size: 12px;
+        }
+
+        .text-xl {
+            font-size: 12px;
+        }
+
+        .text-2xl {
+            font-size: 12px;
+        }
+
+        .text-3xl {
+            font-size: 12px;
+        }
+
+        /* Results box styling */
+        .results-box {
+            padding: 10px 15px;
+            background-color: #fdffff;
+            border: 1px solid #d3dbe6;
+            width: 100%;
+            height: auto;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .results-box h2 {
+            font-family: "Inter", sans-serif;
+            font-size: 18px;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .results-box .summary {
+            font-family: "Inter", sans-serif;
+            font-size: 12px;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .results-box .result-item {
+            font-family: "Inter", sans-serif;
+            margin-bottom: 10px;
+        }
+
+        .results-box .result-item label {
+            font-family: "Inter", sans-serif;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 700;
+            font-size: 12px !important;
+        }
+
+        .results-box .result-value {
+            font-family: "Inter", sans-serif;
+            font-size: 12px;
+            padding: 4px 6px;
+            border: 1px solid #3FD4FF;
+            width: 100px;
+            height: 30px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            box-sizing: border-box;
+        }
+
+        /* Footer styling */
+        .footer {
+            font-family: "Inter", sans-serif;
+            font-size: 12px;
+            margin-top: 10px;
+            line-height: 1.0;
+        }
+
+        /* Header and Logo Styles */
+        .header-container {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .logo-image {
+            width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .company-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1px;
+        }
+
+        .page-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* Input Section Styles */
+        .input-container {
+            padding: 6px;
+            background-color: #F3F5F9;
+            box-sizing: border-box;
+            height: 100%;
+            min-height: 500px;
+            overflow: hidden;
+        }
+
+        .input-table {
+            width: 100%;
+            border-bottom: 1px solid white;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 1px;
+            padding: 4px 10px !important;
+        }
+
+        .label-cell {
+            width: 200px;
+            vertical-align: top;
+            padding: 2px 0;
+        }
+
+        .input-cell-right {
+            text-align: right;
+            width: 100px;
+            padding: 2px 0;
+        }
+
+        .input-cell-left {
+            text-align: left;
+            padding: 2px 0;
+        }
+
+        .input-cell-full {
+            text-align: left;
+            padding: 2px 0;
+        }
+
+        .unit-cell {
+            padding-left: 6px;
+            padding: 2px 0;
+        }
+
+        /* Display Field Styles (using spans for PDF output) */
+        .input-field {
+            padding: 4px 6px !important;
+            width: 100px;
+            border: 1px solid #D4DBE6;
+            background-color: #FEFFFF;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: right;
+            font-family: 'Inter', sans-serif;
+            height: 30px !important;
+            min-height: 30px !important;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Specific styling for count fields to ensure consistent sizing */
+        .count-cell .input-field,
+        .count-cell-middle .input-field,
+        .count-cell-last .input-field {
+            width: 100px !important;
+            height: 30px !important;
+            min-height: 30px !important;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 2px 0;
+            padding: 0 6px !important;
+        }
+
+        .input-field-full {
+            padding: 4px 6px;
+            width: 95%;
+            border: 1px solid #D4DBE6;
+            background-color: #FEFFFF;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            height: 30px !important;
+            min-height: 30px !important;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Label Styles */
+        .field-label {
+            font-size: 12px;
+            font-weight: 400;
+            color: #000000;
+        }
+
+        .count-label {
+            font-size: 12px;
+            text-align: left;
+            display: block;
+            margin-bottom: 2px;
+            height: 14px;
+            line-height: 14px;
+        }
+
+        /* Unit Label Styles */
+        .unit-text {
+            font-size: 12px;
+            color: #000000;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
+        .unit-symbol {
+            font-size: 12px;
+            display: inline !important;
+            vertical-align: baseline;
+        }
+
+        /* Superscript styling for power notation */
+        .unit-symbol sup {
+            font-size: 8px !important;
+            vertical-align: super !important;
+            line-height: 1;
+            position: relative;
+            top: -0.3em;
+            display: inline !important;
+        }
+
+        /* Global superscript styling to ensure all sup elements are smaller */
+        sup {
+            font-size: 0.75em !important;
+            vertical-align: super !important;
+            line-height: 1;
+            display: inline !important;
+        }
+
+        /* Count Grid Styles */
+        .count-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .count-cell,
+        .count-cell-middle,
+        .count-cell-last {
+            width: 60px;
+            padding: 0 5px;
+            vertical-align: top;
+        }
+
+        .count-cell {
+            padding-left: 0;
+        }
+
+        .count-cell-last {
+            padding-right: 0;
+        }
+
+        .count-symbol-cell {
+            vertical-align: bottom;
+            padding-left: 8px;
+        }
+
+        /* Required Field Styles */
+        .required-note {
+            padding: 2px 0;
+        }
+
+        /* Results Narrative Styles */
+        .narrative-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 300 !important;
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+
+        /* Result Item Styles */
+        .result-item-text {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .result-item-margin {
+            margin-bottom: 3px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .result-note {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #000;
+            margin: 2px 0 0;
+            padding-top: 2px;
+        }
+
+        .result-density-value {
+            font-family: 'Inter', sans-serif;
+            padding: 4px 6px;
+            border: 1px solid #E4EAF0;
+            width: 150px;
+            white-space: nowrap;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            box-sizing: border-box;
+            height: 30px;
+        }
+
+        /* Cell Count Table Styles */
+        .cell-count-table {
+            width: 100%;
+            border-collapse: separate;
+            margin: auto;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cell-count-cell {
+            padding: 4px;
+            border: 1px solid #E4EAF0;
+            width: 50%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cell-count-label {
+            margin: 0 0 2px;
+            font-size: 12px;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cell-count-value {
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Results Box Specific Styles */
+        .results-box-auto {
+            height: 100%;
+            min-height: 500px;
+        }
+
+        /* Footer Text Styles */
+        .footer-note {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-content">
+        <!-- Header -->
+        <div class="header-container">
+            {% if logo_base64 %}
+            <img src="{{ logo_base64 }}" alt="bit.bio Logo" class="logo-image">
+            {% else %}
+            <div class="company-name">
+                bit.bio
+            </div>
+            {% endif %}
+
+            <div class="page-title">
+                Cell seeding calculator
+            </div>
+        </div>
+
+        <!-- Two‐column table -->
+        <table class="main-table">
+            <tr>
+                <!-- Input Section -->
+                <td class="input-section">
+                    <div class="input-container">
+                        <!-- Cell stock volume -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Cell stock
+                                        volume* </label><span class="info-icon">i</span>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ suspension_volume|default:'' }}</span>
+                                    </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">mL</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Live cell count -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Live cell
+                                        count</label><span class="info-icon">i</span>
+                                </td>
+                                <td class="input-cell-left">
+                                    <table class="count-grid-table">
+                                        <tr>
+                                            <td class="count-cell">
+                                                <label class="count-label">Count 1*</label>
+                                                <span class="input-field">{{ count1|default:'' }}</span>
+                                            </td>
+                                            <td class="count-cell-middle">
+                                                <label class="count-label">Count 2</label>
+                                                <span class="input-field">{{ count2|default:'' }}</span>
+                                            </td>
+                                            <td class="count-cell-last">
+                                                <label class="count-label">Count 3</label>
+                                                <span class="input-field">{{ count3|default:'' }}</span>
+                                            </td>
+                                            <td class="count-symbol-cell">
+                                                <span class="unit-symbol">&times; 10<sup>6</sup> cells/mL</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Cell viability -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Cell
+                                        viability</label>
+                                </td>
+                                <td class="input-cell-left">
+                                    <table class="count-grid-table">
+                                        <tr>
+                                            <td class="count-cell">
+                                                <label class="count-label">Count 1*</label>
+                                                <span class="input-field">{{ viability1|default:'' }}</span>
+                                            </td>
+                                            <td class="count-cell-middle">
+                                                <label class="count-label">Count 2</label>
+                                                <span class="input-field">{{ viability2|default:'' }}</span>
+                                            </td>
+                                            <td class="count-cell-last">
+                                                <label class="count-label">Count 3</label>
+                                                <span class="input-field">{{ viability3|default:'' }}</span>
+                                            </td>
+                                            <td class="count-symbol-cell">
+                                                <span class="unit-symbol">%</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Cell type -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Cell type</label>
+                                </td>
+                                <td class="input-cell-left">
+                                    <span class="input-field-full">{{ cell_type|default:'' }}</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Seeding density -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Seeding
+                                        density*</label><span class="info-icon">i</span>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ seeding_density|default:'' }}</span>
+                                </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">cells/cm²</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Culture vessel -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Culture
+                                        vessel</label><span class="info-icon">i</span>
+                                </td>
+                                <td class="input-cell-left">
+                                    <span class="input-field-full">{{ culture_vessel|default:'' }}</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Surface area -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Surface
+                                        area*</label>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ surface_area|default:'' }}</span>
+                                </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">cm²/well</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Volume -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Volume*</label>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ media_volume|default:'' }}</span>
+                                </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">mL/well</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Number of wells to seed -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Number of wells to
+                                        seed*</label>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ well_count|default:'' }}</span>
+                                </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">wells</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Dead volume allowance -->
+                        <table class="input-table">
+                            <tr>
+                                <td class="label-cell">
+                                    <label class="field-label">Dead volume
+                                        allowance</label><span class="info-icon">i</span>
+                                </td>
+                                <td class="input-cell-right">
+                                    <span class="input-field">{{ buffer|default:'' }}</span>
+                                </td>
+                                <td class="unit-cell">
+                                    <span class="unit-text">%</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Required field note -->
+                        <div class="required-note">
+                            <label class="field-label">* Required field</label>
+                        </div>
+                    </div>
+                </td>
+
+                <!-- Results Section -->
+                <td class="results-section">
+                    <div class="results-box results-box-auto">
+                        <h2>Results</h2>
+
+                        <!-- Narrative text section -->
+                        <p class="narrative-text">
+                            Your results for seeding <span>{{ well_count|default:'' }}</span> wells, prepare a dilution
+                            by
+                            combining <span>{{ volume_to_seed|default:'' }}</span> mL of cell stock with
+                            <span>{{ volume_to_dilute|default:'' }}</span> mL of media. Add
+                            <span>{{ volume_per_well|default:'' }}</span>
+                            &micro;L of the final dilution to each well for a density of
+                            <span>{{ cell_density_html|safe }}</span>
+                            cells/mL, resulting in <span>{{ cells_per_well|default:'' }}</span> cells per well.
+                        </p>
+
+                        <div class="result-item result-item-text">
+                            <label>Volume of media for dilution</label>
+                            <div class="result-value">
+                                <span>{{ volume_to_dilute|default:'' }}</span> mL
+                            </div>
+                        </div>
+
+                        <div class="result-item result-item-text">
+                            <label>From your initial cell stock volume, pipette</label>
+                            <div class="result-value">
+                                <span>{{ volume_to_seed|default:'' }}</span> mL
+                            </div>
+                        </div>
+
+                        <div class="result-item result-item-margin">
+                            <label>
+                                Add <span>{{ volume_per_well|default:'' }}</span> &micro;L of the final dilution to each well
+                            </label>
+                            <p class="result-note">
+                                Review the values below and adjust if needed for your experiment
+                            </p>
+                        </div>
+
+                        <div class="result-item result-item-text">
+                            <label>Cell density</label>
+                            <div class="result-density-value">
+                                <span>{{ cell_density_html|safe }}</span> cells/mL
+                            </div>
+                        </div>
+
+                        <div class="result-item result-item-text">
+                            <label>Required number of cells</label>
+                            <table class="cell-count-table">
+                                <tr>
+                                    <td class="cell-count-cell">
+                                        <p class="cell-count-label">
+                                            Total</p>
+                                        <div class="cell-count-value">
+                                            <span>{{ required_cells|default:'' }}</span> cells
+                                        </div>
+                                    </td>
+                                    <td class="cell-count-cell">
+                                        <p class="cell-count-label">
+                                            Per well</p>
+                                        <div class="cell-count-value">
+                                            <span>{{ cells_per_well|default:'' }}</span> cells
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>If you have any questions, please contact us at technical@bit.bio.</p>
+            <p>If you have any issues, please feedback to our team at technical@bit.bio.</p>
+            <p class="footer-note">Please note that this calculator has been developed by bit.bio and provides
+                standard guidance.</p>
+            <p>bit.bio © {{ current_year }} | All rights reserved</p>
+        </div>
+    </div>
+</body>
+
+</html>

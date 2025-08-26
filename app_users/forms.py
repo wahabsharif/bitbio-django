@@ -200,6 +200,7 @@ class UserRegistrationForm(forms.Form):
         user.in_vitro = self.cleaned_data["in_vitro"]
         user.in_vivo = self.cleaned_data["in_vivo"]
         user.communications_agreement = self.cleaned_data["communications_agreement"]
+        user.is_client = True
 
         if commit:
             user.save()

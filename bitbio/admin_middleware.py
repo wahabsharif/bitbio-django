@@ -37,14 +37,17 @@ class AdminAccessMiddleware:
                 request.user.is_active
                 and (request.user.is_staff or request.user.is_superuser)
             ):
-                # User doesn't have admin access
-                messages.error(
+                # User doesn't have admin access - logout and redirect to admin login
+                from django.contrib.auth import logout
+
+                logout(request)
+                messages.warning(
                     request,
                     _(
-                        "Access denied. You do not have permission to access the admin site."
+                        "You were logged out because you don't have admin access. Please log in with an admin account."
                     ),
                 )
-                return redirect("/")  # Redirect to home page
+                return redirect(reverse("admin:login"))
 
         response = self.get_response(request)
         return response

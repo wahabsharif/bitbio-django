@@ -71,21 +71,27 @@ class BitBioAdminSite(AdminSite):
         """
         Custom login view with enhanced security checks.
         """
-        # Additional security check before showing login form
+        # If user is already authenticated and has admin access, redirect to admin index
         if request.user.is_authenticated:
-            if not (
-                request.user.is_active
-                and (request.user.is_staff or request.user.is_superuser)
+            if request.user.is_active and (
+                request.user.is_staff or request.user.is_superuser
             ):
-                # User is logged in but doesn't have admin access
-                from django.contrib import messages
+                # User has admin access, redirect to admin index
                 from django.shortcuts import redirect
 
-                messages.error(
+                return redirect("/admin/")
+            else:
+                # User is logged in but doesn't have admin access
+                # Instead of redirecting to home page (which causes loops),
+                # log them out and show the login form
+                from django.contrib.auth import logout
+                from django.contrib import messages
+
+                logout(request)
+                messages.warning(
                     request,
-                    "Access denied. You do not have permission to access the admin site.",
+                    "You were logged out because you don't have admin access. Please log in with an admin account.",
                 )
-                return redirect("/")
 
         return super().login(request, extra_context)
 

@@ -141,8 +141,8 @@ The project includes several custom management commands:
 
 - **Database Operations**:
   ```bash
-  python manage.py check_tables (you can check the table list)
-  python manage.py drop_tables (this will drop all the table from database)
+  python manage.py check_tables #you can check the table list
+  python manage.py drop_tables  #this will drop all the table from database
   ```
 
 ## 📱 Features

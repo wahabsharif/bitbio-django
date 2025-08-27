@@ -429,11 +429,11 @@
     </div>
 
     <!-- Results Section -->
-    {% include 'calculator/result_section.html' %}
+    {% include 'result_section.html' %}
 </div>
 
 <!-- Useful Resources -->
-{% include 'calculator/useful_resources.html' %}
+{% include 'useful_resources.html' %}
 
 <!-- Include JavaScript files -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -442,7 +442,7 @@
 <script src="{% static 'js/tooltip.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <script src="{% static 'js/export.js' %}"></script>
-{% include 'calculator/profile_modal.html' %}
+{% include 'profile_modal.html' %}
 <script>
 // Format numbers with thousands separators while preserving decimal precision
 function formatWithThousands(value) {

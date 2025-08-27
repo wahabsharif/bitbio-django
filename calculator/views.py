@@ -40,7 +40,7 @@ def calculator_view(request):
     """Main calculator view"""
     from bitbio.countries import COUNTRIES
 
-    return render(request, "calculator/calculator.html", {"countries": COUNTRIES})
+    return render(request, "calculator.html", {"countries": COUNTRIES})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -518,7 +518,7 @@ class DownloadPDFView(View):
             }
 
             # Render HTML template
-            html = render_to_string("calculator/pdf_download.html", context)
+            html = render_to_string("pdf_download.html", context)
 
             # Create PDF with Playwright (perfect CSS support)
             try:

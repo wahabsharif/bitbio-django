@@ -189,6 +189,22 @@ function setupEventListeners() {
             }
         }
 
+        // Add real-time validation for viability fields
+        if (["viability1", "viability2", "viability3"].includes(input.id)) {
+            input.addEventListener("input", function(e) {
+                validateViabilityInput(this, e);
+            });
+            input.addEventListener("keypress", function(e) {
+                validateViabilityKeypress(this, e);
+            });
+            input.addEventListener("paste", function(e) {
+                validateViabilityPaste(this, e);
+            });
+            input.addEventListener("drop", function(e) {
+                validateViabilityDrop(this, e);
+            });
+        }
+
         // Update styling on user interaction
         input.addEventListener("input", function () {
             this.classList.remove("default-input");
@@ -667,6 +683,178 @@ function parseDecimalInput(value) {
     const normalized = String(value).replace(/,/g, "");
     const result = parseFloat(normalized);
     return isNaN(result) ? NaN : result;
+}
+
+/**
+ * Validate viability input to prevent non-numeric characters and values over 100%
+ */
+function validateViabilityInput(input, event) {
+    const value = input.value;
+    
+    // Remove any non-numeric characters except decimal point
+    const cleanedValue = value.replace(/[^0-9.]/g, '');
+    
+    // Ensure only one decimal point
+    const parts = cleanedValue.split('.');
+    if (parts.length > 2) {
+        const beforeDecimal = parts[0];
+        const afterDecimal = parts.slice(1).join('');
+        cleanedValue = beforeDecimal + '.' + afterDecimal;
+    }
+    
+    // Limit decimal places to 2 for percentage values
+    if (cleanedValue.includes('.')) {
+        const decimalParts = cleanedValue.split('.');
+        if (decimalParts[1] && decimalParts[1].length > 2) {
+            cleanedValue = decimalParts[0] + '.' + decimalParts[1].substring(0, 2);
+        }
+    }
+    
+    // Check if value exceeds 100%
+    if (cleanedValue !== '' && parseFloat(cleanedValue) > 100) {
+        input.value = '100';
+        return;
+    }
+    
+    // Update input value if it was cleaned
+    if (cleanedValue !== value) {
+        input.value = cleanedValue;
+    }
+    
+    // If text was selected and replaced, ensure cursor is at the end
+    if (input.selectionStart !== input.selectionEnd) {
+        input.setSelectionRange(input.value.length, input.value.length);
+    }
+}
+
+/**
+ * Validate viability keypress to prevent non-numeric characters
+ */
+function validateViabilityKeypress(input, event) {
+    const key = event.key;
+    
+    // Allow: backspace, delete, tab, escape, enter, decimal point, and numbers
+    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(key)) {
+        return;
+    }
+    
+    // Allow only numeric characters
+    if (!/^[0-9]$/.test(key)) {
+        event.preventDefault();
+        return;
+    }
+    
+    // Check if adding this character would exceed 100%
+    const currentValue = input.value;
+    const cursorPosition = input.selectionStart;
+    const selectionEnd = input.selectionEnd;
+    const isTextSelected = cursorPosition !== selectionEnd;
+    
+    // If text is selected, allow typing (it will replace the selection)
+    if (isTextSelected) {
+        return;
+    }
+    
+    const newValue = currentValue.slice(0, cursorPosition) + key + currentValue.slice(cursorPosition);
+    
+    if (newValue !== '' && parseFloat(newValue) > 100) {
+        event.preventDefault();
+        return;
+    }
+    
+    // Prevent typing more than 3 digits before decimal point (since 100 is max)
+    if (key !== '.' && !currentValue.includes('.')) {
+        const beforeDecimal = currentValue.slice(0, cursorPosition) + key;
+        if (beforeDecimal.length > 3) {
+            event.preventDefault();
+            return;
+        }
+    }
+    
+    // Check if adding this character would create more than 2 decimal places
+    if (key === '.' && currentValue.includes('.')) {
+        event.preventDefault();
+        return;
+    }
+    
+    // Check if adding this character after decimal would create more than 2 decimal places
+    if (currentValue.includes('.') && currentValue.split('.')[1] && currentValue.split('.')[1].length >= 2) {
+        const decimalPart = currentValue.split('.')[1];
+        if (cursorPosition > currentValue.indexOf('.') + 2) {
+            event.preventDefault();
+            return;
+        }
+    }
+}
+
+
+
+/**
+ * Validate viability paste event
+ */
+function validateViabilityPaste(input, event) {
+    event.preventDefault();
+    
+    // Get pasted text
+    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+    
+    // Check if pasted text contains only valid characters
+    if (!/^[0-9.]*$/.test(pastedText)) {
+        return;
+    }
+    
+    // Check if pasted value would exceed 100%
+    if (pastedText !== '' && parseFloat(pastedText) > 100) {
+        return;
+    }
+    
+    // Check if pasted value has more than 2 decimal places
+    if (pastedText.includes('.')) {
+        const decimalParts = pastedText.split('.');
+        if (decimalParts[1] && decimalParts[1].length > 2) {
+            return;
+        }
+    }
+    
+    // If valid, manually set the value
+    input.value = pastedText;
+    
+    // Trigger input event to update styling
+    input.dispatchEvent(new Event('input'));
+}
+
+/**
+ * Validate viability drop event
+ */
+function validateViabilityDrop(input, event) {
+    event.preventDefault();
+    
+    // Get dropped text
+    const droppedText = event.dataTransfer.getData('text');
+    
+    // Check if dropped text contains only valid characters
+    if (!/^[0-9.]*$/.test(droppedText)) {
+        return;
+    }
+    
+    // Check if dropped value would exceed 100%
+    if (droppedText !== '' && parseFloat(droppedText) > 100) {
+        return;
+    }
+    
+    // Check if dropped value has more than 2 decimal places
+    if (droppedText.includes('.')) {
+        const decimalParts = droppedText.split('.');
+        if (decimalParts[1] && decimalParts[1].length > 2) {
+            return;
+        }
+    }
+    
+    // If valid, manually set the value
+    input.value = droppedText;
+    
+    // Trigger input event to update styling
+    input.dispatchEvent(new Event('input'));
 }
 
 // Initialize calculator when DOM is loaded

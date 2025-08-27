@@ -293,17 +293,19 @@
                 white-space: nowrap;
                 vertical-align: middle;
             }
+            .delete-confirmation form .cancel-link ,
+            .submit-row a.deletelink            {
+                height: auto !important;
 
+            }
 
         </style>
     {% endblock %}
 
     {% block branding %}
-    <h1 id="site-name">
-        <a href="{% url 'admin:index' %}">
-            BitBio Administration
-        </a>
-    </h1>
+    <a href="{% url 'admin:index' %}" style="padding: 5px; border-radius: 5px; margin: 0; background-color: white; border: none;">
+        <img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo" style="height: 30px;">
+    </a>
     {% endblock %}
 
     {% block nav-global %}{% endblock %}

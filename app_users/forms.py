@@ -1,6 +1,7 @@
 from django import forms
 from .models import User
 from bitbio.countries import COUNTRIES
+from .domain_management import should_block_registration, get_email_domain
 import json
 
 
@@ -11,14 +12,10 @@ class UserLoginForm(forms.Form):
 
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(
-            attrs={"class": "form-input", "placeholder": "Enter your email address"}
-        ),
+        widget=forms.EmailInput(attrs={"class": "form-input"}),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={"class": "form-input", "placeholder": "Enter your password"}
-        )
+        widget=forms.PasswordInput(attrs={"class": "form-input"})
     )
 
 
@@ -140,6 +137,17 @@ class UserRegistrationForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Validate email domain
+        email = cleaned_data.get("email")
+        if email and should_block_registration(email):
+            domain = get_email_domain(email)
+            raise forms.ValidationError(
+                f"Registration not allowed for personal email domains. "
+                f"Please use an institutional email address instead of {domain}. "
+                f"If you're affiliated with a research institution, university, "
+                f"or biotechnology company, please use your official email address."
+            )
 
         # Validate passwords match
         password1 = cleaned_data.get("password1")

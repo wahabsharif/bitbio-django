@@ -1,0 +1,414 @@
+{% extends "admin/change_form.html" %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        // Function to toggle client fields visibility
+        function toggleClientFields() {
+            const isClientChecked = $('#id_is_client').is(':checked');
+            
+            // Find fieldsets by examining their h2 text content
+            let clientFieldsets = $();
+            $('fieldset.module').each(function() {
+                const title = $(this).find('h2').text().trim();
+                if (title.includes('Billing Information') || title.includes('Shipping Information') || title.includes('Use Intent') || title.includes('Consent & Status')) {
+                    clientFieldsets = clientFieldsets.add($(this));
+                }
+            });
+            
+            // Also target by class
+            const collapseFieldsets = $('.client-fieldset');
+            
+            if (isClientChecked) {
+                // Show all client-related fieldsets
+                clientFieldsets.show().removeClass('collapsed').addClass('show');
+                collapseFieldsets.show().removeClass('collapsed').addClass('show');
+                
+                // Also show by class name
+                $('.client-fieldset').addClass('show').removeClass('collapsed');
+                
+                // Force visibility of all elements within
+                clientFieldsets.find('*').css('display', '');
+                collapseFieldsets.find('*').css('display', '');
+                
+                // Show specific named fieldsets
+                $('fieldset').each(function() {
+                    const h2Text = $(this).find('h2').first().text();
+                    if (h2Text && (h2Text.includes('BILLING INFORMATION') || h2Text.includes('SHIPPING INFORMATION') || h2Text.includes('USE INTENT') || h2Text.includes('CONSENT & STATUS'))) {
+                        $(this).show().addClass('show');
+                    }
+                });
+                
+                console.log('Client fields shown:', clientFieldsets.length + collapseFieldsets.length);
+            } else {
+                // Hide all client-related fieldsets
+                clientFieldsets.hide().removeClass('show');
+                collapseFieldsets.hide().removeClass('show');
+                $('.client-fieldset').removeClass('show');
+                
+                // Hide specific named fieldsets
+                $('fieldset').each(function() {
+                    const h2Text = $(this).find('h2').first().text();
+                    if (h2Text && (h2Text.includes('BILLING INFORMATION') || h2Text.includes('SHIPPING INFORMATION') || h2Text.includes('USE INTENT') || h2Text.includes('CONSENT & STATUS'))) {
+                        $(this).hide().removeClass('show');
+                    }
+                });
+                
+                console.log('Client fields hidden');
+            }
+        }
+        
+        // Debug function to log field visibility
+        function debugFieldsVisibility() {
+            console.log('=== Field Visibility Debug ===');
+            console.log('Is Client checked:', $('#id_is_client').is(':checked'));
+            console.log('Client fieldsets found:', $('.client-fieldset').length);
+            console.log('Fieldsets with show class:', $('.client-fieldset.show').length);
+            $('fieldset').each(function(i) {
+                const title = $(this).find('h2').first().text();
+                if (title) {
+                    console.log(`Fieldset ${i}: "${title}" - Visible: ${$(this).is(':visible')}`);
+                }
+            });
+            console.log('==============================');
+        }
+        
+        // Initial state - run after a small delay to ensure DOM is ready
+        setTimeout(function() {
+            toggleClientFields();
+            debugFieldsVisibility();
+        }, 100);
+        
+        // Listen for changes on the is_client checkbox
+        $('#id_is_client').change(function() {
+            console.log('Is Client checkbox changed to:', $(this).is(':checked'));
+            toggleClientFields();
+            setTimeout(debugFieldsVisibility, 100);
+        });
+        
+        // Force horizontal alignment of User Type fields
+        function arrangeUserTypeFields() {
+            // Find the User Type fieldset
+            const isClientField = $('.field-is_client');
+            const isStaffField = $('.field-is_staff');
+            
+            if (isClientField.length && isStaffField.length) {
+                // Create a wrapper div for horizontal layout
+                if (!isClientField.parent().hasClass('user-type-wrapper')) {
+                    const wrapper = $('<div class="user-type-wrapper" style="display: flex; gap: 15px; align-items: flex-start;"></div>');
+                    
+                    // Wrap both fields
+                    isClientField.before(wrapper);
+                    wrapper.append(isClientField);
+                    wrapper.append(isStaffField);
+                    
+                    // Apply inline styles to ensure horizontal layout
+                    isClientField.css({
+                        'flex': '1',
+                        'margin-right': '10px',
+                        'display': 'block'
+                    });
+                    
+                    isStaffField.css({
+                        'flex': '1',
+                        'margin-right': '0',
+                        'display': 'block'
+                    });
+                }
+            }
+        }
+        
+        // Apply the arrangement after DOM is ready
+        arrangeUserTypeFields();
+        
+        // Also apply after any dynamic content changes
+        setTimeout(arrangeUserTypeFields, 500);
+        
+        // Update checked state styling (fallback for :has() selector)
+        function updateCheckedState() {
+            $('.field-is_client').toggleClass('checked', $('#id_is_client').is(':checked'));
+            $('.field-is_staff').toggleClass('checked', $('#id_is_staff').is(':checked'));
+        }
+        
+        // Make whole User Type containers clickable
+        function makeUserTypeClickable() {
+            $('.field-is_client, .field-is_staff').off('click.usertype').on('click.usertype', function(e) {
+                // Don't trigger if clicking directly on checkbox or label
+                if ($(e.target).is('input[type="checkbox"]') || $(e.target).is('label')) {
+                    return;
+                }
+                
+                // Find the checkbox in this container
+                const checkbox = $(this).find('input[type="checkbox"]');
+                if (checkbox.length) {
+                    // Toggle the checkbox
+                    checkbox.prop('checked', !checkbox.prop('checked'));
+                    
+                    // Trigger change event to update conditional fields
+                    checkbox.trigger('change');
+                    
+                    // Update checked state styling
+                    updateCheckedState();
+                    
+                    // Add visual feedback
+                    $(this).addClass('clicked');
+                    setTimeout(() => {
+                        $(this).removeClass('clicked');
+                    }, 150);
+                }
+            });
+            
+            // Add hover effects
+            $('.field-is_client, .field-is_staff').off('mouseenter.usertype mouseleave.usertype')
+                .on('mouseenter.usertype', function() {
+                    $(this).addClass('hover');
+                })
+                .on('mouseleave.usertype', function() {
+                    $(this).removeClass('hover');
+                });
+        }
+        
+        // Apply clickable functionality
+        makeUserTypeClickable();
+        
+        // Initial checked state update
+        updateCheckedState();
+        
+        // Listen for direct checkbox changes and ensure field visibility updates
+        $('#id_is_client, #id_is_staff').on('change', function() {
+            updateCheckedState();
+            if ($(this).attr('id') === 'id_is_client') {
+                toggleClientFields();
+                setTimeout(debugFieldsVisibility, 100);
+            }
+        });
+        
+        // Re-apply after dynamic changes
+        setTimeout(function() {
+            makeUserTypeClickable();
+            updateCheckedState();
+            toggleClientFields();
+        }, 600);
+        
+        // Also handle the case where fieldsets are collapsed/expanded
+        $('.collapse-toggle').click(function() {
+            // Small delay to allow the collapse/expand animation to complete
+            setTimeout(function() {
+                toggleClientFields();
+                arrangeUserTypeFields();
+                makeUserTypeClickable();
+            }, 100);
+        });
+    });
+})(django.jQuery);
+</script>
+
+<style type="text/css">
+
+    h2{
+        text-transform: uppercase;
+        font-weight: 500 !important;
+        letter-spacing: 0.05em;
+    }
+/* Initially hide client fieldsets */
+.client-fieldset {
+    display: none;
+}
+
+.client-fieldset.show {
+    display: block !important;
+}
+
+.client-fieldset.collapsed {
+    display: none !important;
+}
+
+/* Client fields styling */
+.field-company_trading_name,
+.field-billing_address_line_1,
+.field-billing_address_line_2,
+.field-billing_city,
+.field-billing_postal_code,
+.field-billing_state,
+.field-billing_country,
+.field-billing_phone,
+.field-shipping_address_line_1,
+.field-shipping_address_line_2,
+.field-shipping_city,
+.field-shipping_postal_code,
+.field-shipping_state,
+.field-shipping_country,
+.field-shipping_phone,
+.field-shipping_instructions,
+.field-institution_tax_vat,
+.field-in_vitro,
+.field-in_vivo,
+.field-communications_agreement,
+.field-status {
+    transition: opacity 0.3s ease;
+}
+
+/* Ensure form elements are visible when parent is shown */
+.client-fieldset.show .form-row,
+.client-fieldset.show input,
+.client-fieldset.show textarea,
+.client-fieldset.show select,
+.client-fieldset.show label {
+    display: block !important;
+}
+
+.client-fieldset.show input[type="checkbox"] {
+    display: inline-block !important;
+}
+
+.client-fieldset h2 {
+    color: #0073aa;
+}
+
+.client-fieldset .description {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* User Type wrapper for horizontal alignment */
+.user-type-wrapper {
+    display: flex !important;
+    gap: 15px !important;
+    align-items: flex-start !important;
+    width: 30% !important;
+    margin: 15px 0 !important;
+}
+
+/* Force User Type checkboxes to display in same line */
+.user-type-wrapper .field-is_client,
+.user-type-wrapper .field-is_staff {
+    flex: 1 !important;
+    display: block !important;
+    background-color: #f9f9f9 !important;
+    padding: 15px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    border: 1px solid #ddd !important;
+}
+.user-type-wrapper .field-is_client .flex-container,
+.user-type-wrapper .field-is_staff .flex-container {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+}
+
+/* Individual field styling */
+.field-is_client,
+.field-is_staff {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+/* Hover effect for clickable containers */
+.field-is_client.hover,
+.field-is_staff.hover,
+.field-is_client:hover,
+.field-is_staff:hover {
+    background-color: #e8f4fd !important;
+    border-color: #0073aa !important;
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Click effect for immediate feedback */
+.field-is_client.clicked,
+.field-is_staff.clicked {
+    background-color: #d4edda !important;
+    border-color: #28a745 !important;
+    transform: scale(0.98) !important;
+}
+
+/* Active state when checkbox is checked */
+.field-is_client:has(input:checked),
+.field-is_staff:has(input:checked),
+.field-is_client.checked,
+.field-is_staff.checked {
+    background-color: #e8f4fd !important;
+    border-color: #0073aa !important;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1) !important;
+}
+
+/* Special styling for checked state labels */
+.field-is_client.checked label,
+.field-is_staff.checked label {
+    color: #005177 !important;
+}
+
+/* Enhanced cursor styling */
+.field-is_client,
+.field-is_staff {
+    cursor: pointer !important;
+}
+
+.field-is_client *,
+.field-is_staff * {
+    cursor: pointer !important;
+}
+
+/* Prevent text selection during clicks */
+.field-is_client,
+.field-is_staff {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+.field-is_client label,
+.field-is_staff label {
+    font-weight: bold !important;
+    color: #0073aa !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+}
+
+.field-is_client input[type="checkbox"],
+.field-is_staff input[type="checkbox"] {
+    margin-right: 8px !important;
+    transform: scale(1.3) !important;
+    accent-color: #0073aa !important;
+}
+
+/* Help text styling */
+.field-is_client .help,
+.field-is_staff .help {
+    font-size: 12px !important;
+    color: #666 !important;
+    margin-top: 5px !important;
+    font-style: italic !important;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .field-is_client,
+    .field-is_staff {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 10px;
+        float: none !important;
+    }
+    
+    div.form-row {
+        flex-direction: column !important;
+    }
+}
+</style>
+{% endblock %}

@@ -4,6 +4,23 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src: url("/static/fonts/avenir-next-lt-pro.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Reusable Font Classes */
+.font-bitbio {
+  font-family: "BitBioSans", "Segoe UI", Arial, sans-serif !important;
+}
+
+.font-avenir {
+  font-family: "Avenir Next LT Pro", sans-serif !important;
+}
+
 *,
 *::before,
 *::after {
@@ -59,13 +76,12 @@ p {
   font-family: "BitBioSans" !important;
 }
 .container {
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 1rem;
   box-sizing: border-box;
 }
 a {
@@ -113,8 +129,9 @@ textarea {
 .nav-links > li > a {
   color: #000;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
+  font-family: "Avenir Next LT Pro", sans-serif;
 }
 .icons {
   display: flex;
@@ -123,8 +140,8 @@ textarea {
   gap: 2em;
 }
 .icons > a > img {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,7 +272,7 @@ textarea {
 .cta {
   display: flex;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1300px;
   line-height: 42px;
   margin: 0 auto;
   padding: 0 1rem;
@@ -315,7 +332,7 @@ textarea {
 
 footer {
   width: 100%;
-  background: #1e252d;
+  background: #151d29;
   box-sizing: border-box;
 }
 
@@ -324,7 +341,7 @@ footer {
   justify-content: space-between;
   padding: 2em 1rem;
   color: #fff;
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   gap: 10em;
   width: 100%;
@@ -336,7 +353,7 @@ footer {
   padding-left: 1rem;
   padding-right: 1rem;
   color: #fff;
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -371,6 +388,7 @@ footer {
   align-items: flex-start;
   gap: 2em;
   margin-bottom: 1.5em;
+  list-style: none;
 }
 
 .footer-links-container ul ul {

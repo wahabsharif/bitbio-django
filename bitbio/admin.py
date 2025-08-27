@@ -12,14 +12,161 @@ from app_users.models import User as CustomUser
 from app_users.admin_forms import EmailAuthenticationForm
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from bitbio.countries import COUNTRIES
 
 
 class CustomUserCreationForm(UserCreationForm):
     """Custom form for creating users in admin"""
 
+    is_client = forms.BooleanField(
+        required=False,
+        label="Is Client",
+        help_text="Check this if the user is a client",
+        widget=forms.CheckboxInput(attrs={"id": "id_is_client"}),
+    )
+    is_staff = forms.BooleanField(
+        required=False,
+        label="Is Staff",
+        help_text="Check this if the user is a staff member",
+        widget=forms.CheckboxInput(attrs={"id": "id_is_staff"}),
+    )
+
+    # Billing information fields (same as registration form)
+    company_trading_name = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Company Trading Name",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_address_line_1 = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Billing Address Line 1",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_address_line_2 = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Billing Address Line 2",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_city = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Billing City",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_postal_code = forms.CharField(
+        max_length=20,
+        required=False,
+        label="Billing Postal Code",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_state = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Billing State",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    billing_country = forms.ChoiceField(
+        choices=[("", "Select Country")]
+        + [(country, country) for country in COUNTRIES],
+        required=False,
+        label="Billing Country",
+        widget=forms.Select(attrs={"class": "vTextField"}),
+    )
+    billing_phone = forms.CharField(
+        max_length=20,
+        required=False,
+        label="Billing Phone",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+
+    # Shipping information fields (same as registration form)
+    shipping_address_line_1 = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Shipping Address Line 1",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_address_line_2 = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Shipping Address Line 2",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_city = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Shipping City",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_postal_code = forms.CharField(
+        max_length=20,
+        required=False,
+        label="Shipping Postal Code",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_state = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Shipping State",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_country = forms.ChoiceField(
+        choices=[("", "Select Country")]
+        + [(country, country) for country in COUNTRIES],
+        required=False,
+        label="Shipping Country",
+        widget=forms.Select(attrs={"class": "vTextField"}),
+    )
+    shipping_phone = forms.CharField(
+        max_length=20,
+        required=False,
+        label="Shipping Phone",
+        widget=forms.TextInput(attrs={"class": "vTextField"}),
+    )
+    shipping_instructions = forms.CharField(
+        required=False,
+        label="Shipping Instructions",
+        widget=forms.Textarea(attrs={"class": "vLargeTextField", "rows": 3}),
+    )
+
+    # Other fields
+    institution_tax_vat = forms.BooleanField(
+        required=False, label="Institution is Tax/VAT Exempt"
+    )
+    in_vitro = forms.BooleanField(
+        required=False, label="Research use only (RUO): in vitro"
+    )
+    in_vivo = forms.BooleanField(
+        required=False, label="Research use only (RUO): in vivo"
+    )
+    communications_agreement = forms.BooleanField(
+        required=False, label="Agree to receive communications"
+    )
+    status = forms.ChoiceField(
+        choices=[
+            ("pending", "Pending"),
+            ("approved", "Approved"),
+            ("rejected", "Rejected"),
+        ],
+        initial="pending",
+        required=False,
+        label="Status",
+    )
+    is_active = forms.BooleanField(initial=True, required=False, label="Is Active")
+
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ("email", "first_name", "last_name", "job_title")
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "job_title",
+            "is_client",
+            "is_staff",
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,6 +188,44 @@ class CustomUserCreationForm(UserCreationForm):
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         user.job_title = self.cleaned_data["job_title"]
+        user.is_client = self.cleaned_data.get("is_client", False)
+        user.is_staff = self.cleaned_data.get("is_staff", False)
+
+        # Set billing information as JSON (same as registration form)
+        billing_info = {
+            "company_trading_name": self.cleaned_data.get("company_trading_name", ""),
+            "address_line_1": self.cleaned_data.get("billing_address_line_1", ""),
+            "address_line_2": self.cleaned_data.get("billing_address_line_2", ""),
+            "city": self.cleaned_data.get("billing_city", ""),
+            "postal_code": self.cleaned_data.get("billing_postal_code", ""),
+            "state": self.cleaned_data.get("billing_state", ""),
+            "country": self.cleaned_data.get("billing_country", ""),
+            "phone_number": self.cleaned_data.get("billing_phone", ""),
+        }
+        user.billing_information = billing_info
+
+        # Set shipping information as JSON (same as registration form)
+        shipping_info = {
+            "address_line_1": self.cleaned_data.get("shipping_address_line_1", ""),
+            "address_line_2": self.cleaned_data.get("shipping_address_line_2", ""),
+            "city": self.cleaned_data.get("shipping_city", ""),
+            "postal_code": self.cleaned_data.get("shipping_postal_code", ""),
+            "state": self.cleaned_data.get("shipping_state", ""),
+            "country": self.cleaned_data.get("shipping_country", ""),
+            "phone_number": self.cleaned_data.get("shipping_phone", ""),
+            "instructions": self.cleaned_data.get("shipping_instructions", ""),
+        }
+        user.shipping_information = shipping_info
+
+        user.institution_tax_vat = self.cleaned_data.get("institution_tax_vat", False)
+        user.in_vitro = self.cleaned_data.get("in_vitro", False)
+        user.in_vivo = self.cleaned_data.get("in_vivo", False)
+        user.communications_agreement = self.cleaned_data.get(
+            "communications_agreement", False
+        )
+        user.status = self.cleaned_data.get("status", "pending")
+        user.is_active = self.cleaned_data.get("is_active", True)
+
         if commit:
             user.save()
         return user
@@ -151,6 +336,7 @@ admin_site = BitBioAdminSite(name="bitbio_admin")
 @admin.register(CustomUser, site=admin_site)
 class CustomUserAdmin(admin.ModelAdmin):
     change_list_template = "admin/change_list.html"
+    change_form_template = "admin/app_users/user/change_form.html"
     list_display = (
         "email",
         "first_name",
@@ -291,19 +477,91 @@ class CustomUserAdmin(admin.ModelAdmin):
         Return different fieldsets for add vs. change operations.
         """
         if obj is None:  # Adding new user
-            # For new users, only show the fields available in CustomUserCreationForm
+            # For new users, show organized fieldsets with checkboxes and conditional fields
             return (
                 (
-                    None,
+                    "Personal Information",
                     {
                         "fields": (
                             "first_name",
                             "last_name",
                             "job_title",
+                        )
+                    },
+                ),
+                (
+                    "Login Information",
+                    {
+                        "fields": (
                             "email",
                             "password1",
                             "password2",
                         )
+                    },
+                ),
+                (
+                    "User Type",
+                    {
+                        "fields": (
+                            "is_client",
+                            "is_staff",
+                        ),
+                        "classes": ("wide",),
+                    },
+                ),
+                (
+                    "Billing Information",
+                    {
+                        "fields": (
+                            "company_trading_name",
+                            "billing_address_line_1",
+                            "billing_address_line_2",
+                            "billing_city",
+                            "billing_postal_code",
+                            "billing_state",
+                            "billing_country",
+                            "billing_phone",
+                            "institution_tax_vat",
+                        ),
+                        "classes": ("client-fieldset", "collapse"),
+                        "description": "These fields are shown when 'Is Client' is checked.",
+                    },
+                ),
+                (
+                    "Shipping Information",
+                    {
+                        "fields": (
+                            "shipping_address_line_1",
+                            "shipping_address_line_2",
+                            "shipping_city",
+                            "shipping_postal_code",
+                            "shipping_state",
+                            "shipping_country",
+                            "shipping_phone",
+                            "shipping_instructions",
+                        ),
+                        "classes": ("client-fieldset", "collapse"),
+                    },
+                ),
+                (
+                    "Use Intent",
+                    {
+                        "fields": (
+                            "in_vitro",
+                            "in_vivo",
+                        ),
+                        "classes": ("client-fieldset", "collapse"),
+                    },
+                ),
+                (
+                    "Consent & Status",
+                    {
+                        "fields": (
+                            "communications_agreement",
+                            "status",
+                            "is_active",
+                        ),
+                        "classes": ("client-fieldset", "collapse"),
                     },
                 ),
             )
@@ -422,11 +680,12 @@ class CustomUserAdmin(admin.ModelAdmin):
     # Custom admin actions
     def approve_users(self, request, queryset):
         """Approve selected users"""
-        updated = queryset.update(status="approved")
+        # Update both status and is_active for approved users
+        updated = queryset.update(status="approved", is_active=True)
         if updated == 1:
-            message = "1 user was successfully approved."
+            message = "1 user was successfully approved and activated."
         else:
-            message = f"{updated} users were successfully approved."
+            message = f"{updated} users were successfully approved and activated."
         self.message_user(request, message, messages.SUCCESS)
 
     approve_users.short_description = "Approve selected users"
@@ -446,7 +705,11 @@ class CustomUserAdmin(admin.ModelAdmin):
         return super().get_queryset(request).select_related()
 
     def save_model(self, request, obj, form, change):
-        if not change:  # New user
+        if change:  # Existing user being updated
+            # Check if status is being changed to approved
+            if obj.status == "approved":
+                obj.is_active = True
+        elif not change:  # New user
             # Password is already handled by UserCreationForm
             pass
         super().save_model(request, obj, form, change)

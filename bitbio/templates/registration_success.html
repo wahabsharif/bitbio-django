@@ -1,5 +1,7 @@
-{% extends 'layout.html' %} {% load static %} {% block title %} Registration
-Success {% endblock %} {% block content %}
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Registration Success{% endblock %}
+{% block content %}
 
 <style>
   .success-container {
@@ -49,12 +51,11 @@ Success {% endblock %} {% block content %}
   <div class="success-icon">✓</div>
   <h1 class="success-title">Registration Successful!</h1>
   <div class="success-message">
-    <p>Thank you for registering with Bit Bio!</p>
-    <p>
-      Your account application has been submitted and is currently pending
-      approval. Our team will review your information and get back to you within
-      24 hours.
-    </p>
+    {% if request.session.registration_auto_approved %}
+      <p>Your account has been automatically approved! You can now sign in with {{ request.session.registration_email }}.</p>
+    {% else %}
+      <p>Registration successful! Your account is pending approval. You will receive an email notification once your account is approved.</p>
+    {% endif %}
     <p>
       If you have any questions, please contact us at
       <a href="mailto:orders@bit.bio">orders@bit.bio</a>

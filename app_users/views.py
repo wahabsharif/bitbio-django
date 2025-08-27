@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from functools import wraps
 from .forms import UserRegistrationForm, UserProfileUpdateForm
 from .models import User
+from .domain_management import should_auto_approve, get_email_domain
 from django.contrib.auth import update_session_auth_hash
 
 
@@ -39,13 +40,41 @@ def registration_view(request):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # User needs approval
-            user.save()
+            # Save the user first (this will set default values)
+            user = form.save()
 
-            messages.success(
-                request, "Registration successful! Your account is pending approval."
+            # Now check if user should be auto-approved based on email domain
+            auto_approve = should_auto_approve(user.email)
+
+            # Debug output to understand the flow
+            print(
+                f"DEBUG Registration: Email='{user.email}', Auto approve={auto_approve}"
             )
+            from .domain_management import get_email_domain
+
+            domain = get_email_domain(user.email)
+            print(f"DEBUG Registration: Domain='{domain}'")
+
+            if auto_approve:
+                # Update the user status and save again
+                user.status = "approved"
+                user.is_active = True
+                user.save()
+
+                messages.success(
+                    request,
+                    f"Your account has been automatically approved! You can now sign in with {user.email}.",
+                )
+            else:
+                # Update the user status and save again
+                user.is_active = False  # User needs manual approval
+                user.save()
+
+                messages.success(
+                    request,
+                    "Registration successful! Your account is pending approval. ",
+                )
+
             return redirect("registration_success")
         else:
             messages.error(request, "Please correct the errors below.")
@@ -64,6 +93,12 @@ def registration_view(request):
 
 def registration_success(request):
     """Display success message after registration"""
+    # Clear the session variables after displaying them
+    if "registration_auto_approved" in request.session:
+        del request.session["registration_auto_approved"]
+    if "registration_email" in request.session:
+        del request.session["registration_email"]
+
     return render(request, "registration_success.html")
 
 

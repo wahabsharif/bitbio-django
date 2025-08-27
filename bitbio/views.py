@@ -4,6 +4,7 @@ from django.contrib import messages
 from app_users.forms import UserRegistrationForm, UserLoginForm
 from app_users.models import User
 from app_users.views import approved_user_required
+from app_users.domain_management import should_auto_approve, get_email_domain
 
 
 def home(request):
@@ -50,9 +51,9 @@ def account(request):
                         )
                         return redirect("calculator:calculator")
                     elif user.status == "pending":
-                        messages.error(
+                        messages.warning(
                             request,
-                            "Your account is pending approval. Please wait for admin approval before accessing the calculator.",
+                            "Your account is pending approval. Please wait for admin approval before you can access the system. You will receive an email notification once your account is approved.",
                         )
                     elif user.status == "rejected":
                         messages.error(
@@ -75,9 +76,9 @@ def account(request):
                     if user.check_password(password):
                         # Password is correct but user might not be approved
                         if user.status == "pending":
-                            messages.error(
+                            messages.warning(
                                 request,
-                                "Your account is pending approval. Please wait for admin approval before logging in.",
+                                "Your account is pending approval. Please wait for admin approval before you can log in. You will receive an email notification once your account is approved.",
                             )
                         elif user.status == "rejected":
                             messages.error(
@@ -106,27 +107,58 @@ def account(request):
 
 
 def registration(request):
-    """Handle user registration from main URL"""
+    """Handle user registration with domain-based auto-approval"""
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # User needs approval
-            user.save()
+            # Save the user first (this will set default values)
+            user = form.save()
 
-            from django.contrib import messages
+            # Now check if user should be auto-approved based on email domain
+            auto_approve = should_auto_approve(user.email)
 
-            messages.success(
-                request, "Registration successful! Your account is pending approval."
+            # Debug output to understand the flow
+            print(
+                f"DEBUG Registration: Email='{user.email}', Auto approve={auto_approve}"
             )
+            domain = get_email_domain(user.email)
+            print(f"DEBUG Registration: Domain='{domain}'")
+
+            # Clear any existing messages before adding registration message
+            storage = messages.get_messages(request)
+            storage.used = True
+
+            if auto_approve:
+                # Update the user status and save again
+                user.status = "approved"
+                user.is_active = True
+                user.save()
+
+                messages.success(
+                    request,
+                    f"Your account has been automatically approved! You can now sign in with {user.email}.",
+                )
+            else:
+                # Update the user status and save again
+                user.is_active = False  # User needs manual approval
+                user.save()
+
+                messages.success(
+                    request,
+                    "Registration successful! Your account is pending approval. "
+                    "You will receive an email notification once your account is approved.",
+                )
+
+            # Pass registration status via session
+            request.session["registration_auto_approved"] = auto_approve
+            request.session["registration_email"] = user.email
             return redirect("registration_success")
         else:
-            from django.contrib import messages
-
             messages.error(request, "Please correct the errors below.")
     else:
         form = UserRegistrationForm()
 
+    # Get countries list for the template
     from .countries import COUNTRIES
 
     context = {
@@ -138,6 +170,12 @@ def registration(request):
 
 def registration_success(request):
     """Display success message after registration"""
+    # Clear the session variables after displaying them
+    if "registration_auto_approved" in request.session:
+        del request.session["registration_auto_approved"]
+    if "registration_email" in request.session:
+        del request.session["registration_email"]
+
     return render(request, "registration_success.html")
 
 

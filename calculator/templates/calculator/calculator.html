@@ -40,7 +40,7 @@
     flex-direction: column;
     justify-content: space-between;">
         <div style="display: flex; flex-direction: column; align-items: start; width: 75%;">
-            <h1 style="font-size: 2rem; font-weight: 600; margin-bottom: 10px !important;">Cell seeding calculator</h1>
+            <h1 style="font-size: 2rem; font-weight: 600; margin-bottom: 5px !important;">Cell seeding calculator</h1>
             <p style="margin-bottom: 20px; font-size: 1rem; margin-top: 0px !important;">
                 This calculator helps scientists to quickly determine how much cell stock solution and culture media
                 is needed for seeding cells in a variety of different culture vessels. By following this simple
@@ -66,8 +66,8 @@
                                 </g>
                             </g>
                         </svg>
-                        <div class="custom-tooltip tooltip-box-narrow">
-                            <div class="tooltip-row">
+                        <div class="custom-tooltip" style="width: 310px;">
+                            <div class="tooltip-text-container ">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
                                         <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
@@ -77,9 +77,9 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div class="tooltip-actions">
+                                <div >
                                     <p>Please refer to the ioCell user manual for your cell type for guidance on thawing and recommended initial suspension volume.</p>
-                                    <button type="button" class="muted-action">
+                                    <button type="button" class="tooltip-close">
                                         <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -107,8 +107,8 @@
                                 </g>
                             </g>
                         </svg>
-                        <div class="custom-tooltip tooltip-box-wide">
-                            <div class="tooltip-row">
+                        <div class="custom-tooltip" style="width: 565px;">
+                            <div class="tooltip-text-container ">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
                                         <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
@@ -118,9 +118,9 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div class="tooltip-actions">
+                                <div >
                                     <p>Please count the number of cells using a viability marker. We recommend performing the count in triplicates - this calculator will automatically calculate the average value. If you have an outlier, best practice is to resuspend the cells carefully and repeat the triplicates count from the beginning. Please do not enter the number of total cells, the value should reflect the viable number of cells only.</p>
-                                    <button type="button" class="muted-action">
+                                    <button type="button" class="tooltip-close">
                                         <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -234,8 +234,8 @@
                                 </g>
                             </g>
                         </svg>
-                        <div class="custom-tooltip tooltip-box-narrow">
-                            <div class="tooltip-row">
+                        <div class="custom-tooltip" style="width: 310px;">
+                            <div class="tooltip-text-container ">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
                                         <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
@@ -245,9 +245,9 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div class="tooltip-actions">
+                                <div >
                                     <p>Please note that the default seeding density has been optimised by bit.bio for ioCell monocultures. We recommend adjusting it as needed based on your assay or application.</p>
-                                    <button type="button" class="muted-action">
+                                    <button type="button" class="tooltip-close">
                                         <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -275,8 +275,8 @@
                                 </g>
                             </g>
                         </svg>
-                        <div class="custom-tooltip tooltip-box-wide">
-                            <div class="tooltip-row">
+                        <div class="custom-tooltip" style="width: 565px;">
+                            <div class="tooltip-text-container ">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
                                         <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
@@ -286,9 +286,9 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div class="tooltip-actions">
+                                <div >
                                     <p>Please select the appropriate culture vessel for your experimental setup. The options and values provided are for reference only, based on the most widely used formats - be sure to confirm them and adjust surface area and volume according to the supplier's recommendations.</p>
-                                    <button type="button" class="muted-action">
+                                    <button type="button" class="tooltip-close">
                                         <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -355,8 +355,8 @@
                                 </g>
                             </g>
                         </svg>
-                        <div class="custom-tooltip tooltip-box-narrow">
-                            <div class="tooltip-row">
+                        <div class="custom-tooltip" style="width: 310px;">
+                            <div class="tooltip-text-container ">
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0,0,256,256">
                                         <g fill="#6d7e93" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
@@ -366,9 +366,9 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div class="tooltip-actions">
+                                <div >
                                     <p>Include contingency (typically 10–20%) to account for dead volume. If unsure on what values to use, you can also change this value to zero, and instead add a few extra wells into your experimental plan.</p>
-                                    <button type="button" class="muted-action">
+                                    <button type="button" class="tooltip-close">
                                         <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -439,6 +439,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="{% static 'js/ui-handlers.js' %}"></script>
+<script src="{% static 'js/tooltip.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <script src="{% static 'js/export.js' %}"></script>
 {% include 'calculator/profile_modal.html' %}
@@ -717,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-});
+    });
 
 // Override calculation to use server-side Python without changing UI
 window.performCalculation = async function () {

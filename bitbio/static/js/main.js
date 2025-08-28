@@ -1,3 +1,4 @@
+// bitbio/static/js/main.js
 /**
  * Main JavaScript file for bit.bio calculator
  * This file initializes all functionality and ensures proper loading order
@@ -859,8 +860,41 @@ function validateViabilityDrop(input, event) {
 
 // Initialize calculator when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Setup warning event listeners first
+    setupWarningEventListeners();
+    
+    // Then initialize the calculator
     initCalculator();
 });
+
+/**
+ * Setup event listeners for warning functionality
+ */
+function setupWarningEventListeners() {
+    // Add event listeners for cell count inputs
+    ['count1', 'count2', 'count3'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function() {
+                if (typeof checkCellCountVariability === 'function') {
+                    checkCellCountVariability();
+                }
+            });
+        }
+    });
+    
+    // Add event listeners for viability inputs
+    ['viability1', 'viability2', 'viability3'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('change', function() {
+                if (typeof checkViabilityValues === 'function') {
+                    checkViabilityValues();
+                }
+            });
+        }
+    });
+}
 
 // Global error handler
 window.addEventListener('error', function(e) {
@@ -869,5 +903,47 @@ window.addEventListener('error', function(e) {
 // Handle unhandled promise rejections
 window.addEventListener('unhandledrejection', function(e) {
     console.error('Unhandled promise rejection:', e.reason);
-
 });
+
+/**
+ * Test function to manually trigger cell count warning
+ */
+function testCellCountWarning() {
+    if (typeof checkCellCountVariability === 'function') {
+        checkCellCountVariability();
+    }
+}
+
+/**
+ * Test function to manually trigger viability warning
+ */
+function testViabilityWarning() {
+    if (typeof checkViabilityValues === 'function') {
+        checkViabilityValues();
+    }
+}
+
+/**
+ * Test function to hide all warnings
+ */
+function hideAllWarnings() {
+    const cellCountWarning = document.getElementById('cellCountWarning');
+    const viabilityWarning = document.getElementById('viabilityWarning');
+    
+    if (cellCountWarning) {
+        cellCountWarning.classList.add('hidden');
+        cellCountWarning.classList.remove('show-warning');
+    }
+    
+    if (viabilityWarning) {
+        viabilityWarning.classList.add('hidden');
+        viabilityWarning.classList.remove('show-warning');
+    }
+}
+
+// Make test functions globally available
+window.testCellCountWarning = testCellCountWarning;
+window.testViabilityWarning = testViabilityWarning;
+window.hideAllWarnings = hideAllWarnings;
+
+

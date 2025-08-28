@@ -149,7 +149,7 @@
                         </div>
                         <div class="desktop-only symbol">x 10<sup>6</sup> cells/mL</div>
                     </div>
-                    <div id="cellCountWarning" class="warning-container">
+                    <div id="cellCountWarning" class="warning-container hidden" style="top: -1.75rem">
                         <div class="warning-content">
                             <div class="warning-icon">
                                 <svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">
@@ -157,7 +157,7 @@
                                 </svg>
                             </div>
                             <p class="warning-text">The variability in your live cell count exceeds 10%, we recommend that you re-suspend your cell suspension and perform a recount.</p>
-                            <button type="button" class="warning-close" onclick="document.getElementById('cellCountWarning').classList.add('hidden')">
+                            <button type="button" class="warning-close" onclick="document.getElementById('cellCountWarning').classList.add('hidden'); document.getElementById('cellCountWarning').classList.remove('show-warning');">
                                 <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -189,7 +189,7 @@
                         </div>
                         <div class="desktop-only symbol">%</div>
                     </div>
-                    <div id="viabilityWarning" class="warning-container">
+                    <div id="viabilityWarning" class="warning-container hidden" style="top: 1.75rem">
                         <div class="warning-content">
                             <div class="warning-icon">
                                 <svg class="icon-20 icon-orange margin-right-sm no-shrink" viewBox="0 0 24 24" fill="currentColor">
@@ -197,7 +197,7 @@
                                 </svg>
                             </div>
                             <p class="warning-text">If there is high variability in your cell viability percentage, or if this value is below 80%, we recommend that you re-suspend your cell suspension and perform a recount.</p>
-                            <button type="button" class="warning-close" onclick="document.getElementById('viabilityWarning').classList.add('hidden')">
+                            <button type="button" class="warning-close" onclick="document.getElementById('viabilityWarning').classList.add('hidden'); document.getElementById('viabilityWarning').classList.remove('show-warning');">
                                 <svg class="tooltip-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -338,7 +338,7 @@
                     Number of wells to seed <span class="required-field">*</span>
                 </label>
                 <div class="input-container">
-                    <input id="num_wells" type="number" min="1" step="1" value="0" class="form-input-number">
+                    <input id="num_wells" type="number" min="1" step="1" value="" class="form-input-number">
                     <span class="unit-label">wells</span>
                 </div>
             </div>
@@ -430,6 +430,21 @@
 
     <!-- Results Section -->
     {% include 'result_section.html' %}
+    
+                <!-- Warnings Container -->
+            <div id="warnings" class="hidden" style="margin: 20px 0; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px;">
+                <!-- Warnings will be populated here by JavaScript -->
+            </div>
+            
+
+    
+    <!-- Validation Errors Container -->
+    <div id="validationErrors" class="hidden" style="margin: 20px 0; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
+        <ul>
+            <!-- Validation errors will be populated here by JavaScript -->
+        </ul>
+    </div>
+</div>
 </div>
 
 <!-- Useful Resources -->
@@ -438,10 +453,11 @@
 <!-- Include JavaScript files -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-<script src="{% static 'js/ui-handlers.js' %}"></script>
-<script src="{% static 'js/tooltip.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
-<script src="{% static 'js/export.js' %}"></script>
+    <script src="{% static 'js/validation.js' %}"></script>
+    <script src="{% static 'js/cell-checks.js' %}"></script>
+    <script src="{% static 'js/calculator.js' %}"></script>
+    <script src="{% static 'js/ui-handlers.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 {% include 'profile_modal.html' %}
 <script>
 // Format numbers with thousands separators while preserving decimal precision
@@ -483,7 +499,7 @@ function hideMissingFieldsPopup() {
 // Map human-readable names to input IDs for highlighting
 var requiredFieldNameToId = {
     'Seeding Density': 'seeding_density',
-    'Number of Wells': 'num_wells',
+    'Number of wells to seed': 'num_wells',
     'Surface Area': 'surface_area',
     'Media Volume': 'media_volume',
     'Cell Count 1': 'count1',

@@ -80,14 +80,14 @@ class ValidationResult:
 
 def validate_required_fields(payload: Dict[str, Any]) -> ValidationResult:
     required = [
-        ("seeding_density", "Seeding Density"),
-        ("num_wells", "Number of Wells"),
-        ("surface_area", "Surface Area"),
-        ("media_volume", "Media Volume"),
+        ("suspension_volume", "Suspension Volume"),
         ("count1", "Cell Count 1"),
         ("viability1", "Viability 1"),
+        ("seeding_density", "Seeding Density"),
+        ("surface_area", "Surface Area"),
+        ("media_volume", "Media Volume"),
+        ("num_wells", "Number of wells to seed"),
         ("buffer", "Buffer Percentage"),
-        ("suspension_volume", "Suspension Volume"),
     ]
 
     missing: List[str] = []
@@ -114,6 +114,16 @@ def validate_required_fields(payload: Dict[str, Any]) -> ValidationResult:
 
         if num < 0:
             negative.append(label)
+        elif num == 0 and field_id in {
+            "num_wells",
+            "seeding_density",
+            "surface_area",
+            "media_volume",
+            "count1",
+        }:
+            # These fields cannot be 0
+            missing.append(label)
+            continue
 
         if (
             field_id in {"viability1", "viability2", "viability3", "buffer"}

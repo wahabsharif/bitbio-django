@@ -1,339 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{% block title %}BitBio Django{% endblock %}</title>
-    {% load static %}
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="{% static 'images/favicon-32x32.webp' %}"
-    />
-    <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
-    {% block extra_css %}{% endblock %}
-  </head>
 
-  <body>
-    <header>
-      <div class="container">
-        <div class="nav-items">
-          <a href="/"
-            ><img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo" style="max-width: 85px; width: 100%; margin-bottom: 0.5em"
-          /></a>
-          <nav>
-            <ul class="nav-links">
-              <li>
-                <a href="#">Products</a>
-              </li>
-              <li>
-                <a href="#">Platform</a>
-              </li>
-              <li>
-                <a href="#">Therapeutics</a>
-              </li>
-              <li>
-                <a href="#">Resources</a>
-              </li>
-              <li>
-                <a href="#">Support</a>
-              </li>
-              <li>
-                <a href="#">About us</a>
-              </li>
-              <li>
-                <a href="#">Contact us</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div class="icons">
-          <a href="/" class="btn btn-primary">
-            <img src="{% static 'images/user-icon.svg' %}" alt="User Icon" />
-          </a>
-          <a href="#" class="btn btn-primary">
-            <img src="{% static 'images/cart-icon.svg' %}" alt="Cart Icon" />
-          </a>
-          <a href="#" class="btn btn-primary">
-            <img
-              src="{% static 'images/search-icon.svg' %}"
-              alt="Search Icon"
-            />
-          </a>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}BitBio Django{% endblock %}</title>
+  {% load static %}
+  <link rel="icon" type="image/x-icon" href="{% static 'images/account-favicon-32x32.webp' %}" />
+  <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="nav-items">
+        <a href="/"><img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo"
+            style="max-width: 85px; width: 100%;" /></a>
+        <nav>
+          <ul class="nav-links">
+            <li>
+              <a href="#">Products</a>
+            </li>
+            <li>
+              <a href="#">Platform</a>
+            </li>
+            <li>
+              <a href="#">Therapeutics</a>
+            </li>
+            <li>
+              <a href="#">Resources</a>
+            </li>
+            <li>
+              <a href="#">Support</a>
+            </li>
+            <li>
+              <a href="#">About us</a>
+            </li>
+            <li>
+              <a href="#">Contact us</a>
+            </li>
+          </ul>
+        </nav>
       </div>
-    </header>
-    <main>{% block content %}{% endblock %}</main>
-    <footer>
-      <div
-        style="
-          background-image: linear-gradient(90deg, #353a42 50%, #293038 50%);
-        "
-      >
-        <div class="cta">
-          <div class="newsletter-section">
-            <div>
-              <div
-                style="
-                  color: #fff;
-                  font-size: 32px;
-                  font-weight: 300;
-                  letter-spacing: 0;
-                  line-height: 42px;
-                "
-              >
-                <span
-                  ><strong>Subscribe to<br />our newsletter</strong></span
-                >
-              </div>
-              <button class="cta-btn">
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="currentColor"
-                      fill-rule="evenodd"
-                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                    />
-                  </svg>
-                </span>
-                Subscribe
-              </button>
-            </div>
-          </div>
-          <div class="team-section">
-            <div>
-              <div
-                style="
-                  color: #fff;
-                  font-size: 32px;
-                  font-weight: 300;
-                  letter-spacing: 0;
-                  line-height: 42px;
-                "
-              >
-                <span
-                  ><strong>Join our<br />pioneering team</strong></span
-                >
-              </div>
-              <button class="cta-btn">
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="currentColor"
-                      fill-rule="evenodd"
-                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                    />
-                  </svg>
-                </span>
-                Learn more
-              </button>
-            </div>
-          </div>
-        </div>
+      <div class="icons">
+        <a href="/" class="btn btn-primary">
+          <img src="{% static 'images/user-icon.svg' %}" alt="User Icon" />
+        </a>
+        <a href="#" class="btn btn-primary">
+          <img src="{% static 'images/cart-icon.svg' %}" alt="Cart Icon" />
+        </a>
+        <a href="#" class="btn btn-primary">
+          <img src="{% static 'images/search-icon.svg' %}" alt="Search Icon" />
+        </a>
       </div>
-      <div class="footer-items">
-        <div>
-          <span><strong>The cell coding company</strong></span>
-        </div>
+    </div>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <div class="support-banner">
+    <div class="support-banner-content">
+      <h4><strong>
+          Subscribe to
+          <br /> our newsletter
+        </strong></h4>
+      <button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M13.692 17.308l-.707-.72l4.088-4.088H5v-1h12.073l-4.088-4.088l.707-.72L19 12z">
+          </path>
+        </svg>
+        Subscribe now
+      </button>
+    </div>
+    <img src="{% static 'images/bit.bio_office_pic0066.webp' %}" alt="Support Banner" />
+
+  </div>
+  <a href="https://www.bit.bio/working-at-bit.bio" class="join-team-container">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path fill="currentColor" fill-rule="evenodd" d="M18.5 12.214a1 1 0 0 0-1-1H5a1 1 0 1 0 0 2h12.5a1 1 0 0 0 1-1"
+        clip-rule="evenodd"></path>
+      <path fill="currentColor" fill-rule="evenodd"
+        d="M20 12.214a1 1 0 0 0-.293-.707l-4.5-4.5a1 1 0 1 0-1.414 1.414l3.793 3.793l-3.793 3.793a1 1 0 0 0 1.414 1.415l4.5-4.5a1 1 0 0 0 .293-.708"
+        clip-rule="evenodd"></path>
+    </svg>
+    Join our pioneering team
+  </a>
+  <footer>
+    <div class="footer-items">
+      <div style="width: 50%;">
+        <span><strong>The cell coding<br />company</strong></span>
+      </div>
+      <div style="display: flex; gap: 2em; width: 50%;">
+
         <div class="footer-links-container">
           <div>
+            <label>Discover ioCells™</label>
             <ul>
               <li>
-                <a href="#">Platform</a>
+                <a href="#">ioWild Type Cells</a>
               </li>
               <li>
-                <a href="#">Therapeutics</a>
+                <a href="#">ioDisease Model Cells</a>
               </li>
               <li>
-                <a href="#">Discover ioCells™</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">ioCells™</a>
-                    </li>
-                    <li>
-                      <a href="#">ioWild Type Cells™</a>
-                    </li>
-                    <li>
-                      <a href="#">ioDisease Model Cells™</a>
-                    </li>
-                    <li>
-                      <a href="#">Custom cell development</a>
-                    </li>
-                  </ul>
-                </div>
+                <a href="#">CRISPR-Ready ioCells</a>
               </li>
               <li>
-                <a href="#">About</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">About us</a>
-                    </li>
-                    <li>
-                      <a href="#">Sustainability</a>
-                    </li>
-                    <li>
-                      <a href="#">Partners</a>
-                    </li>
-                  </ul>
-                </div>
+                <a href="#">ioTracker Cells</a>
+              </li>
+              <li>
+                <a href="#">Custom cell development</a>
               </li>
             </ul>
           </div>
 
           <div>
-            <ul>
-              <li>
-                <a href="#">General Resources</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">Application notes</a>
-                    </li>
-                    <li>
-                      <a href="#">bits of bio</a>
-                    </li>
-                    <li>
-                      <a href="#">Infographic</a>
-                    </li>
-                    <li>
-                      <a href="#">Posters</a>
-                    </li>
-                    <li>
-                      <a href="#">Publications</a>
-                    </li>
-                    <li>
-                      <a href="#">Talks</a>
-                    </li>
-                    <li>
-                      <a href="#">Videos</a>
-                    </li>
-                    <li>
-                      <a href="#">Video tutorials</a>
-                    </li>
-                    <li>
-                      <a href="#">Webinars</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li>
-                <a href="#">Product information</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">User manuals</a>
-                    </li>
-                    <li>
-                      <a href="#">Brochures</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
+            <a href="#">Platform</a>
           </div>
 
           <div>
-            <ul>
-              <li>
-                <a href="#">Careers</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">Open Roles</a>
-                    </li>
-                    <li>
-                      <a href="#">Working at bit.bio</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li>
-                <a href="#">Contact</a>
-              </li>
-              <li>
-                <a href="#">Follow us</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">LinkedIn</a>
-                    </li>
-                    <li>
-                      <a href="#">Twitter</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li>
-                <a href="#">Policies</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">Cookies Policy</a>
-                    </li>
-                    <li>
-                      <a href="#">Diversity & Inclusion</a>
-                    </li>
-                    <li>
-                      <a href="#">Privacy Policy</a>
-                    </li>
-                    <li>
-                      <a href="#">Terms & Conditions</a>
-                    </li>
-                    <li>
-                      <a href="#">Statement of Use</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
+            <a href="#">Therapeutics</a>
           </div>
 
           <div>
+            <label>Product Information</label>
             <ul>
               <li>
-                <a href="#">Contact</a>
+                <a href="https://www.bit.bio/resources/brochures" class="text-decoration-none">Brochures</a>
               </li>
               <li>
-                <a href="#">Follow us</a>
-                <div>
-                  <ul>
-                    <li>
-                      <a href="#">LinkedIn</a>
-                    </li>
-                  </ul>
-                </div>
+                <a href="https://www.bit.bio/resources/protocols" class="text-decoration-none">Protocol library</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/user-manuals" class="text-decoration-none">User manuals</a>
               </li>
             </ul>
           </div>
         </div>
+
+        <div class="footer-links-container">
+          <div>
+            <label>Resources</label>
+            <ul>
+              <li>
+                <a href="https://www.bit.bio/resources/application-notes" class="text-decoration-none">Application
+                  notes</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/case-studies" class="text-decoration-none">Case studies</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/infographics" class="text-decoration-none">Infographic</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/posters" class="text-decoration-none">Posters</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/publications" class="text-decoration-none">Publications</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/talks" class="text-decoration-none">Talks</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/videos" class="text-decoration-none">Videos</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/video-tutorials" class="text-decoration-none">Video tutorials</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/resources/webinars" class="text-decoration-none">Webinars</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <label>About us</label>
+            <ul>
+              <li>
+                <a href="https://www.bit.bio/about-us" class="text-decoration-none">About us</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/sustainability-and-environment"
+                  class="text-decoration-none">Sustainability</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/partners" class="text-decoration-none">Partners</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <label>Careers</label>
+            <ul>
+              <li>
+                <a href="https://www.bit.bio/open-roles" class="text-decoration-none">Open Roles</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/working-at-bit.bio" class="text-decoration-none">Working at bit.bio</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <label>News and Events</label>
+            <ul>
+              <li>
+                <a href="https://www.bit.bio/news" class="text-decoration-none">News</a>
+              </li>
+
+              <li>
+                <a href="https://www.bit.bio/events" class="text-decoration-none">Events</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-links-container">
+          <div>
+            <label>Contact</label>
+            <ul>
+              <li>
+                <a href="tel:+441223787297" class="text-decoration-none">Tel: +44 (0) 1223 787297</a>
+              </li>
+              <li>
+                <a href="mailto:info@bit.bio" class="text-decoration-none">Email: info@bit.bio</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <label>Follow us</label>
+            <ul>
+              <li>
+                <a href="https://www.linkedin.com/company/bitbioltd/" class="text-decoration-none">LinkedIn</a>
+              </li>
+              <li>
+                <a href="https://twitter.com/bitbio" class="text-decoration-none">X</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <label>Policies</label>
+            <ul>
+              <li>
+                <a href="https://www.bit.bio/cookies" class="text-decoration-none">Cookie notice</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/diversity" class="text-decoration-none">Diversity &amp; inclusion</a>
+              </li>
+              <li>
+                <a href="https://14527135.fs1.hubspotusercontent-na1.net/hubfs/14527135/Documents/e-commerce%20Terms%20and%20Conditions%20of%20Sale%20V1.pdf"
+                  class="text-decoration-none">E-commerce terms &amp; conditions of sale</a>
+              </li>
+              <li>
+                <a href="https://14527135.fs1.hubspotusercontent-na1.net/hubfs/14527135/Documents/14-22-REF%20(V-04)%20Combined%20Limited%20Use%20License%20and%20Statement%20of%20Use%2024%20July%202023%20Customer.pdf"
+                  class="text-decoration-none">Limited use license &amp; statement of use</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/privacy" class="text-decoration-none">Privacy notice</a>
+              </li>
+              <li>
+                <a href="https://14527135.fs1.hubspotusercontent-na1.net/hubfs/14527135/Documents/Standard%20Terms%20and%20Conditions%20for%20the%20Supply%20of%20Goods%20and%20Services.pdf"
+                  class="text-decoration-none">Standard terms &amp; conditions for sales and services</a>
+              </li>
+              <li>
+                <a href="https://www.bit.bio/trademarks" class="text-decoration-none">Trade marks</a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
       </div>
-      <div class="footer-bottom">
-        <div style="min-width: 247px">
-          <a href="/"
-            ><img
-              src="{% static 'images/bit_bio_logo.svg' %}"
-              alt="BitBio Logo"
-              style="max-width: 150px; width: 100%; margin-bottom: 0.5em"
-          /></a>
-        </div>
-        <div>
-          <p class="caption">
-            bit.bio © <span class="footer-year">2023</span> | All rights
-            reserved
-          </p>
-        </div>
+    </div>
+    <div class="footer-bottom">
+      <div style="width: 50%;">
+        <a href="/"><img src="{% static 'images/bit_bio_logo.svg' %}" alt="BitBio Logo"
+            style="max-width: 150px; width: 100%; margin-bottom: 0.5em" /></a>
       </div>
-    </footer>
-  </body>
+      <div style="width: 50%;">
+        <p class="caption">bit.bio © 2025 | All rights reserved | <a href="https://www.bit.bio/trademarks">Trade
+            Marks</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+
 </html>

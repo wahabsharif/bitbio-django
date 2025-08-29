@@ -6,26 +6,33 @@ bit.bio{% endblock %} {% block content %}
     border-top: solid 1px #d2d3d5;
     height: 100vh;
   }
+
   .signin-container {
-    max-width: 1300px;
+    max-width: 1320px;
     margin: 0 auto;
     display: flex;
     align-items: flex-start;
     gap: 200px;
-    > h1 {
+    padding: 0 1rem;
+
+    >h1 {
       flex: 0.6;
       white-space: nowrap;
     }
-    > .form-container-wrapper {
+
+    >.form-container-wrapper {
       width: 100%;
     }
-    > .form-container-wrapper > .form-container {
+
+    >.form-container-wrapper>.form-container {
       flex: 1;
       display: flex;
       gap: 40px;
-      > .signin-left {
+
+      >.signin-left {
         flex: 1;
       }
+
       .signup-section {
         display: flex;
         flex-direction: column;
@@ -86,19 +93,22 @@ bit.bio{% endblock %} {% block content %}
     color: #000;
     font-size: 16px;
     align-self: flex-start;
-    margin-top: 8px;
+    margin-top: -10px;
   }
 
   .remember-section {
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 15px 0;
   }
 
   .checkbox {
     width: 16px;
     height: 16px;
     accent-color: #e91b0d;
+    margin: 0;
+
   }
 
   .checkbox-label {
@@ -125,9 +135,11 @@ bit.bio{% endblock %} {% block content %}
 
   .signup-title {
     font-size: 18px;
+    line-height: 28px;
     color: #333;
     margin: 0;
-    font-weight: 600;
+    font-weight: bold;
+    letter-spacing: .4px;
   }
 
   .signup-description {
@@ -157,19 +169,20 @@ bit.bio{% endblock %} {% block content %}
     color: white;
     border: none;
   }
+
   .divider {
     width: 1px;
     background-color: #d2d3d5;
     margin: 0 40px;
   }
-  
+
   .error-message {
     color: #e74c3c;
     font-size: 14px;
     margin-top: 5px;
     font-weight: 500;
   }
-  
+
   .form-group label {
     display: block;
     font-size: 16px;
@@ -179,13 +192,13 @@ bit.bio{% endblock %} {% block content %}
     margin-bottom: 7px;
     color: #4a5157;
   }
-  
+
   /* Message styling */
   .messages-container {
     margin-bottom: 20px;
     width: 100%;
   }
-  
+
   .message {
     padding: 12px 16px;
     margin-bottom: 10px;
@@ -193,31 +206,31 @@ bit.bio{% endblock %} {% block content %}
     font-weight: 500;
     border-radius: 4px;
   }
-  
+
   .message-error {
     background-color: #fdf2f2;
     border: 1px solid #fecaca;
     color: #e74c3c;
   }
-  
+
   .message-warning {
     background-color: #fffbeb;
     border: 1px solid #fed7aa;
     color: #f39c12;
   }
-  
+
   .message-success {
     background-color: #f0fdf4;
     border: 1px solid #bbf7d0;
     color: #27ae60;
   }
-  
+
   .message-info {
     background-color: #eff6ff;
     border: 1px solid #bfdbfe;
     color: #3b82f6;
   }
-  
+
   /* Account status info box */
   .account-status-info {
     margin-top: 20px;
@@ -228,26 +241,26 @@ bit.bio{% endblock %} {% block content %}
     width: 50%;
 
   }
-  
+
   .account-status-info h4 {
     margin: 0 0 8px 0;
     color: #333;
     font-size: 14px;
     font-weight: 600;
   }
-  
+
   .account-status-info p {
     margin: 0;
     color: #666;
     font-size: 13px;
     line-height: 1.4;
   }
-  
+
   .account-status-info a {
     color: #e91b0d;
     text-decoration: none;
   }
-  
+
   .account-status-info a:hover {
     text-decoration: underline;
   }
@@ -259,66 +272,60 @@ bit.bio{% endblock %} {% block content %}
     <div class="form-container-wrapper">
       <div class="form-container">
         <div class="signin-left">
-    <form class="form" method="post">
-     {% csrf_token %}
+          <form class="form" method="post">
+            {% csrf_token %}
 
-    <div class="form-group">
-      <label for="{{ form.email.id_for_label }}" class="form-label">Username</label>
-      {{ form.email }}
-      {% if form.email.errors %}
-        <div class="error-message">{{ form.email.errors.0 }}</div>
-      {% endif %}
-    </div>
+            <div class="form-group">
+              <label for="{{ form.email.id_for_label }}" class="form-label">Username</label>
+              {{ form.email }}
+              {% if form.email.errors %}
+              <div class="error-message">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
 
-    <div class="form-group">
-      <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-      {{ form.password }}
-      {% if form.password.errors %}
-        <div class="error-message">{{ form.password.errors.0 }}</div>
-      {% endif %}
-    </div>
+            <div class="form-group">
+              <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+              {{ form.password }}
+              {% if form.password.errors %}
+              <div class="error-message">{{ form.password.errors.0 }}</div>
+              {% endif %}
+            </div>
 
-    <a href="#" class="forgot-link">Forgot your password?</a>
+            <a href="#" class="forgot-link">Forgot your password?</a>
 
-    <div class="remember-section">
-      <input
-        type="checkbox"
-        id="remember-me"
-        name="remember"
-        class="checkbox"
-      />
-      <label for="remember-me" class="checkbox-label">Remember me</label>
-    </div>
+            <div class="remember-section">
+              <input type="checkbox" id="remember-me" name="remember" class="checkbox" />
+              <label for="remember-me" class="checkbox-label">Remember me</label>
+            </div>
 
-    <button type="submit" class="signin-button">Sign in</button>
-  </form>
+            <button type="submit" class="signin-button">Sign in</button>
+          </form>
 
-</div>
-<div class="divider"></div>
-<div class="signup-section">
-  <div>
-    <p class="signup-title font-avenir">Don't have an account?</p>
-    <p class="signup-description font-avenir">
-      Register for an account to purchase ioCells™.
-    </p>
-  </div>
-  <a href="/registration" class="create-account-button"
-    >Create an account</a
-  >
-</div>
-</div>
+        </div>
+        <div class="divider"></div>
+        <div class="signup-section">
+          <div>
+            <p class="signup-title font-avenir">Don't have an account?</p>
+            <p class="signup-description font-avenir">
+              Register for an account to purchase ioCells™.
+            </p>
+          </div>
+          <a href="/registration" class="create-account-button">Create an account</a>
+        </div>
+      </div>
       <!-- Account Status Information - Only show when there are pending messages -->
       {% for message in messages %}
       {% if message.tags == 'warning' and 'pending approval' in message|lower %}
-        <div class="account-status-info">
-          <h4>Account Approval Process</h4>
-          <p>
-            New accounts require approval before access. If your account is pending, you'll receive an email notification once approved. 
-            For immediate assistance, contact <a href="mailto:orders@bit.bio">orders@bit.bio</a>
-          </p>
-        </div>
+      <div class="account-status-info">
+        <h4>Account Approval Process</h4>
+        <p>
+          New accounts require approval before access. If your account is pending, you'll receive an email notification
+          once approved.
+          For immediate assistance, contact <a href="mailto:orders@bit.bio">orders@bit.bio</a>
+        </p>
+      </div>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
     </div>
   </div>
 </section>

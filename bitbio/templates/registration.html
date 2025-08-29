@@ -7,6 +7,7 @@
   section {
     border-top: solid 1px #d2d3d5;
   }
+
   h1,
   h3 {
     font-size: 32px;
@@ -14,16 +15,19 @@
     line-height: 42px;
     margin: 0;
   }
-  p > a {
-    border-bottom: 1px solid #e9500d;
+
+  .reg-container :nth-child(2) p>a {
     padding-bottom: 2px;
     color: black;
+    border-bottom: 1px solid #e9500d;
   }
-  a:hover {
+
+  .reg-container :nth-child(2) p>a:hover {
     color: #e9500d;
     border: none;
   }
-  p {
+
+  .reg-container :nth-child(2) p {
     font-size: 18px;
     line-height: 28px;
     letter-spacing: 0.4px;
@@ -34,7 +38,7 @@
   }
 
   .reg-container {
-    max-width: 1300px;
+    max-width: 1320px;
     margin: 0 auto;
     display: flex;
     align-items: start;
@@ -43,16 +47,18 @@
     border-bottom: 1px solid #d2d3d5;
     padding-bottom: 2.5rem;
     padding-top: 65px;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
-  .reg-container > * {
+  .reg-container>* {
     width: 50%;
     display: flex;
     flex-direction: column;
   }
 
   label,
-  .checkbox-wrapper > span {
+  .checkbox-wrapper>span {
     display: block;
     font-size: 16px;
     font-weight: 400;
@@ -61,9 +67,11 @@
     margin-bottom: 7px;
     color: #4a5157;
   }
+
   .checkbox-wrapper span {
     cursor: pointer;
   }
+
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -81,7 +89,8 @@
     width: 90%;
     margin-bottom: 2em;
   }
-  .reg-container > div > button {
+
+  .reg-container>div>button {
     background: linear-gradient(90deg, #f6a11e, #e91b0d);
     border: none;
     color: #fff;
@@ -97,17 +106,20 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  .reg-container > div > button:hover {
+
+  .reg-container>div>button:hover {
     background: white;
     border: 1px solid #e91b0d;
     color: #e91b0d;
   }
+
   .checkbox-wrapper {
     display: flex;
     align-items: center;
     gap: 8px;
     margin: 2em 0;
   }
+
   .custom-checkbox {
     display: flex;
     align-items: center;
@@ -118,6 +130,7 @@
     height: 20px;
     width: 20px;
   }
+
   .custom-checkbox input[type="checkbox"] {
     opacity: 0;
     width: 20px;
@@ -129,6 +142,7 @@
     cursor: pointer;
     z-index: 2;
   }
+
   .custom-checkbox .checkmark {
     display: inline-block;
     width: 20px;
@@ -140,6 +154,7 @@
     z-index: 1;
     position: relative;
   }
+
   .custom-checkbox .checkmark::after {
     content: "";
     display: block;
@@ -152,7 +167,8 @@
     opacity: 0;
     transition: opacity 0.2s;
   }
-  .custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+
+  .custom-checkbox input[type="checkbox"]:checked+.checkmark::after {
     opacity: 1;
   }
 
@@ -191,7 +207,9 @@
 
 <section>
   <div class="reg-container">
-    <div><h1>Register for an account</h1></div>
+    <div>
+      <h1>Register for an account</h1>
+    </div>
     <div>
       <p>Welcome!</p>
       <p>
@@ -225,35 +243,39 @@
   </div>
   <form method="post" novalidate>
     {% csrf_token %}
-    
+
     <!-- Django Messages Display -->
     {% if messages %}
-      <div class="messages-container" style="max-width: 1300px; margin: 0 auto 20px auto;">
-        {% for message in messages %}
-          <div class="message message-{{ message.tags|default:'info' }}" 
-               style="padding: 12px 16px; margin-bottom: 10px; font-size: 14px; font-weight: 500; border-radius: 4px;">
-            {% if message.tags == 'error' %}
-              <div style="color: #e74c3c; background-color: #fdf2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 4px;">
-                {{ message }}
-              </div>
-            {% elif message.tags == 'success' %}
-              <div style="color: #27ae60; background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 4px;">
-                {{ message }}
-              </div>
-            {% elif message.tags == 'warning' %}
-              <div style="color: #f39c12; background-color: #fffbeb; border: 1px solid #fed7aa; padding: 12px; border-radius: 4px;">
-                {{ message }}
-              </div>
-            {% else %}
-              <div style="color: #3b82f6; background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 4px;">
-                {{ message }}
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
+    <div class="messages-container" style="max-width: 1320px; padding: 0 1rem;   margin: 0 auto 20px auto;">
+      {% for message in messages %}
+      <div class="message message-{{ message.tags|default:'info' }}"
+        style="padding: 12px 16px; margin-bottom: 10px; font-size: 14px; font-weight: 500; border-radius: 4px;">
+        {% if message.tags == 'error' %}
+        <div
+          style="color: #e74c3c; background-color: #fdf2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 4px;">
+          {{ message }}
+        </div>
+        {% elif message.tags == 'success' %}
+        <div
+          style="color: #27ae60; background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 4px;">
+          {{ message }}
+        </div>
+        {% elif message.tags == 'warning' %}
+        <div
+          style="color: #f39c12; background-color: #fffbeb; border: 1px solid #fed7aa; padding: 12px; border-radius: 4px;">
+          {{ message }}
+        </div>
+        {% else %}
+        <div
+          style="color: #3b82f6; background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 4px;">
+          {{ message }}
+        </div>
+        {% endif %}
       </div>
+      {% endfor %}
+    </div>
     {% endif %}
-    
+
     {% if form.non_field_errors %}
     <div class="error-message">
       {% for error in form.non_field_errors %}
@@ -263,7 +285,9 @@
     {% endif %}
 
     <div class="reg-container">
-      <div><h3>Your details</h3></div>
+      <div>
+        <h3>Your details</h3>
+      </div>
       <div>
         <label for="{{ form.first_name.id_for_label }}">First Name*</label>
         {{ form.first_name }} {% if form.first_name.errors %}
@@ -297,27 +321,23 @@
       </div>
     </div>
     <div class="reg-container">
-      <div><h3>Your billing information</h3></div>
       <div>
-        <label for="{{ form.company_trading_name.id_for_label }}"
-          >Company trading name*</label
-        >
+        <h3>Your billing information</h3>
+      </div>
+      <div>
+        <label for="{{ form.company_trading_name.id_for_label }}">Company trading name*</label>
         {{ form.company_trading_name }} {% if form.company_trading_name.errors %}
         <div class="field-error">{{ form.company_trading_name.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.billing_address_line_1.id_for_label }}"
-          >Address line 1*</label
-        >
+        <label for="{{ form.billing_address_line_1.id_for_label }}">Address line 1*</label>
         {{ form.billing_address_line_1 }} {% if form.billing_address_line_1.errors %}
         <div class="field-error">
           {{ form.billing_address_line_1.errors.0 }}
         </div>
         {% endif %}
 
-        <label for="{{ form.billing_address_line_2.id_for_label }}"
-          >Address line 2</label
-        >
+        <label for="{{ form.billing_address_line_2.id_for_label }}">Address line 2</label>
         {{ form.billing_address_line_2 }} {% if form.billing_address_line_2.errors %}
         <div class="field-error">
           {{ form.billing_address_line_2.errors.0 }}
@@ -329,9 +349,7 @@
         <div class="field-error">{{ form.billing_city.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.billing_postal_code.id_for_label }}"
-          >Postal code*</label
-        >
+        <label for="{{ form.billing_postal_code.id_for_label }}">Postal code*</label>
         {{ form.billing_postal_code }} {% if form.billing_postal_code.errors %}
         <div class="field-error">{{ form.billing_postal_code.errors.0 }}</div>
         {% endif %}
@@ -351,19 +369,16 @@
         <div class="field-error">{{ form.billing_phone.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.institution_tax_vat.id_for_label }}"
-          >Please indicate if your institution is tax or VAT exempt by ticking
-          the box below.</label
-        >
+        <label for="{{ form.institution_tax_vat.id_for_label }}">Please indicate if your institution is tax or VAT
+          exempt by ticking
+          the box below.</label>
         <div class="checkbox-wrapper">
           <label class="custom-checkbox">
             {{ form.institution_tax_vat }}
             <span class="checkmark"></span>
           </label>
-          <span
-            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-            >Our institution is tax/VAT exempt</span
-          >
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Our institution is
+            tax/VAT exempt</span>
         </div>
         {% if form.institution_tax_vat.errors %}
         <div class="field-error">{{ form.institution_tax_vat.errors.0 }}</div>
@@ -371,20 +386,18 @@
       </div>
     </div>
     <div class="reg-container">
-      <div><h3>Your shipping information</h3></div>
       <div>
-        <label for="{{ form.shipping_address_line_1.id_for_label }}"
-          >Address line 1*</label
-        >
+        <h3>Your shipping information</h3>
+      </div>
+      <div>
+        <label for="{{ form.shipping_address_line_1.id_for_label }}">Address line 1*</label>
         {{ form.shipping_address_line_1 }} {% if form.shipping_address_line_1.errors %}
         <div class="field-error">
           {{ form.shipping_address_line_1.errors.0 }}
         </div>
         {% endif %}
 
-        <label for="{{ form.shipping_address_line_2.id_for_label }}"
-          >Address line 2</label
-        >
+        <label for="{{ form.shipping_address_line_2.id_for_label }}">Address line 2</label>
         {{ form.shipping_address_line_2 }} {% if form.shipping_address_line_2.errors %}
         <div class="field-error">
           {{ form.shipping_address_line_2.errors.0 }}
@@ -396,9 +409,7 @@
         <div class="field-error">{{ form.shipping_city.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.shipping_postal_code.id_for_label }}"
-          >Postal code*</label
-        >
+        <label for="{{ form.shipping_postal_code.id_for_label }}">Postal code*</label>
         {{ form.shipping_postal_code }} {% if form.shipping_postal_code.errors %}
         <div class="field-error">{{ form.shipping_postal_code.errors.0 }}</div>
         {% endif %}
@@ -413,25 +424,24 @@
         <div class="field-error">{{ form.shipping_country.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.shipping_phone.id_for_label }}"
-          >Phone Number*</label
-        >
+        <label for="{{ form.shipping_phone.id_for_label }}">Phone Number*</label>
         {{ form.shipping_phone }} {% if form.shipping_phone.errors %}
         <div class="field-error">{{ form.shipping_phone.errors.0 }}</div>
         {% endif %}
 
-        <label for="{{ form.shipping_instructions.id_for_label }}"
-          >Do you have any specific instructions or restrictions on shipping?
+        <label for="{{ form.shipping_instructions.id_for_label }}">Do you have any specific instructions or restrictions
+          on shipping?
           For example, deliveries are only accepted from Monday to Thursday or
-          no deliveries before 9am..</label
-        >
+          no deliveries before 9am..</label>
         {{ form.shipping_instructions }} {% if form.shipping_instructions.errors %}
         <div class="field-error">{{ form.shipping_instructions.errors.0 }}</div>
         {% endif %}
       </div>
     </div>
     <div class="reg-container">
-      <div><h3>Use intent</h3></div>
+      <div>
+        <h3>Use intent</h3>
+      </div>
       <div>
         <label for="use_intent">How will you use our products?*</label>
         <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
@@ -439,10 +449,8 @@
             {{ form.in_vitro }}
             <span class="checkmark"></span>
           </label>
-          <span
-            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-            >Research use only (RUO): in vitro</span
-          >
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only
+            (RUO): in vitro</span>
         </div>
         {% if form.in_vitro.errors %}
         <div class="field-error">{{ form.in_vitro.errors.0 }}</div>
@@ -453,10 +461,8 @@
             {{ form.in_vivo }}
             <span class="checkmark"></span>
           </label>
-          <span
-            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-            >Research use only (RUO): in vivo</span
-          >
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only
+            (RUO): in vivo</span>
         </div>
         {% if form.in_vivo.errors %}
         <div class="field-error">{{ form.in_vivo.errors.0 }}</div>
@@ -464,26 +470,24 @@
       </div>
     </div>
     <div class="reg-container">
-      <div><h3>Consent</h3></div>
       <div>
-        <label for="use_intent"
-          >bit.bio is committed to protecting and respecting your privacy, and
+        <h3>Consent</h3>
+      </div>
+      <div>
+        <label for="use_intent">bit.bio is committed to protecting and respecting your privacy, and
           we’ll only use your personal information to administer your account
           and to provide the products and services you requested from us. From
           time to time, we would like to contact you about our products and
           services, as well as other content that may be of interest to you. If
           you consent to us contacting you for this purpose, please tick below
-          to say how you would like us to contact you:</label
-        >
+          to say how you would like us to contact you:</label>
         <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
           <label class="custom-checkbox">
             {{ form.communications_agreement }}
             <span class="checkmark"></span>
           </label>
-          <span
-            onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()"
-            >I agree to receive other communications from Bit Bio.</span
-          >
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">I agree to receive
+            other communications from Bit Bio.</span>
         </div>
         {% if form.communications_agreement.errors %}
         <div class="field-error">

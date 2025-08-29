@@ -687,6 +687,7 @@ p {
   margin-left: -1rem;
   margin-right: -1rem;
   cursor: pointer;
+  padding: 0 1rem;
 }
 
 @media (min-width: 768px) {
@@ -697,7 +698,6 @@ p {
 
 .resource-item {
   flex: 1;
-  padding: 1rem;
   text-align: center;
   text-decoration: none;
   color: #374151;

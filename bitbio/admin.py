@@ -3,13 +3,13 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.utils.html import format_html
-from django.urls import path
+from django.urls import path, reverse
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 
-from app_users.models import User as CustomUser
-from app_users.admin_forms import EmailAuthenticationForm
+from app_users.models import User as CustomUser, Domain
+from app_users.admin_forms import EmailAuthenticationForm, DomainManagementForm
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from bitbio.countries import COUNTRIES
@@ -312,6 +312,23 @@ class BitBioAdminSite(AdminSite):
                         status="rejected"
                     ).count(),
                     "recent_users": CustomUser.objects.order_by("-created_at")[:5],
+                    "domain_count": Domain.objects.count(),
+                    "whitelisted_domains_count": sum(
+                        len(obj.whitelisted_domains or [])
+                        for obj in Domain.objects.all()
+                    ),
+                    "blocklisted_domains_count": sum(
+                        len(obj.blocklisted_domains or [])
+                        for obj in Domain.objects.all()
+                    ),
+                    "domain_management_url": (
+                        reverse(
+                            "admin:app_users_domain_change",
+                            args=[Domain.objects.first().id],
+                        )
+                        if Domain.objects.exists()
+                        else None
+                    ),
                 }
             )
         except Exception as e:
@@ -323,6 +340,9 @@ class BitBioAdminSite(AdminSite):
                     "approved_count": 0,
                     "rejected_count": 0,
                     "recent_users": [],
+                    "domain_count": 0,
+                    "whitelisted_domains_count": 0,
+                    "blocklisted_domains_count": 0,
                 }
             )
         return context
@@ -713,6 +733,153 @@ class CustomUserAdmin(admin.ModelAdmin):
             # Password is already handled by UserCreationForm
             pass
         super().save_model(request, obj, form, change)
+
+
+# Register Domain model with custom admin site
+@admin.register(Domain, site=admin_site)
+class DomainAdmin(admin.ModelAdmin):
+    """
+    Admin interface for Domain model
+    """
+
+    form = DomainManagementForm
+
+    list_display = (
+        "whitelisted_count",
+        "blocklisted_count",
+        "created_at",
+        "updated_at",
+    )
+    list_filter = ("created_at", "updated_at")
+    readonly_fields = ()
+
+    # Disable adding new records - only allow editing existing ones
+    def has_add_permission(self, request):
+        """Disable adding new domain records"""
+        return False
+
+    # Disable deleting records
+    def has_delete_permission(self, request, obj=None):
+        """Disable deleting domain records"""
+        return False
+
+    # Change the list view to show edit link directly
+    def changelist_view(self, request, extra_context=None):
+        """Override changelist to redirect to edit the first domain record"""
+        from django.shortcuts import redirect
+        from django.urls import reverse
+
+        # Get the first domain record
+        domain_obj = Domain.objects.first()
+        if domain_obj:
+            # Redirect to edit the existing record
+            return redirect(
+                reverse("admin:app_users_domain_change", args=[domain_obj.id])
+            )
+        else:
+            # If no record exists, create one and redirect to edit
+            domain_obj = Domain.objects.create(
+                whitelisted_domains=[], blocklisted_domains=[]
+            )
+            return redirect(
+                reverse("admin:app_users_domain_change", args=[domain_obj.id])
+            )
+
+    def whitelisted_count(self, obj):
+        """Display count of whitelisted domains"""
+        return len(obj.whitelisted_domains) if obj.whitelisted_domains else 0
+
+    whitelisted_count.short_description = "Whitelisted Domains"
+
+    def blocklisted_count(self, obj):
+        """Display count of blocklisted domains"""
+        return len(obj.blocklisted_domains) if obj.blocklisted_domains else 0
+
+    blocklisted_count.short_description = "Blocklisted Domains"
+
+    fieldsets = (
+        (
+            "Domain Management",
+            {
+                "fields": ("whitelisted_domains_input", "blocklisted_domains_input"),
+                "description": "Enter one domain per line. Empty lines will be ignored.",
+            },
+        ),
+    )
+
+    # Hide the original JSON fields from the form
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if form:
+            # Set the model dynamically
+            form.Meta.model = Domain
+            form.Meta.fields = [
+                "whitelisted_domains_input",
+                "blocklisted_domains_input",
+            ]
+        return form
+
+    def save_model(self, request, obj, form, change):
+        """Override save_model to create detailed change messages"""
+        if change and hasattr(form, "get_domain_changes"):
+            changes = form.get_domain_changes()
+
+            # Create detailed change message
+            change_messages = []
+
+            if changes.get("whitelisted_added"):
+                domains = ", ".join(changes["whitelisted_added"])
+                change_messages.append(f"Added to whitelist: {domains}")
+
+            if changes.get("whitelisted_removed"):
+                domains = ", ".join(changes["whitelisted_removed"])
+                change_messages.append(f"Removed from whitelist: {domains}")
+
+            if changes.get("blocklisted_added"):
+                domains = ", ".join(changes["blocklisted_added"])
+                change_messages.append(f"Added to blocklist: {domains}")
+
+            if changes.get("blocklisted_removed"):
+                domains = ", ".join(changes["blocklisted_removed"])
+                change_messages.append(f"Removed from blocklist: {domains}")
+
+            if change_messages:
+                # Store the detailed message for the history view
+                obj._change_message = "; ".join(change_messages)
+
+        super().save_model(request, obj, form, change)
+
+    def construct_change_message(self, request, form, formsets, add=False):
+        """Override to provide custom change messages"""
+        if add:
+            return "Domain management record created."
+
+        if hasattr(form, "get_domain_changes"):
+            changes = form.get_domain_changes()
+
+            # Create detailed change message
+            change_messages = []
+
+            if changes.get("whitelisted_added"):
+                domains = ", ".join(changes["whitelisted_added"])
+                change_messages.append(f"Added to whitelist: {domains}")
+
+            if changes.get("whitelisted_removed"):
+                domains = ", ".join(changes["whitelisted_removed"])
+                change_messages.append(f"Removed from whitelist: {domains}")
+
+            if changes.get("blocklisted_added"):
+                domains = ", ".join(changes["blocklisted_added"])
+                change_messages.append(f"Added to blocklist: {domains}")
+
+            if changes.get("blocklisted_removed"):
+                domains = ", ".join(changes["blocklisted_removed"])
+                change_messages.append(f"Removed from blocklist: {domains}")
+
+            if change_messages:
+                return "; ".join(change_messages)
+
+        return "Domain lists updated."
 
 
 # Override the default admin site

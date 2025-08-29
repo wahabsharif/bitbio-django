@@ -3,197 +3,52 @@ Domain management for user registration
 Handles whitelist for auto-approval and blocklist for rejection
 """
 
-# Whitelisted institutional domains - users from these domains get auto-approved
-WHITELISTED_DOMAINS = {
-    # Research institutions
-    "stanford.edu",
-    "harvard.edu",
-    "mit.edu",
-    "caltech.edu",
-    "yale.edu",
-    "princeton.edu",
-    "columbia.edu",
-    "uchicago.edu",
-    "upenn.edu",
-    "northwestern.edu",
-    "duke.edu",
-    "jhu.edu",  # Johns Hopkins
-    "cornell.edu",
-    "brown.edu",
-    "dartmouth.edu",
-    "vanderbilt.edu",
-    "rice.edu",
-    "emory.edu",
-    "georgetown.edu",
-    "tufts.edu",
-    "boston.edu",
-    "bu.edu",
-    "northeastern.edu",
-    # UC system
-    "berkeley.edu",
-    "ucla.edu",
-    "ucsd.edu",
-    "ucsf.edu",
-    "uci.edu",
-    "ucdavis.edu",
-    "ucsb.edu",
-    "ucsc.edu",
-    "ucr.edu",
-    "ucmerced.edu",
-    # International institutions
-    "ox.ac.uk",  # Oxford
-    "cam.ac.uk",  # Cambridge
-    "imperial.ac.uk",  # Imperial College London
-    "ed.ac.uk",  # University of Edinburgh
-    "manchester.ac.uk",
-    "kcl.ac.uk",  # King's College London
-    "utoronto.ca",  # University of Toronto
-    "mcgill.ca",  # McGill University
-    "ubc.ca",  # University of British Columbia
-    "ethz.ch",  # ETH Zurich
-    "epfl.ch",  # EPFL
-    "mpg.de",  # Max Planck Institute
-    "u-tokyo.ac.jp",  # University of Tokyo
-    "kyoto-u.ac.jp",  # Kyoto University
-    "nus.edu.sg",  # National University of Singapore
-    "ntu.edu.sg",  # Nanyang Technological University
-    "melbourne.edu.au",  # University of Melbourne
-    "sydney.edu.au",  # University of Sydney
-    # Government and research organizations
-    "nih.gov",  # National Institutes of Health
-    "cdc.gov",  # Centers for Disease Control
-    "fda.gov",  # Food and Drug Administration
-    "usda.gov",  # US Department of Agriculture
-    "doe.gov",  # Department of Energy
-    "nasa.gov",  # NASA
-    "nsf.gov",  # National Science Foundation
-    "noaa.gov",  # National Oceanic and Atmospheric Administration
-    # Major research institutes
-    "scripps.edu",  # Scripps Research
-    "cshl.edu",  # Cold Spring Harbor Laboratory
-    "broadinstitute.org",  # Broad Institute
-    "whitehead.mit.edu",  # Whitehead Institute
-    "rockefeller.edu",  # Rockefeller University
-    "mskcc.org",  # Memorial Sloan Kettering
-    "stjude.org",  # St. Jude Children's Research Hospital
-    "mayoclinic.org",  # Mayo Clinic
-    "clevelandclinic.org",  # Cleveland Clinic
-    "mdanderson.org",  # MD Anderson Cancer Center
-    # Pharmaceutical and biotech companies
-    "pfizer.com",
-    "novartis.com",
-    "roche.com",
-    "gsk.com",
-    "merck.com",
-    "abbvie.com",
-    "bms.com",  # Bristol Myers Squibb
-    "jnj.com",  # Johnson & Johnson
-    "lilly.com",  # Eli Lilly
-    "biogen.com",
-    "gilead.com",
-    "regeneron.com",
-    "amgen.com",
-    "genentech.com",
-    "celgene.com",
-    "illumina.com",
-    "thermofisher.com",
-    "bd.com",  # Becton Dickinson
-    "danaher.com",
-    "agilent.com",
-    "perkinelmer.com",
-    "waters.com",
-    "zeiss.com",
-    # Contract research organizations
-    "crl.com",  # Charles River Laboratories
-    "covance.com",
-    "pra-intl.com",  # PRA Health Sciences
-    "iqvia.com",
-    "parexel.com",
-    "ppdi.com",
-    "quintiles.com",
-    "wuxi.com",  # WuXi AppTec
-    "evotec.com",
-    "eurofins.com",
-    # Hospitals and medical centers
-    "mayo.edu",
-    "partners.org",  # Partners HealthCare
-    "nyp.org",  # NewYork-Presbyterian
-    "upmc.com",  # University of Pittsburgh Medical Center
-    "ucsf.edu",
-    "chop.edu",  # Children's Hospital of Philadelphia
-    "childrens.harvard.edu",  # Boston Children's Hospital
-    "seattlechildrens.org",
-    "sickkids.ca",  # The Hospital for Sick Children
-}
+from django.core.cache import cache
+from .models import Domain
 
-# Blocklisted personal email domains - registrations from these domains are rejected
-BLOCKLISTED_DOMAINS = {
-    # Major email providers
-    "gmail.com",
-    "yahoo.com",
-    "hotmail.com",
-    "outlook.com",
-    "live.com",
-    "msn.com",
-    "aol.com",
-    "icloud.com",
-    "me.com",
-    "mac.com",
-    # International email providers
-    "yandex.com",
-    "yandex.ru",
-    "mail.ru",
-    "qq.com",
-    "163.com",
-    "126.com",
-    "sina.com",
-    "sohu.com",
-    "naver.com",
-    "daum.net",
-    "hanmail.net",
-    "protonmail.com",
-    "tutanota.com",
-    "gmx.com",
-    "gmx.de",
-    "web.de",
-    "t-online.de",
-    "freenet.de",
-    "libero.it",
-    "virgilio.it",
-    "alice.it",
-    "tin.it",
-    "orange.fr",
-    "free.fr",
-    "wanadoo.fr",
-    "laposte.net",
-    "terra.com.br",
-    "uol.com.br",
-    "bol.com.br",
-    "ig.com.br",
-    "globo.com",
-    "yahoo.com.br",
-    "rediffmail.com",
-    "sify.com",
-    "vsnl.net",
-    "indiatimes.com",
-    # Temporary/disposable email services
-    "10minutemail.com",
-    "tempmail.org",
-    "guerrillamail.com",
-    "mailinator.com",
-    "throwaway.email",
-    "temp-mail.org",
-    "getnada.com",
-    "maildrop.cc",
-    "sharklasers.com",
-    "guerrillamailblock.com",
-    "pokemail.net",
-    "spam4.me",
-    "tempail.com",
-    "tempinbox.com",
-    "yopmail.com",
-    "mytemp.email",
-}
+
+def get_cached_domain_lists():
+    """
+    Get domain lists from cache or database
+    """
+    cache_key = "domain_management_lists"
+    cached_data = cache.get(cache_key)
+
+    if cached_data is None:
+        try:
+            domain_obj = Domain.get_or_create_domain_management()
+            cached_data = {
+                "whitelisted": set(domain_obj.whitelisted_domains or []),
+                "blocklisted": set(domain_obj.blocklisted_domains or []),
+            }
+            # Cache for 1 hour
+            cache.set(cache_key, cached_data, 3600)
+        except Exception:
+            # Fallback to empty sets if database is not available
+            cached_data = {"whitelisted": set(), "blocklisted": set()}
+
+    return cached_data
+
+
+def clear_domain_cache():
+    """
+    Clear the domain management cache
+    """
+    cache.delete("domain_management_lists")
+
+
+# Legacy constants for backward compatibility (deprecated)
+# These will be removed in future versions
+WHITELISTED_DOMAINS = set()
+BLOCKLISTED_DOMAINS = set()
+
+# Initialize legacy constants from database
+try:
+    domain_obj = Domain.get_or_create_domain_management()
+    WHITELISTED_DOMAINS = set(domain_obj.whitelisted_domains or [])
+    BLOCKLISTED_DOMAINS = set(domain_obj.blocklisted_domains or [])
+except Exception:
+    pass
 
 
 def get_email_domain(email):
@@ -223,7 +78,8 @@ def is_whitelisted_domain(email):
         bool: True if domain is whitelisted, False otherwise
     """
     domain = get_email_domain(email)
-    return domain in WHITELISTED_DOMAINS
+    domain_lists = get_cached_domain_lists()
+    return domain in domain_lists["whitelisted"]
 
 
 def is_blocklisted_domain(email):
@@ -237,7 +93,8 @@ def is_blocklisted_domain(email):
         bool: True if domain is blocklisted, False otherwise
     """
     domain = get_email_domain(email)
-    return domain in BLOCKLISTED_DOMAINS
+    domain_lists = get_cached_domain_lists()
+    return domain in domain_lists["blocklisted"]
 
 
 def get_domain_status(email):
@@ -282,3 +139,36 @@ def should_block_registration(email):
         bool: True if registration should be blocked, False otherwise
     """
     return is_blocklisted_domain(email)
+
+
+def update_domain_lists(whitelisted_domains=None, blocklisted_domains=None):
+    """
+    Update domain lists in the database and clear cache
+
+    Args:
+        whitelisted_domains (list): New list of whitelisted domains
+        blocklisted_domains (list): New list of blocklisted domains
+    """
+    try:
+        domain_obj = Domain.get_or_create_domain_management()
+
+        if whitelisted_domains is not None:
+            domain_obj.whitelisted_domains = whitelisted_domains
+
+        if blocklisted_domains is not None:
+            domain_obj.blocklisted_domains = blocklisted_domains
+
+        domain_obj.save()
+
+        # Clear cache to force refresh
+        clear_domain_cache()
+
+        # Update legacy constants
+        global WHITELISTED_DOMAINS, BLOCKLISTED_DOMAINS
+        WHITELISTED_DOMAINS = set(domain_obj.whitelisted_domains or [])
+        BLOCKLISTED_DOMAINS = set(domain_obj.blocklisted_domains or [])
+
+        return True
+    except Exception as e:
+        print(f"Error updating domain lists: {e}")
+        return False

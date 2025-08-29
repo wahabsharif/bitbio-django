@@ -145,3 +145,43 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_rejected(self):
         """Check if user is rejected"""
         return self.status == "rejected"
+
+
+class Domain(models.Model):
+    """
+    Model to store domain management data including whitelisted and blocklisted domains
+    """
+
+    whitelisted_domains = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of whitelisted domains for auto-approval",
+    )
+    blocklisted_domains = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of blocklisted domains that are rejected",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "domains"
+        verbose_name = "Domain"
+        verbose_name_plural = "Domains"
+
+    def __str__(self):
+        return f"Domain Management ({len(self.whitelisted_domains or [])} whitelisted, {len(self.blocklisted_domains or [])} blocklisted)"
+
+    @classmethod
+    def get_or_create_domain_management(cls):
+        """
+        Get or create the main domain management record
+        """
+        # Since we only need one record, get the first one or create it
+        domain_obj = cls.objects.first()
+        if not domain_obj:
+            domain_obj = cls.objects.create(
+                whitelisted_domains=[], blocklisted_domains=[]
+            )
+        return domain_obj

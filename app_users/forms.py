@@ -138,6 +138,16 @@ class UserRegistrationForm(forms.Form):
     def clean_email(self):
         """Custom validation for email field"""
         email = self.cleaned_data.get("email")
+
+        # Check if email is already registered
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                f"An account with this email address already exists. "
+                f"If you already have an account, please sign in instead. "
+                f"If you forgot your password, please contact support."
+            )
+
+        # Check if email domain is blocked
         if email and should_block_registration(email):
             domain = get_email_domain(email)
             raise forms.ValidationError(

@@ -65,69 +65,12 @@ async function fetchInitialData() {
         }
     } catch (err) {
         console.error("Failed to fetch data:", err);
-        // Use mock data for testing if fetch fails
-        useMockData();
     }
     
-    // Ensure dropdowns are populated even if fetch fails
-    if (cellTypes.length === 0) {
-        useMockData();
-    }
+
 }
 
-/**
- * Use mock data for testing if backend is not available
- */
-function useMockData() {
-    
-    // Mock cell types
-    cellTypes = [
-        { id: 1, name: 'iPSC', product_name: 'iPSC' },
-        { id: 2, name: 'Neurons', product_name: 'Neurons' },
-        { id: 3, name: 'Cardiomyocytes', product_name: 'Cardiomyocytes' }
-    ];
-    
-    // Mock culture vessels
-    cultureVessels = [
-        { id: 1, name: '96-well plate', plate_format: '96-well plate', surface_area: 0.32, media_volume: 0.1 },
-        { id: 2, name: '24-well plate', plate_format: '24-well plate', surface_area: 1.9, media_volume: 0.5 },
-        { id: 3, name: '6-well plate', plate_format: '6-well plate', surface_area: 9.6, media_volume: 2.0 }
-    ];
-    
-    // Try to populate dropdowns with retry mechanism
-    populateDropdownsWithRetry();
-}
 
-/**
- * Populate dropdowns with retry mechanism
- */
-function populateDropdownsWithRetry(maxRetries = 5) {
-    let retryCount = 0;
-    
-    const tryPopulate = () => {
-        
-        const cellTypeDropdown = document.getElementById('cell_type_dropdown');
-        const cultureVesselDropdown = document.getElementById('culture_vessel_dropdown');
-        
-        if (cellTypeDropdown && cultureVesselDropdown) {
-            populateCellTypes(cellTypes);
-            populateCultureVessels(cultureVessels);
-            return true;
-        } else {
-            retryCount++;
-            
-            if (retryCount < maxRetries) {
-                setTimeout(tryPopulate, 100 * retryCount); // Exponential backoff
-                return false;
-            } else {
-                console.error('Failed to populate dropdowns after maximum retries');
-                return false;
-            }
-        }
-    };
-    
-    tryPopulate();
-}
 
 /**
  * Initialize all components

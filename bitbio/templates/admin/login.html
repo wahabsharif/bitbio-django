@@ -305,14 +305,7 @@
     </div>
   </form>
 
-  {# 🔽 Moved error messages BELOW form #}
-  {% if form.non_field_errors %}
-    {% for error in form.non_field_errors %}
-    <p class="errornote">
-        {{ error }}
-    </p>
-    {% endfor %}
-  {% endif %}
+  {# Field-specific errors are displayed above each field, no general error message needed #}
 
   {% if user.is_authenticated %}
   <p class="errornote">
@@ -323,5 +316,35 @@
   </p>
   {% endif %}
 </div>
+
+<script>
+// Scroll to the first field with an error when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there are any field errors
+    const fieldErrors = document.querySelectorAll('.errorlist');
+    if (fieldErrors.length > 0) {
+        // Find the first field with an error and scroll to it
+        const firstErrorField = fieldErrors[0];
+        // Find the input field associated with this error
+        const formRow = firstErrorField.closest('.form-row');
+        if (formRow) {
+            const inputField = formRow.querySelector('input');
+            if (inputField) {
+                // Scroll to the input field with smooth animation
+                inputField.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+                
+                // Add a subtle highlight effect
+                inputField.style.borderColor = '#e74c3c';
+                setTimeout(() => {
+                    inputField.style.borderColor = '';
+                }, 2000);
+            }
+        }
+    }
+});
+</script>
 
 {% endblock %}

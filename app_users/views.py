@@ -76,8 +76,8 @@ def registration_view(request):
                 )
 
             return redirect("registration_success")
-        else:
-            messages.error(request, "Please correct the errors below.")
+        # Form has errors, but we don't need to add a general error message
+        # since field-specific errors will be displayed below each field
     else:
         form = UserRegistrationForm()
 

@@ -135,11 +135,9 @@ class UserRegistrationForm(forms.Form):
     in_vivo = forms.BooleanField(required=False)
     communications_agreement = forms.BooleanField(required=False)
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # Validate email domain
-        email = cleaned_data.get("email")
+    def clean_email(self):
+        """Custom validation for email field"""
+        email = self.cleaned_data.get("email")
         if email and should_block_registration(email):
             domain = get_email_domain(email)
             raise forms.ValidationError(
@@ -148,6 +146,10 @@ class UserRegistrationForm(forms.Form):
                 f"If you're affiliated with a research institution, university, "
                 f"or biotechnology company, please use your official email address."
             )
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
 
         # Validate passwords match
         password1 = cleaned_data.get("password1")

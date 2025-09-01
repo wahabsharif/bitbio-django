@@ -40,16 +40,20 @@ class EmailAuthenticationForm(AuthenticationForm):
             # Try to authenticate with email
             user = authenticate(username=email, password=password)
             if user is None:
-                raise forms.ValidationError(
+                # Add error to the email field instead of general form error
+                self.add_error(
+                    "username",
                     _(
                         "Please enter a correct email and password. Note that both fields may be case-sensitive."
-                    )
+                    ),
                 )
             elif not user.is_active:
-                raise forms.ValidationError(_("This account is inactive."))
+                # Add error to the email field
+                self.add_error("username", _("This account is inactive."))
             elif not (user.is_staff or user.is_superuser):
-                raise forms.ValidationError(
-                    _("You don't have permission to access the admin site.")
+                # Add error to the email field
+                self.add_error(
+                    "username", _("You don't have permission to access the admin site.")
                 )
             else:
                 self.user_cache = user

@@ -11,10 +11,14 @@
   h1,
   h3 {
     font-size: 32px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 42px;
     margin: 0;
   }
+
+.reg-container p{
+  margin-bottom: 15px !important;
+}
 
   .reg-container :nth-child(2) p>a {
     padding-bottom: 2px;
@@ -115,9 +119,8 @@
 
   .checkbox-wrapper {
     display: flex;
-    align-items: center;
+    align-items: start;
     gap: 8px;
-    margin: 2em 0;
   }
 
   .custom-checkbox {
@@ -207,7 +210,7 @@
 
 <section>
   <div class="reg-container">
-    <di
+    <div>
       <h1>Register for an account</h1>
     </div>
     <div>
@@ -404,7 +407,7 @@
       </div>
       <div>
         <label for="use_intent">How will you use our products?*</label>
-        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+        <div class="checkbox-wrapper">
           <label class="custom-checkbox">
             {{ form.in_vitro }}
             <span class="checkmark"></span>
@@ -416,7 +419,7 @@
         <div class="field-error">{{ form.in_vitro.errors.0 }}</div>
         {% endif %}
 
-        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+        <div class="checkbox-wrapper">
           <label class="custom-checkbox">
             {{ form.in_vivo }}
             <span class="checkmark"></span>
@@ -434,14 +437,14 @@
         <h3>Consent</h3>
       </div>
       <div>
-        <label for="use_intent">bit.bio is committed to protecting and respecting your privacy, and
+        <p>bit.bio is committed to protecting and respecting your privacy, and
           we’ll only use your personal information to administer your account
           and to provide the products and services you requested from us. From
           time to time, we would like to contact you about our products and
           services, as well as other content that may be of interest to you. If
           you consent to us contacting you for this purpose, please tick below
-          to say how you would like us to contact you:</label>
-        <div class="checkbox-wrapper" style="margin: 1rem 0 !important">
+          to say how you would like us to contact you:</p>
+        <div class="checkbox-wrapper">
           <label class="custom-checkbox">
             {{ form.communications_agreement }}
             <span class="checkmark"></span>

@@ -29,16 +29,11 @@ def home(request):
 def account(request):
     """Handle user login"""
     if request.method == "POST":
-        print(f"DEBUG: POST request received with data: {request.POST}")
         form = UserLoginForm(request.POST)
-        print(f"DEBUG: Form is valid: {form.is_valid()}")
         if form.is_valid():
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
-            print(f"DEBUG: Form data - Email: {email}, Password: {password}")
-            print(f"DEBUG: Attempting to authenticate user: {email}")
             user = authenticate(request, username=email, password=password)
-            print(f"DEBUG: Authentication result: {user}")
 
             if user is not None:
                 if user.is_active:
@@ -46,9 +41,6 @@ def account(request):
                     if user.status == "approved":
                         login(request, user)
                         messages.success(request, f"Welcome back, {user.first_name}!")
-                        print(
-                            f"DEBUG: User {user.email} logged in successfully, redirecting to calculator"
-                        )
                         return redirect("calculator:calculator")
                     elif user.status == "pending":
                         messages.warning(
@@ -95,8 +87,6 @@ def account(request):
                     # Email not found
                     messages.error(request, "No account found with that email.")
                     form.add_error("email", "No account found with that email.")
-        else:
-            print(f"DEBUG: Form errors: {form.errors}")
     else:
         form = UserLoginForm()
 
@@ -117,12 +107,7 @@ def registration(request):
             # Now check if user should be auto-approved based on email domain
             auto_approve = should_auto_approve(user.email)
 
-            # Debug output to understand the flow
-            print(
-                f"DEBUG Registration: Email='{user.email}', Auto approve={auto_approve}"
-            )
             domain = get_email_domain(user.email)
-            print(f"DEBUG Registration: Domain='{domain}'")
 
             # Clear any existing messages before adding registration message
             storage = messages.get_messages(request)

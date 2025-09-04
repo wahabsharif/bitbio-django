@@ -170,5 +170,4 @@ def update_domain_lists(whitelisted_domains=None, blocklisted_domains=None):
 
         return True
     except Exception as e:
-        print(f"Error updating domain lists: {e}")
         return False

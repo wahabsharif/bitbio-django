@@ -46,14 +46,9 @@ def registration_view(request):
             # Now check if user should be auto-approved based on email domain
             auto_approve = should_auto_approve(user.email)
 
-            # Debug output to understand the flow
-            print(
-                f"DEBUG Registration: Email='{user.email}', Auto approve={auto_approve}"
-            )
             from .domain_management import get_email_domain
 
             domain = get_email_domain(user.email)
-            print(f"DEBUG Registration: Domain='{domain}'")
 
             if auto_approve:
                 # Update the user status and save again

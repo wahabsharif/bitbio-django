@@ -23,18 +23,15 @@ class PostDevelopCommand(develop):
 
 def _install_playwright():
     """Install Playwright browser and dependencies."""
-    print("🎭 Installing Playwright browser and dependencies...")
 
     try:
         # Install Playwright browser
         subprocess.check_call(
             [sys.executable, "-m", "playwright", "install", "chromium"]
         )
-        print("✅ Playwright chromium browser installed successfully!")
 
         # Install system dependencies
         subprocess.check_call([sys.executable, "-m", "playwright", "install-deps"])
-        print("✅ Playwright system dependencies installed successfully!")
 
     except subprocess.CalledProcessError as e:
         print(f"❌ Error installing Playwright: {e}")

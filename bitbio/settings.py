@@ -41,10 +41,6 @@ if allowed_hosts_env:
 else:
     ALLOWED_HOSTS = ["member.bit.bio", "localhost", "127.0.0.1"]
 
-# Debug logging for ALLOWED_HOSTS
-print(f"DEBUG: ALLOWED_HOSTS = {ALLOWED_HOSTS}")
-print(f"DEBUG: ALLOWED_HOSTS_ENV = '{allowed_hosts_env}'")
-
 
 # Application definition
 

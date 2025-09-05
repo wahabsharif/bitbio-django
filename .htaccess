@@ -1,0 +1,18 @@
+# Apache configuration for Django static files
+# This file should be placed in your public_html directory
+
+# Enable rewrite engine
+RewriteEngine On
+
+# Serve static files directly from staticfiles directory
+RewriteCond %{REQUEST_URI} ^/static/(.*)$
+RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
+
+# Serve media files directly (if you have any)
+RewriteCond %{REQUEST_URI} ^/media/(.*)$
+RewriteRule ^media/(.*)$ /media/$1 [L]
+
+# Pass all other requests to Django
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /passenger_wsgi.py [QSA,L]

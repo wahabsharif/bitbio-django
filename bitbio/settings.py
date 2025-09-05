@@ -32,11 +32,18 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = (
-    os.getenv("ALLOWED_HOSTS", "member.bit.bio,localhost,127.0.0.1").split(",")
-    if os.getenv("ALLOWED_HOSTS")
-    else ["member.bit.bio", "localhost", "127.0.0.1"]
-)
+# ALLOWED_HOSTS setting
+allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "").strip()
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [
+        host.strip() for host in allowed_hosts_env.split(",") if host.strip()
+    ]
+else:
+    ALLOWED_HOSTS = ["member.bit.bio", "localhost", "127.0.0.1"]
+
+# Debug logging for ALLOWED_HOSTS
+print(f"DEBUG: ALLOWED_HOSTS = {ALLOWED_HOSTS}")
+print(f"DEBUG: ALLOWED_HOSTS_ENV = '{allowed_hosts_env}'")
 
 
 # Application definition

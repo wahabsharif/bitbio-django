@@ -202,6 +202,10 @@ CSRF_COOKIE_SECURE = (
 CSRF_COOKIE_HTTPONLY = True
 
 # Logging configuration
+# Ensure logs directory exists
+logs_dir = BASE_DIR / "logs"
+logs_dir.mkdir(exist_ok=True)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -219,13 +223,13 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "django.log",
+            "filename": logs_dir / "django.log",
             "formatter": "verbose",
         },
         "passenger_file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "passenger.log",
+            "filename": logs_dir / "passenger.log",
             "formatter": "verbose",
         },
         "console": {

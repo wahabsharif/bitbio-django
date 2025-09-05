@@ -5,11 +5,11 @@
 RewriteEngine On
 
 # Serve static files directly from staticfiles directory
-RewriteCond %{REQUEST_URI} ^/static/(.*)$
+RewriteCond %{REQUEST_URI} ^/static/
 RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
 
 # Serve media files directly (if you have any)
-RewriteCond %{REQUEST_URI} ^/media/(.*)$
+RewriteCond %{REQUEST_URI} ^/media/
 RewriteRule ^media/(.*)$ /media/$1 [L]
 
 # Pass all other requests to Django

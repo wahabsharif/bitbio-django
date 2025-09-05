@@ -50,14 +50,14 @@ setup(
     description="Django project with Playwright PDF generation",
     packages=find_packages(),
     install_requires=[
-        "asgiref==3.9.1",
-        "Django==5.2.4",
+        "asgiref==3.7.2",
+        "Django==4.2.16",
         "mysqlclient==2.2.7",
         "sqlparse==0.5.3",
         "tzdata==2025.2",
         "openpyxl==3.1.5",
         "playwright==1.48.0",
-        "Pillow==10.4.0",
+        "Pillow==10.0.1",
     ],
     cmdclass={
         "install": PostInstallCommand,

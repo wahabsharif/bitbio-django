@@ -57,7 +57,7 @@ setup(
         "tzdata==2025.2",
         "openpyxl==3.1.5",
         "playwright==1.48.0",
-        "Pillow==10.0.1",
+        "Pillow>=10.2.0",
     ],
     cmdclass={
         "install": PostInstallCommand,

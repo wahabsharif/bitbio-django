@@ -33,7 +33,9 @@ SECRET_KEY = os.getenv(
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = (
-    os.getenv("ALLOWED_HOSTS", "").split(",") if os.getenv("ALLOWED_HOSTS") else []
+    os.getenv("ALLOWED_HOSTS", "member.bit.bio,localhost,127.0.0.1").split(",")
+    if os.getenv("ALLOWED_HOSTS")
+    else ["member.bit.bio", "localhost", "127.0.0.1"]
 )
 
 

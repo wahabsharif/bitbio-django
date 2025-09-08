@@ -115,6 +115,54 @@ python manage.py runserver
 
 The application will be available at `http://127.0.0.1:8000/`
 
+## 🚀 Production Setup
+
+For production deployment, follow these steps:
+
+### Step 1: Create Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+### Step 2: Activate Virtual Environment
+
+```bash
+# On Windows
+venv\Scripts\activate
+# On macOS/Linux
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Run Database Migrations
+
+```bash
+python manage.py migrate
+```
+
+### Step 5: Collect Static Files
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+### Production Configuration
+
+Before deploying to production, ensure you have:
+
+1. Set `DEBUG = False` in `bitbio/settings.py`
+2. Configure production database credentials
+3. Set a secure `SECRET_KEY`
+4. Configure `ALLOWED_HOSTS` for your domain
+5. Set up proper static file serving (Apache/Nginx)
+6. Configure HTTPS/SSL certificates
+
 ## 🔧 Configuration
 
 ### Environment Variables

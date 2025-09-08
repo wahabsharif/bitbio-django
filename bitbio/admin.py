@@ -721,7 +721,10 @@ class CustomUserAdmin(admin.ModelAdmin):
     reject_users.short_description = "Reject selected users"
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related()
+        """Exclude the currently logged-in user from the queryset"""
+        queryset = super().get_queryset(request).select_related()
+        # Exclude the currently logged-in user from the list
+        return queryset.exclude(id=request.user.id)
 
     def save_model(self, request, obj, form, change):
         if change:  # Existing user being updated

@@ -593,8 +593,10 @@ class DownloadPDFView(View):
                 response["Content-Disposition"] = f'attachment; filename="{filename}"'
                 return response
 
-            except ImportError:
-                logger.warning("WeasyPrint not available, trying Playwright")
+            except ImportError as weasyprint_import_error:
+                logger.warning(
+                    f"WeasyPrint not available: {str(weasyprint_import_error)}, trying Playwright"
+                )
                 # Fall back to Playwright
                 pass
             except Exception as weasyprint_error:
@@ -606,9 +608,12 @@ class DownloadPDFView(View):
 
             # Try Playwright as fallback
             try:
+                logger.info("Trying Playwright as fallback")
                 # Lazy import Playwright to avoid startup issues
                 try:
                     from playwright.sync_api import sync_playwright
+
+                    logger.info("Playwright imported successfully")
                 except ImportError as import_error:
                     logger.warning(
                         f"Playwright not available: {str(import_error)}, falling back to HTML"
@@ -660,9 +665,23 @@ class DownloadPDFView(View):
                     f"Playwright PDF generation failed: {str(pdf_error)}, falling back to HTML"
                 )
                 # Final fallback: return HTML as plain text
-                response = HttpResponse(html, content_type="text/html")
+                html_filename = filename.replace(".pdf", ".html")
+                logger.info(f"Returning HTML file: {html_filename}")
+
+                # Add a note to the HTML about printing to PDF
+                html_with_note = html.replace(
+                    "<body>",
+                    """<body>
+                    <div style="background: #e3f2fd; border: 1px solid #2196f3; padding: 10px; margin: 10px; border-radius: 4px; text-align: center;">
+                        <p><strong>Note:</strong> This is an HTML version of your calculation results. You can print this page to PDF using your browser's print function (Ctrl+P or Cmd+P) and select "Save as PDF" as the destination.</p>
+                    </div>""",
+                )
+
+                response = HttpResponse(
+                    html_with_note, content_type="text/html; charset=utf-8"
+                )
                 response["Content-Disposition"] = (
-                    f'attachment; filename="{filename.replace(".pdf", ".html")}"'
+                    f'attachment; filename="{html_filename}"'
                 )
                 return response
         except Exception as e:
@@ -692,7 +711,9 @@ class DownloadPDFView(View):
                 </body>
                 </html>
                 """
-                response = HttpResponse(simple_html, content_type="text/html")
+                response = HttpResponse(
+                    simple_html, content_type="text/html; charset=utf-8"
+                )
                 response["Content-Disposition"] = (
                     f'attachment; filename="calculator-results.html"'
                 )

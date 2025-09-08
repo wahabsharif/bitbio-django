@@ -280,6 +280,17 @@ class BitBioAdminSite(AdminSite):
 
         return super().login(request, extra_context)
 
+    def logout(self, request, extra_context=None):
+        """
+        Custom logout view that redirects to main login page instead of showing logout page.
+        """
+        from django.contrib.auth import logout
+        from django.shortcuts import redirect
+
+        logout(request)
+        # Redirect to main login page instead of showing Django's logout page
+        return redirect("/admin")
+
     def has_module_permission(self, request):
         """
         Return True if the given HttpRequest has permission to view

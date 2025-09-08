@@ -56,7 +56,10 @@ setup(
         "sqlparse==0.5.3",
         "tzdata==2025.2",
         "openpyxl==3.1.5",
-        "playwright==1.48.0",
+        "playwright>=1.40.0",
+        "greenlet>=3.0.0",
+        "pyee>=11.0.0",
+        "websockets>=11.0.0",
         "Pillow>=10.2.0",
     ],
     cmdclass={

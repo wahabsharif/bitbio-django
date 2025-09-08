@@ -52,7 +52,7 @@ setup(
     install_requires=[
         "asgiref==3.7.2",
         "Django==4.2.16",
-        "mysqlclient==2.2.7",
+        "PyMySQL==1.1.1",
         "sqlparse==0.5.3",
         "tzdata==2025.2",
         "openpyxl==3.1.5",

@@ -537,18 +537,83 @@ class DownloadPDFView(View):
                     status=500,
                 )
 
-            # Create PDF with Playwright (perfect CSS support)
+            # Try WeasyPrint first (more reliable in production environments)
+            try:
+                from weasyprint import HTML, CSS
+                from weasyprint.text.fonts import FontConfiguration
+
+                logger.info("Using WeasyPrint for PDF generation")
+
+                # Create a simplified HTML version for weasyprint
+                simple_html = html.replace(
+                    'class="pdf-container"',
+                    'class="pdf-container" style="font-family: Arial, sans-serif; max-width: 100%;"',
+                )
+
+                # Generate PDF with weasyprint
+                font_config = FontConfiguration()
+                pdf_bytes = HTML(string=simple_html).write_pdf(
+                    stylesheets=[
+                        CSS(
+                            string="""
+                        @page {
+                            size: A4 landscape;
+                            margin: 10mm;
+                        }
+                        body {
+                            font-family: Arial, sans-serif;
+                            font-size: 12px;
+                            line-height: 1.4;
+                        }
+                        .pdf-container {
+                            max-width: 100%;
+                            margin: 0 auto;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 10px 0;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                        }
+                    """
+                        )
+                    ],
+                    font_config=font_config,
+                )
+
+                response = HttpResponse(pdf_bytes, content_type="application/pdf")
+                response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                return response
+
+            except ImportError:
+                logger.warning("WeasyPrint not available, trying Playwright")
+                # Fall back to Playwright
+                pass
+            except Exception as weasyprint_error:
+                logger.warning(
+                    f"WeasyPrint failed: {str(weasyprint_error)}, trying Playwright"
+                )
+                # Fall back to Playwright
+                pass
+
+            # Try Playwright as fallback
             try:
                 # Lazy import Playwright to avoid startup issues
                 try:
                     from playwright.sync_api import sync_playwright
                 except ImportError as import_error:
-                    return JsonResponse(
-                        {
-                            "error": f"Playwright is not available: {str(import_error)}. Please install it with: pip install playwright && python -m playwright install chromium"
-                        },
-                        status=500,
+                    logger.warning(
+                        f"Playwright not available: {str(import_error)}, falling back to HTML"
                     )
+                    raise Exception("Playwright not available")
 
                 # Generate PDF with Playwright (production-ready)
                 with sync_playwright() as p:
@@ -591,84 +656,53 @@ class DownloadPDFView(View):
                 return response
 
             except Exception as pdf_error:
-                logger.error(f"Playwright PDF generation failed: {str(pdf_error)}")
-                # Try fallback to weasyprint for shared hosting environments
-                try:
-                    from weasyprint import HTML, CSS
-                    from weasyprint.text.fonts import FontConfiguration
-
-                    # Create a simplified HTML version for weasyprint
-                    # Remove complex CSS that might not work with weasyprint
-                    simple_html = html.replace(
-                        'class="pdf-container"',
-                        'class="pdf-container" style="font-family: Arial, sans-serif; max-width: 100%;"',
-                    )
-
-                    # Generate PDF with weasyprint
-                    font_config = FontConfiguration()
-                    pdf_bytes = HTML(string=simple_html).write_pdf(
-                        stylesheets=[
-                            CSS(
-                                string="""
-                            @page {
-                                size: A4 landscape;
-                                margin: 10mm;
-                            }
-                            body {
-                                font-family: Arial, sans-serif;
-                                font-size: 12px;
-                                line-height: 1.4;
-                            }
-                            .pdf-container {
-                                max-width: 100%;
-                                margin: 0 auto;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                margin: 10px 0;
-                            }
-                            th, td {
-                                border: 1px solid #ddd;
-                                padding: 8px;
-                                text-align: left;
-                            }
-                            th {
-                                background-color: #f2f2f2;
-                                font-weight: bold;
-                            }
-                        """
-                            )
-                        ],
-                        font_config=font_config,
-                    )
-
-                    response = HttpResponse(pdf_bytes, content_type="application/pdf")
-                    response["Content-Disposition"] = (
-                        f'attachment; filename="{filename}"'
-                    )
-                    return response
-
-                except ImportError:
-                    logger.error("WeasyPrint not available, falling back to HTML")
-                    # Final fallback: return HTML as plain text
-                    response = HttpResponse(html, content_type="text/html")
-                    response["Content-Disposition"] = (
-                        f'attachment; filename="{filename.replace(".pdf", ".html")}"'
-                    )
-                    return response
-                except Exception as weasyprint_error:
-                    logger.error(
-                        f"WeasyPrint PDF generation failed: {str(weasyprint_error)}"
-                    )
-                    # Final fallback: return HTML as plain text
-                    response = HttpResponse(html, content_type="text/html")
-                    response["Content-Disposition"] = (
-                        f'attachment; filename="{filename.replace(".pdf", ".html")}"'
-                    )
-                    return response
+                logger.warning(
+                    f"Playwright PDF generation failed: {str(pdf_error)}, falling back to HTML"
+                )
+                # Final fallback: return HTML as plain text
+                response = HttpResponse(html, content_type="text/html")
+                response["Content-Disposition"] = (
+                    f'attachment; filename="{filename.replace(".pdf", ".html")}"'
+                )
+                return response
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            logger.error(
+                f"PDF generation completely failed: {str(e)}, returning HTML fallback"
+            )
+            # Ultimate fallback: return a simple HTML response
+            try:
+                # Create a minimal HTML response
+                simple_html = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Cell Seeding Calculator Results</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                        h1 {{ color: #333; }}
+                        .error {{ color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 4px; }}
+                    </style>
+                </head>
+                <body>
+                    <h1>Cell Seeding Calculator Results</h1>
+                    <div class="error">
+                        <p>PDF generation is temporarily unavailable. Please try again later or contact support.</p>
+                        <p>Error: {str(e)}</p>
+                    </div>
+                </body>
+                </html>
+                """
+                response = HttpResponse(simple_html, content_type="text/html")
+                response["Content-Disposition"] = (
+                    f'attachment; filename="calculator-results.html"'
+                )
+                return response
+            except Exception:
+                # If even the fallback fails, return a basic error
+                return JsonResponse(
+                    {"error": "PDF generation failed. Please try again later."},
+                    status=500,
+                )
 
 
 @method_decorator(csrf_exempt, name="dispatch")

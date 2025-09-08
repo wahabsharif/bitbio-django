@@ -43,7 +43,13 @@ if allowed_hosts_env:
         host.strip() for host in allowed_hosts_env.split(",") if host.strip()
     ]
 else:
-    ALLOWED_HOSTS = ["member.bit.bio", "rdg.capture.dev.workplaceservicing.co.uk", "localhost", "127.0.0.1"]
+    ALLOWED_HOSTS = [
+        "member.bit.bio",
+        "rdg.capture.dev.workplaceservicing.co.uk",
+        "fs.capture.dev.workplaceservicing.co.uk",
+        "localhost",
+        "127.0.0.1",
+    ]
 
 
 # Application definition
@@ -210,6 +216,8 @@ CSRF_COOKIE_SECURE = (
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for AJAX requests
 CSRF_TRUSTED_ORIGINS = [
     "https://member.bit.bio",
+    "https://fs.capture.dev.workplaceservicing.co.uk",
+    "https://rdg.capture.dev.workplaceservicing.co.uk",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]

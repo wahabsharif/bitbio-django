@@ -827,9 +827,10 @@ class DownloadPDFView(View):
                     "details": str(e) if settings.DEBUG else None,
                 },
                 status=500,
-            ) @ method_decorator(csrf_exempt, name="dispatch")
+            )
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class CalculateAPIView(View):
     """Server-side calculation endpoint to mirror client-side calculator.js logic"""
 

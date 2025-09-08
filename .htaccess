@@ -1,6 +1,3 @@
-# .htaccess file for BitBio Django application
-# This file should be placed in /home/memberbit/public_html/
-
 # Enable Passenger
 PassengerEnabled on
 PassengerAppRoot /home/memberbit/public_html
@@ -19,18 +16,10 @@ RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
 RewriteCond %{REQUEST_URI} ^/media/
 RewriteRule ^media/(.*)$ /media/$1 [L]
 
-# Explicitly handle Django URLs
-RewriteRule ^admin/.*$ passenger_wsgi.py [QSA,L]
-RewriteRule ^registration/.*$ passenger_wsgi.py [QSA,L]
-RewriteRule ^home/.*$ passenger_wsgi.py [QSA,L]
-RewriteRule ^logout/.*$ passenger_wsgi.py [QSA,L]
-RewriteRule ^users/.*$ passenger_wsgi.py [QSA,L]
-RewriteRule ^calculator/.*$ passenger_wsgi.py [QSA,L]
-
-# Pass all other requests to Django via Passenger
+# Pass everything else to Passenger (Django)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ passenger_wsgi.py [QSA,L]
+RewriteRule ^.*$ - [L]
 
 # Security headers
 Header always set X-Content-Type-Options nosniff

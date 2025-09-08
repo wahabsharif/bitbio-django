@@ -373,8 +373,19 @@ class DownloadExcelView(View):
 class DownloadPDFView(View):
     """Handle PDF download"""
 
+    def get(self, request):
+        """Handle GET requests by redirecting to calculator page"""
+        from django.shortcuts import redirect
+
+        return redirect("calculator:calculator")
+
     def post(self, request):
         try:
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.info("PDF download request started")
+
             data = request.POST or {}
 
             # Helpers
@@ -518,7 +529,13 @@ class DownloadPDFView(View):
             }
 
             # Render HTML template
-            html = render_to_string("pdf_download.html", context)
+            try:
+                html = render_to_string("pdf_download.html", context)
+            except Exception as template_error:
+                return JsonResponse(
+                    {"error": f"Template rendering failed: {str(template_error)}"},
+                    status=500,
+                )
 
             # Create PDF with Playwright (perfect CSS support)
             try:
@@ -574,6 +591,7 @@ class DownloadPDFView(View):
                 return response
 
             except Exception as pdf_error:
+                logger.error(f"Playwright PDF generation failed: {str(pdf_error)}")
                 # Try fallback to weasyprint for shared hosting environments
                 try:
                     from weasyprint import HTML, CSS
@@ -632,23 +650,23 @@ class DownloadPDFView(View):
                     return response
 
                 except ImportError:
-                    error_msg = "PDF generation failed: Neither Playwright nor WeasyPrint is available. Please install weasyprint: pip install weasyprint"
-                    return JsonResponse({"error": error_msg}, status=500)
+                    logger.error("WeasyPrint not available, falling back to HTML")
+                    # Final fallback: return HTML as plain text
+                    response = HttpResponse(html, content_type="text/html")
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename.replace(".pdf", ".html")}"'
+                    )
+                    return response
                 except Exception as weasyprint_error:
-                    # Enhanced error handling for production
-                    error_msg = f"PDF generation failed: {str(pdf_error)}"
-
-                    # Specific error handling for production issues
-                    if "Browser closed" in str(pdf_error):
-                        error_msg += " - Browser process terminated unexpectedly. WeasyPrint fallback also failed."
-                    elif "timeout" in str(pdf_error).lower():
-                        error_msg += " - PDF generation timed out. WeasyPrint fallback also failed."
-                    elif "No such file or directory" in str(pdf_error):
-                        error_msg += " - Chromium browser not found. WeasyPrint fallback also failed."
-                    elif "Permission denied" in str(pdf_error):
-                        error_msg += " - Browser permission error. WeasyPrint fallback also failed."
-
-                    return JsonResponse({"error": error_msg}, status=500)
+                    logger.error(
+                        f"WeasyPrint PDF generation failed: {str(weasyprint_error)}"
+                    )
+                    # Final fallback: return HTML as plain text
+                    response = HttpResponse(html, content_type="text/html")
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename.replace(".pdf", ".html")}"'
+                    )
+                    return response
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

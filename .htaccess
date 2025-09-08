@@ -1,17 +1,21 @@
 # .htaccess file for BitBio Django application
-# This file provides an alternative configuration for Apache
+# This file should be placed in /home/memberbit/public_html/
 
 # Enable Passenger
 PassengerEnabled on
+PassengerAppRoot /home/memberbit/public_html
 PassengerAppType wsgi
 PassengerStartupFile passenger_wsgi.py
+PassengerBaseURI /
 
 # Handle static files
 RewriteEngine On
+
+# Serve static files directly
 RewriteCond %{REQUEST_URI} ^/static/
 RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
 
-# Handle media files
+# Serve media files directly
 RewriteCond %{REQUEST_URI} ^/media/
 RewriteRule ^media/(.*)$ /media/$1 [L]
 
@@ -19,3 +23,33 @@ RewriteRule ^media/(.*)$ /media/$1 [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ passenger_wsgi.py/$1 [QSA,L]
+
+# Security headers
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set X-XSS-Protection "1; mode=block"
+
+# Prevent access to sensitive files
+<Files "*.py">
+    Require all denied
+</Files>
+<Files "*.pyc">
+    Require all denied
+</Files>
+<Files "*.log">
+    Require all denied
+</Files>
+<Files ".env">
+    Require all denied
+</Files>
+<Files "requirements.txt">
+    Require all denied
+</Files>
+<Files "manage.py">
+    Require all denied
+</Files>
+
+# Allow passenger_wsgi.py
+<Files "passenger_wsgi.py">
+    Require all granted
+</Files>

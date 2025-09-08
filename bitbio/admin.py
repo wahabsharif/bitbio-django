@@ -349,7 +349,7 @@ class BitBioAdminSite(AdminSite):
 
 
 # Create custom admin site instance
-admin_site = BitBioAdminSite(name="bitbio_admin")
+admin_site = BitBioAdminSite(name="admin")
 
 
 # Register models with custom admin site

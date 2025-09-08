@@ -22,6 +22,7 @@ from .admin import admin_site
 urlpatterns = [
     path("admin/", admin_site.urls),
     path("", views.account, name="account"),
+    path("home/", views.home, name="home"),
     path("logout/", views.logout_view, name="logout"),
     path("registration/", views.registration, name="registration"),
     path(

@@ -1,7 +1,5 @@
--e .
-
 # ======================================================
-#             Core dependencies (also listed in setup.py)
+#             Core dependencies
 # ======================================================
 
 setuptools>=75.0.0
@@ -29,3 +27,6 @@ websockets>=13.0.0
 Pillow>=10.4.0
 
 python-dotenv>=1.0.1
+
+# Production WSGI server
+gunicorn>=21.2.0

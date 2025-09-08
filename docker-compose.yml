@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: bitbio_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: bit_bio_django
+      MYSQL_USER: bitbio_user
+      MYSQL_PASSWORD: bitbio_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./products.sql:/docker-entrypoint-initdb.d/products.sql
+      - ./culture_vessels.sql:/docker-entrypoint-initdb.d/culture_vessels.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - bitbio_network
+
+  web:
+    build: .
+    container_name: bitbio_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=bit_bio_django
+      - DB_USER=bitbio_user
+      - DB_PASSWORD=bitbio_password
+      - DB_HOST=db
+      - DB_PORT=3306
+      - SECRET_KEY=your-secret-key-here-change-in-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+    networks:
+      - bitbio_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
+
+networks:
+  bitbio_network:
+    driver: bridge

@@ -591,7 +591,7 @@ class DownloadPDFView(View):
                                     f"Firefox launch failed: {firefox_error}"
                                 )
                                 raise Exception(
-                                    "No browser available. Please install browser dependencies with: playwright install-deps"
+                                    "No browser available. Please install browser dependencies with: playwright"
                                 )
 
                         if not browser:

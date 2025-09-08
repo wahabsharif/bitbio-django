@@ -31,13 +31,12 @@ def _install_playwright():
         )
 
         # Install system dependencies
-        subprocess.check_call([sys.executable, "-m", "playwright", "install-deps"])
+        subprocess.check_call([sys.executable, "-m", "playwright"])
 
     except subprocess.CalledProcessError as e:
         print(f"❌ Error installing Playwright: {e}")
         print("⚠️  You may need to run these commands manually:")
         print("   python -m playwright install chromium")
-        print("   python -m playwright install-deps")
 
 
 # Monkey patch the install methods to include Playwright installation

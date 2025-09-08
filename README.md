@@ -69,7 +69,7 @@ pip install -r requirements.txt
 
 ```bash
 python -m playwright install chromium
-python -m playwright install-deps
+python -m playwright
 ```
 
 ### Step 4: Database Setup

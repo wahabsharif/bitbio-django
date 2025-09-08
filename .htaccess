@@ -1,18 +1,21 @@
-# Apache configuration for Django static files
-# This file should be placed in your public_html directory
+# .htaccess file for BitBio Django application
+# This file provides an alternative configuration for Apache
 
-# Enable rewrite engine
+# Enable Passenger
+PassengerEnabled on
+PassengerAppType wsgi
+PassengerStartupFile passenger_wsgi.py
+
+# Handle static files
 RewriteEngine On
-
-# Serve static files directly from staticfiles directory
 RewriteCond %{REQUEST_URI} ^/static/
 RewriteRule ^static/(.*)$ /staticfiles/$1 [L]
 
-# Serve media files directly (if you have any)
+# Handle media files
 RewriteCond %{REQUEST_URI} ^/media/
 RewriteRule ^media/(.*)$ /media/$1 [L]
 
-# Pass all other requests to Django
+# Pass all other requests to Django via Passenger
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /passenger_wsgi.py [QSA,L]
+RewriteRule ^(.*)$ passenger_wsgi.py/$1 [QSA,L]

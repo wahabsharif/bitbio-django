@@ -43,7 +43,7 @@ if allowed_hosts_env:
         host.strip() for host in allowed_hosts_env.split(",") if host.strip()
     ]
 else:
-    ALLOWED_HOSTS = ["member.bit.bio", "localhost", "127.0.0.1"]
+    ALLOWED_HOSTS = ["member.bit.bio", "rdg.capture.dev.workplaceservicing.co.uk", "localhost", "127.0.0.1"]
 
 
 # Application definition

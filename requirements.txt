@@ -20,6 +20,8 @@ openpyxl==3.1.5
 
 playwright>=1.40.0
 
+weasyprint>=62.0
+
 greenlet>=3.0.0
 
 pyee>=11.0.0

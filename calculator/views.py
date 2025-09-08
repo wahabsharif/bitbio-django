@@ -574,26 +574,81 @@ class DownloadPDFView(View):
                 return response
 
             except Exception as pdf_error:
-                # Enhanced error handling for production
-                error_msg = f"PDF generation failed: {str(pdf_error)}"
+                # Try fallback to weasyprint for shared hosting environments
+                try:
+                    from weasyprint import HTML, CSS
+                    from weasyprint.text.fonts import FontConfiguration
 
-                # Specific error handling for production issues
-                if "Browser closed" in str(pdf_error):
-                    error_msg += (
-                        " - Browser process terminated unexpectedly. Please try again."
+                    # Create a simplified HTML version for weasyprint
+                    # Remove complex CSS that might not work with weasyprint
+                    simple_html = html.replace(
+                        'class="pdf-container"',
+                        'class="pdf-container" style="font-family: Arial, sans-serif; max-width: 100%;"',
                     )
-                elif "timeout" in str(pdf_error).lower():
-                    error_msg += (
-                        " - PDF generation timed out. Please try with simpler content."
-                    )
-                elif "No such file or directory" in str(pdf_error):
-                    error_msg += (
-                        " - Chromium browser not found. Please contact support."
-                    )
-                elif "Permission denied" in str(pdf_error):
-                    error_msg += " - Browser permission error. Please contact support."
 
-                return JsonResponse({"error": error_msg}, status=500)
+                    # Generate PDF with weasyprint
+                    font_config = FontConfiguration()
+                    pdf_bytes = HTML(string=simple_html).write_pdf(
+                        stylesheets=[
+                            CSS(
+                                string="""
+                            @page {
+                                size: A4 landscape;
+                                margin: 10mm;
+                            }
+                            body {
+                                font-family: Arial, sans-serif;
+                                font-size: 12px;
+                                line-height: 1.4;
+                            }
+                            .pdf-container {
+                                max-width: 100%;
+                                margin: 0 auto;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 10px 0;
+                            }
+                            th, td {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            th {
+                                background-color: #f2f2f2;
+                                font-weight: bold;
+                            }
+                        """
+                            )
+                        ],
+                        font_config=font_config,
+                    )
+
+                    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename}"'
+                    )
+                    return response
+
+                except ImportError:
+                    error_msg = "PDF generation failed: Neither Playwright nor WeasyPrint is available. Please install weasyprint: pip install weasyprint"
+                    return JsonResponse({"error": error_msg}, status=500)
+                except Exception as weasyprint_error:
+                    # Enhanced error handling for production
+                    error_msg = f"PDF generation failed: {str(pdf_error)}"
+
+                    # Specific error handling for production issues
+                    if "Browser closed" in str(pdf_error):
+                        error_msg += " - Browser process terminated unexpectedly. WeasyPrint fallback also failed."
+                    elif "timeout" in str(pdf_error).lower():
+                        error_msg += " - PDF generation timed out. WeasyPrint fallback also failed."
+                    elif "No such file or directory" in str(pdf_error):
+                        error_msg += " - Chromium browser not found. WeasyPrint fallback also failed."
+                    elif "Permission denied" in str(pdf_error):
+                        error_msg += " - Browser permission error. WeasyPrint fallback also failed."
+
+                    return JsonResponse({"error": error_msg}, status=500)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

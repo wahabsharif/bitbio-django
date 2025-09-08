@@ -207,7 +207,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = (
 CSRF_COOKIE_SECURE = (
     os.getenv("CSRF_COOKIE_SECURE", "False").lower() == "true"
 )  # Set to True in production with HTTPS
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for AJAX requests
+CSRF_TRUSTED_ORIGINS = [
+    "https://member.bit.bio",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 
 # Logging configuration
 # Ensure logs directory exists

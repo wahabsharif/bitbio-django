@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_http_methods
 from app_users.forms import UserRegistrationForm, UserLoginForm
 from app_users.models import User
 from app_users.views import approved_user_required
@@ -26,6 +28,8 @@ def home(request):
         return redirect("account")
 
 
+@csrf_protect
+@require_http_methods(["GET", "POST"])
 def account(request):
     """Handle user login"""
     if request.method == "POST":
@@ -33,6 +37,20 @@ def account(request):
         if form.is_valid():
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
+
+            # Check if user is already logged in with a different account
+            if request.user.is_authenticated:
+                current_user_email = request.user.email.lower()
+                login_email = email.lower()
+
+                # If trying to log in with a different account, log out current user
+                if current_user_email != login_email:
+                    logout(request)
+                    messages.info(
+                        request,
+                        f"You have been logged out from the previous account. Logging in as {email}.",
+                    )
+
             user = authenticate(request, username=email, password=password)
 
             if user is not None:
@@ -96,6 +114,8 @@ def account(request):
     return render(request, "account.html", context)
 
 
+@csrf_protect
+@require_http_methods(["GET", "POST"])
 def registration(request):
     """Handle user registration with domain-based auto-approval"""
     if request.method == "POST":

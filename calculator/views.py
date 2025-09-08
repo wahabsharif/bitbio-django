@@ -536,89 +536,7 @@ class DownloadPDFView(View):
                     status=500,
                 )
 
-            # Method 1: Try WeasyPrint first (most reliable for production)
-            logger.info("Attempting PDF generation with WeasyPrint")
-            try:
-                from weasyprint import HTML, CSS
-                from weasyprint.text.fonts import FontConfiguration
-
-                logger.info("WeasyPrint imported successfully")
-
-                # Enhanced CSS for better PDF rendering
-                pdf_css = """
-                    @page {
-                        size: A4 landscape;
-                        margin: 15mm;
-                    }
-                    body {
-                        font-family: 'DejaVu Sans', Arial, sans-serif;
-                        font-size: 11px;
-                        line-height: 1.4;
-                        color: #333;
-                    }
-                    .pdf-container {
-                        max-width: 100%;
-                        margin: 0;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin: 8px 0;
-                        page-break-inside: avoid;
-                    }
-                    th, td {
-                        border: 1px solid #ddd;
-                        padding: 6px 8px;
-                        text-align: left;
-                        vertical-align: top;
-                    }
-                    th {
-                        background-color: #f8f9fa;
-                        font-weight: bold;
-                        font-size: 12px;
-                    }
-                    .logo {
-                        max-width: 120px;
-                        height: auto;
-                    }
-                    h1 {
-                        font-size: 16px;
-                        margin: 10px 0;
-                        color: #1976d2;
-                    }
-                    h2 {
-                        font-size: 14px;
-                        margin: 8px 0;
-                        color: #424242;
-                    }
-                    .footer {
-                        font-size: 9px;
-                        color: #666;
-                        margin-top: 20px;
-                    }
-                """
-
-                # Create font configuration
-                font_config = FontConfiguration()
-
-                # Generate PDF
-                pdf_bytes = HTML(string=html).write_pdf(
-                    stylesheets=[CSS(string=pdf_css)],
-                    font_config=font_config,
-                    optimize_images=True,
-                )
-
-                logger.info("PDF generated successfully with WeasyPrint")
-                response = HttpResponse(pdf_bytes, content_type="application/pdf")
-                response["Content-Disposition"] = f'attachment; filename="{filename}"'
-                return response
-
-            except ImportError as e:
-                logger.warning(f"WeasyPrint not available: {str(e)}")
-            except Exception as e:
-                logger.warning(f"WeasyPrint failed: {str(e)}")
-
-            # Method 2: Try Playwright with enhanced error handling
+            # Generate PDF using Playwright
             logger.info("Attempting PDF generation with Playwright")
             try:
                 # Check if Playwright is available
@@ -627,14 +545,16 @@ class DownloadPDFView(View):
 
                     logger.info("Playwright imported successfully")
                 except ImportError as e:
-                    logger.warning(f"Playwright not available: {str(e)}")
-                    raise Exception("Playwright not available")
+                    logger.error(f"Playwright not available: {str(e)}")
+                    raise Exception(
+                        "Playwright not available. Please install with: pip install playwright && playwright install chromium"
+                    )
 
                 # Enhanced Playwright configuration for production
                 with sync_playwright() as p:
+                    browser = None
                     try:
-                        # Try different browsers in order of preference
-                        browser = None
+                        # Browser launch arguments for better stability
                         browser_args = [
                             "--no-sandbox",
                             "--disable-dev-shm-usage",
@@ -644,9 +564,12 @@ class DownloadPDFView(View):
                             "--disable-background-timer-throttling",
                             "--disable-backgrounding-occluded-windows",
                             "--disable-renderer-backgrounding",
+                            "--disable-extensions",
+                            "--disable-plugins",
+                            "--disable-images",  # Faster rendering
                         ]
 
-                        # Try chromium first
+                        # Try chromium first (most reliable)
                         try:
                             browser = p.chromium.launch(
                                 headless=True,
@@ -667,7 +590,9 @@ class DownloadPDFView(View):
                                 logger.warning(
                                     f"Firefox launch failed: {firefox_error}"
                                 )
-                                raise Exception("No browser available")
+                                raise Exception(
+                                    "No browser available. Please install browser dependencies with: playwright install-deps"
+                                )
 
                         if not browser:
                             raise Exception("Failed to launch any browser")
@@ -698,7 +623,6 @@ class DownloadPDFView(View):
                             scale=0.8,  # Slightly smaller scale for better fit
                         )
 
-                        browser.close()
                         logger.info("PDF generated successfully with Playwright")
 
                         response = HttpResponse(
@@ -718,105 +642,31 @@ class DownloadPDFView(View):
                         raise browser_error
 
             except Exception as e:
-                logger.warning(f"Playwright failed: {str(e)}")
+                logger.error(f"Playwright PDF generation failed: {str(e)}")
 
-            # Method 3: Alternative - use wkhtmltopdf if available
-            logger.info("Attempting PDF generation with wkhtmltopdf")
-            try:
-                import subprocess
-                import tempfile
+                # Fallback: Return HTML with print instructions
+                logger.warning("PDF generation failed, falling back to HTML")
+                html_filename = filename.replace(".pdf", ".html")
 
-                # Check if wkhtmltopdf is available
-                result = subprocess.run(
-                    ["which", "wkhtmltopdf"], capture_output=True, text=True
+                html_with_instructions = html.replace(
+                    "<body>",
+                    """<body>
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 10px 0; border-radius: 5px; text-align: center;">
+                        <h3 style="margin-top: 0; color: #856404;">PDF Generation Temporarily Unavailable</h3>
+                        <p style="margin-bottom: 0;"><strong>To save as PDF:</strong> Use your browser's print function (Ctrl+P or Cmd+P) and select "Save as PDF" as the destination.</p>
+                        <p style="margin-top: 10px; font-size: 12px; color: #666;">Error: """
+                    + str(e)
+                    + """</p>
+                    </div>""",
                 )
-                if result.returncode != 0:
-                    raise Exception("wkhtmltopdf not found")
 
-                # Create temporary HTML file
-                with tempfile.NamedTemporaryFile(
-                    mode="w", suffix=".html", delete=False
-                ) as temp_html:
-                    temp_html.write(html)
-                    temp_html_path = temp_html.name
-
-                # Create temporary PDF file
-                with tempfile.NamedTemporaryFile(
-                    suffix=".pdf", delete=False
-                ) as temp_pdf:
-                    temp_pdf_path = temp_pdf.name
-
-                try:
-                    # Run wkhtmltopdf
-                    cmd = [
-                        "wkhtmltopdf",
-                        "--page-size",
-                        "A4",
-                        "--orientation",
-                        "Landscape",
-                        "--margin-top",
-                        "10mm",
-                        "--margin-right",
-                        "10mm",
-                        "--margin-bottom",
-                        "10mm",
-                        "--margin-left",
-                        "10mm",
-                        "--enable-local-file-access",
-                        "--print-media-type",
-                        temp_html_path,
-                        temp_pdf_path,
-                    ]
-
-                    result = subprocess.run(
-                        cmd, capture_output=True, text=True, timeout=30
-                    )
-
-                    if result.returncode == 0:
-                        # Read generated PDF
-                        with open(temp_pdf_path, "rb") as pdf_file:
-                            pdf_bytes = pdf_file.read()
-
-                        logger.info("PDF generated successfully with wkhtmltopdf")
-                        response = HttpResponse(
-                            pdf_bytes, content_type="application/pdf"
-                        )
-                        response["Content-Disposition"] = (
-                            f'attachment; filename="{filename}"'
-                        )
-                        return response
-                    else:
-                        logger.warning(f"wkhtmltopdf failed: {result.stderr}")
-
-                finally:
-                    # Clean up temporary files
-                    try:
-                        os.unlink(temp_html_path)
-                        os.unlink(temp_pdf_path)
-                    except:
-                        pass
-
-            except Exception as e:
-                logger.warning(f"wkhtmltopdf failed: {str(e)}")
-
-            # Final fallback: Return HTML with print instructions
-            logger.warning("All PDF generation methods failed, falling back to HTML")
-            html_filename = filename.replace(".pdf", ".html")
-
-            html_with_instructions = html.replace(
-                "<body>",
-                """<body>
-                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 10px 0; border-radius: 5px; text-align: center;">
-                    <h3 style="margin-top: 0; color: #856404;">PDF Generation Temporarily Unavailable</h3>
-                    <p style="margin-bottom: 0;"><strong>To save as PDF:</strong> Use your browser's print function (Ctrl+P or Cmd+P) and select "Save as PDF" as the destination.</p>
-                </div>""",
-            )
-
-            response = HttpResponse(
-                html_with_instructions, content_type="text/html; charset=utf-8"
-            )
-            response["Content-Disposition"] = f'attachment; filename="{html_filename}"'
-            logger.info(f"Returning HTML fallback: {html_filename}")
+                response = HttpResponse(
+                    html_with_instructions, content_type="text/html; charset=utf-8"
+                )
+                response["Content-Disposition"] = (
+                    f'attachment; filename="{html_filename}"'
+                )
+                logger.info(f"Returning HTML fallback: {html_filename}")
             return response
 
         except Exception as e:

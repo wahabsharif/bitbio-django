@@ -113,6 +113,7 @@ RUN mkdir -p /home/appuser/.cache && chmod -R 755 /home/appuser/.cache
 # Collect static files and set ownership
 RUN python manage.py collectstatic --noinput
 RUN chown -R appuser:appuser /app
+RUN chmod -R 755 /app/logs
 
 # Switch to non-root user
 USER appuser

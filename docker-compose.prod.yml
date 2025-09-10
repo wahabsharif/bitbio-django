@@ -30,8 +30,7 @@ services:
       - XDG_RUNTIME_DIR=/tmp
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
     ports:
-      - "80:8000"
-      - "443:8000"
+      - "8000:8000"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media

@@ -20,6 +20,9 @@ services:
       - STATIC_URL=${STATIC_URL}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE}
       - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE}
+      - USE_X_FORWARDED_HOST=True
+      - USE_X_FORWARDED_PORT=True
+      - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
       # PDF generation environment variables
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
       - DISPLAY=:99
@@ -30,6 +33,9 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - logs_volume:/app/logs
+      # Mount static files to Apache document root for direct serving
+      - static_volume:/home/memberbit/public_html/static
+      - media_volume:/home/memberbit/public_html/media
     network_mode: "host"
     deploy:
       resources:

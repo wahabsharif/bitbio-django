@@ -160,7 +160,7 @@ Before deploying to production, ensure you have:
 2. Configure production database credentials
 3. Set a secure `SECRET_KEY`
 4. Configure `ALLOWED_HOSTS` for your domain
-5. Set up proper static file serving (Apache/Nginx)
+5. Set up proper static file serving (Apache)
 6. Configure HTTPS/SSL certificates
 
 ## 🔧 Configuration

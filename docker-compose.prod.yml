@@ -39,7 +39,10 @@ services:
         reservations:
           memory: 1G
     command: >
-      sh -c "Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
+      sh -c "pkill -f 'Xvfb.*:99' || true &&
+             rm -f /tmp/.X99-lock &&
+             mkdir -p /app/logs && chmod 755 /app/logs &&
+             Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 bitbio.wsgi:application"

@@ -114,6 +114,7 @@ RUN mkdir -p /home/appuser/.cache && chmod -R 755 /home/appuser/.cache
 RUN python manage.py collectstatic --noinput
 RUN chown -R appuser:appuser /app
 RUN chmod -R 755 /app/logs
+RUN chown -R appuser:appuser /app/logs
 
 # Switch to non-root user
 USER appuser

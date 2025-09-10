@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}BitBio Django{% endblock %}</title>
   {% load static %}
   <link rel="icon" type="image/x-icon" href="{% static 'images/account-favicon-32x32.webp' %}" />

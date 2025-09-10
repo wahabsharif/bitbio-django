@@ -86,9 +86,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csrf",
             ],
         },
     },
@@ -214,6 +216,11 @@ CSRF_COOKIE_SECURE = (
     os.getenv("CSRF_COOKIE_SECURE", "False").lower() == "true"
 )  # Set to True in production with HTTPS
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for AJAX requests
+CSRF_COOKIE_SAMESITE = (
+    "Lax"  # Prevent CSRF attacks while allowing some cross-site usage
+)
+CSRF_USE_SESSIONS = False  # Use cookies instead of session for CSRF tokens
+CSRF_COOKIE_AGE = 31449600  # 1 year in seconds (52 weeks * 7 days * 24 hours * 60 minutes * 60 seconds)
 CSRF_TRUSTED_ORIGINS = [
     "https://member.bit.bio",
     "https://fs.capture.dev.workplaceservicing.co.uk",

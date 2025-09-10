@@ -229,6 +229,16 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 
+# Cache configuration - using database cache instead of Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table",
+        "KEY_PREFIX": "bitbio",
+        "TIMEOUT": 300,  # 5 minutes default
+    }
+}
+
 # Logging configuration
 # Ensure logs directory exists
 logs_dir = BASE_DIR / "logs"

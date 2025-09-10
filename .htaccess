@@ -1,0 +1,24 @@
+# .htaccess file for proxying to Django app
+RewriteEngine On
+
+# Don't proxy static and media files - serve them directly
+RewriteCond %{REQUEST_URI} !^/static/
+RewriteCond %{REQUEST_URI} !^/media/
+RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+
+# Don't proxy if the file/directory exists (for static files)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Proxy all other requests to Django on port 8000
+RewriteRule ^(.*)$ http://127.0.0.1:8000/$1 [P,L,QSA]
+
+# Optional: Set proxy headers
+RewriteCond %{REQUEST_URI} !^/static/
+RewriteCond %{REQUEST_URI} !^/media/
+RewriteRule .* - [E=HTTP_X_FORWARDED_PROTO:http]
+RewriteRule .* - [E=HTTP_X_FORWARDED_HOST:%{HTTP_HOST}]
+
+# Enable mod_proxy if not already enabled (may not work on all shared hosts)
+# LoadModule proxy_module modules/mod_proxy.so
+# LoadModule proxy_http_module modules/mod_proxy_http.so

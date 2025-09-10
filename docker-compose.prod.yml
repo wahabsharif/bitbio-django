@@ -1,10 +1,11 @@
-# docker-compose.prod.yml
 
 services:
   web:
     build: .
     container_name: bitbio_web_prod
     restart: always
+    ports:
+      - "8000:8000"
     env_file:
       - .env
     environment:
@@ -36,7 +37,6 @@ services:
       # Mount static files to Apache document root for direct serving
       - static_volume:/home/memberbit/public_html/static
       - media_volume:/home/memberbit/public_html/media
-    network_mode: "host"
     deploy:
       resources:
         limits:
@@ -53,10 +53,7 @@ services:
              python manage.py collectstatic --noinput &&
              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 bitbio.wsgi:application"
 
-
-
 volumes:
   static_volume:
   media_volume:
   logs_volume:
-

@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.utils import timezone
 from app_users.forms import UserRegistrationForm, UserLoginForm
 from app_users.models import User
 from app_users.views import approved_user_required
@@ -189,3 +191,44 @@ def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
     return redirect("account")
+
+
+def health_check(request):
+    """Health check endpoint for production monitoring"""
+    try:
+        # Basic database connectivity check
+        from django.db import connection
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+
+        # Check if WeasyPrint is available for PDF generation
+        try:
+            import weasyprint
+
+            pdf_status = "weasyprint"
+        except ImportError:
+            try:
+                import playwright
+
+                pdf_status = "playwright"
+            except ImportError:
+                pdf_status = "none"
+
+        return JsonResponse(
+            {
+                "status": "healthy",
+                "database": "connected",
+                "pdf_generator": pdf_status,
+                "timestamp": timezone.now().isoformat(),
+            }
+        )
+    except Exception as e:
+        return JsonResponse(
+            {
+                "status": "unhealthy",
+                "error": str(e),
+                "timestamp": timezone.now().isoformat(),
+            },
+            status=500,
+        )

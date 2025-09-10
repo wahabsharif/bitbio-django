@@ -383,10 +383,11 @@ class DownloadPDFView(View):
         return redirect("calculator:calculator")
 
     def post(self, request):
-        try:
-            import logging
+        import logging
 
-            logger = logging.getLogger(__name__)
+        logger = logging.getLogger(__name__)
+
+        try:
             logger.info("PDF download request started")
 
             data = request.POST or {}
@@ -547,14 +548,14 @@ class DownloadPDFView(View):
                 except ImportError as e:
                     logger.error(f"Playwright not available: {str(e)}")
                     raise Exception(
-                        "Playwright not available. Please install with: pip install playwright && playwright install chromium"
+                        "Playwright not available. Please rebuild the Docker container with: docker-compose build --no-cache"
                     )
 
                 # Enhanced Playwright configuration for production
                 with sync_playwright() as p:
                     browser = None
                     try:
-                        # Browser launch arguments for better stability
+                        # Browser launch arguments for better stability and Docker compatibility
                         browser_args = [
                             "--no-sandbox",
                             "--disable-dev-shm-usage",
@@ -567,10 +568,19 @@ class DownloadPDFView(View):
                             "--disable-extensions",
                             "--disable-plugins",
                             "--disable-images",  # Faster rendering
+                            "--disable-setuid-sandbox",
+                            "--no-first-run",
+                            "--no-zygote",
+                            "--single-process",  # Important for Docker
+                            "--disable-features=dbus",
+                            "--disable-ipc-flooding-protection",
                         ]
 
                         # Try chromium first (most reliable)
                         try:
+                            logger.info(
+                                f"Attempting to launch Chromium with args: {browser_args}"
+                            )
                             browser = p.chromium.launch(
                                 headless=True,
                                 args=browser_args,
@@ -578,20 +588,41 @@ class DownloadPDFView(View):
                             )
                             logger.info("Chromium browser launched successfully")
                         except Exception as chromium_error:
-                            logger.warning(f"Chromium launch failed: {chromium_error}")
+                            logger.error(f"Chromium launch failed: {chromium_error}")
+                            logger.error(f"Chromium error type: {type(chromium_error)}")
                             # Try firefox as fallback
                             try:
+                                logger.info("Attempting Firefox as fallback")
                                 browser = p.firefox.launch(
                                     headless=True,
                                     timeout=30000,
                                 )
                                 logger.info("Firefox browser launched successfully")
                             except Exception as firefox_error:
-                                logger.warning(
-                                    f"Firefox launch failed: {firefox_error}"
+                                logger.error(f"Firefox launch failed: {firefox_error}")
+                                logger.error(
+                                    f"Firefox error type: {type(firefox_error)}"
                                 )
+
+                                # Log system information for debugging
+                                import platform
+
+                                logger.error(f"System: {platform.system()}")
+                                logger.error(f"Architecture: {platform.machine()}")
+                                logger.error(
+                                    f"Python version: {platform.python_version()}"
+                                )
+                                logger.error(
+                                    f"Environment variables: PLAYWRIGHT_BROWSERS_PATH={os.getenv('PLAYWRIGHT_BROWSERS_PATH')}"
+                                )
+                                logger.error(
+                                    f"Environment variables: DISPLAY={os.getenv('DISPLAY')}"
+                                )
+
                                 raise Exception(
-                                    "No browser available. Please install browser dependencies with: playwright"
+                                    f"No browser available in Docker container. This likely means the browser installation failed during Docker build. "
+                                    f"Please rebuild the container with: docker-compose build --no-cache. "
+                                    f"Chromium error: {chromium_error}. Firefox error: {firefox_error}"
                                 )
 
                         if not browser:
@@ -602,7 +633,13 @@ class DownloadPDFView(View):
                         # Set viewport for consistent rendering
                         page.set_viewport_size({"width": 1200, "height": 800})
 
-                        # Load content with timeout
+                        # Load content with timeout and set base URL for static assets
+                        import urllib.parse
+
+                        base_url = f"http://localhost:8000"
+                        if hasattr(request, "get_host"):
+                            base_url = f"http://{request.get_host()}"
+
                         page.set_content(html, wait_until="networkidle", timeout=30000)
 
                         # Wait for any dynamic content to load
@@ -644,8 +681,40 @@ class DownloadPDFView(View):
             except Exception as e:
                 logger.error(f"Playwright PDF generation failed: {str(e)}")
 
-                # Fallback: Return HTML with print instructions
-                logger.warning("PDF generation failed, falling back to HTML")
+                # Try WeasyPrint as fallback for Docker environments
+                try:
+                    import weasyprint
+
+                    logger.info("Attempting PDF generation with WeasyPrint fallback")
+
+                    # WeasyPrint requires absolute URLs for CSS/images
+                    base_url = request.build_absolute_uri("/")
+
+                    # Create WeasyPrint HTML document
+                    pdf_document = weasyprint.HTML(string=html, base_url=base_url)
+
+                    # Generate PDF
+                    pdf_bytes = pdf_document.write_pdf()
+
+                    logger.info("PDF generated successfully with WeasyPrint")
+
+                    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+                    response["Content-Disposition"] = (
+                        f'attachment; filename="{filename}"'
+                    )
+                    return response
+
+                except ImportError:
+                    logger.warning("WeasyPrint not available, falling back to HTML")
+                except Exception as weasy_error:
+                    logger.error(
+                        f"WeasyPrint PDF generation also failed: {str(weasy_error)}"
+                    )
+
+                # Final fallback: Return HTML with print instructions
+                logger.warning(
+                    "All PDF generation methods failed, falling back to HTML"
+                )
                 html_filename = filename.replace(".pdf", ".html")
 
                 html_with_instructions = html.replace(

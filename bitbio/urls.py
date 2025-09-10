@@ -30,4 +30,5 @@ urlpatterns = [
     ),
     path("users/", include("app_users.urls")),
     path("calculator/", include("calculator.urls")),
+    path("health/", views.health_check, name="health_check"),
 ]

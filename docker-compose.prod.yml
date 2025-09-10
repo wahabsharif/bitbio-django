@@ -55,8 +55,8 @@ services:
     container_name: bitbio_nginx_prod
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
       - static_volume:/app/staticfiles

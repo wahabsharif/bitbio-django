@@ -4,7 +4,7 @@ services:
     container_name: bitbio_web_prod
     restart: always
     env_file:
-      - .env
+      - .env.production
     environment:
       - DEBUG=${DEBUG}
       - DB_ENGINE=${DB_ENGINE}
@@ -40,9 +40,9 @@ services:
           memory: 1G
     command: >
       sh -c "pkill -f 'Xvfb.*:99' || true &&
-             rm -f /tmp/.X99-lock &&
-             mkdir -p /app/logs && chmod 755 /app/logs &&
+             rm -f /tmp/.X99-lock || true &&
              Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
+             sleep 2 &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 bitbio.wsgi:application"

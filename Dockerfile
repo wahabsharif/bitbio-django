@@ -116,8 +116,7 @@ RUN chown -R appuser:appuser /app
 RUN chmod -R 755 /app/logs
 RUN chown -R appuser:appuser /app/logs
 
-# Switch to non-root user
-USER appuser
+# Note: We stay as root to run the startup script which handles user switching
 
 # Expose port
 EXPOSE 8000
@@ -126,5 +125,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
 
-# Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Default command (overridden by docker-compose)
+CMD ["python", "manage.py", "runserver"]

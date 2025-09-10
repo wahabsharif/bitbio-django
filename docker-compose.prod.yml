@@ -4,7 +4,7 @@ services:
     container_name: bitbio_web_prod
     restart: always
     env_file:
-      - .env.production
+      - .env
     environment:
       - DEBUG=${DEBUG}
       - DB_ENGINE=${DB_ENGINE}

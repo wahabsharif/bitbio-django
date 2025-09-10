@@ -7,21 +7,20 @@ services:
     restart: always
     env_file:
       - .env
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    network_mode: "host"
     environment:
-      - DEBUG=${DEBUG}
-      - DB_ENGINE=${DB_ENGINE}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - SECRET_KEY=${SECRET_KEY}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - STATIC_URL=${STATIC_URL}
-      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE}
-      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE}
+      - DEBUG=${DEBUG:-False}
+      - DB_ENGINE=${DB_ENGINE:-django.db.backends.mysql}
+      - DB_NAME=${DB_NAME:-memberbit_bitbio}
+      - DB_USER=${DB_USER:-memberbit_bitbio}
+      - DB_PASSWORD=${DB_PASSWORD:-7FwNC8uxK)PUx~To}
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-3306}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-z45x*8#9292((t56%@@p&k7(ao!g-^w}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,localhost,127.0.0.1}
+      - STATIC_URL=${STATIC_URL:-/static/}
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-True}
+      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-True}
       - USE_X_FORWARDED_HOST=True
       - USE_X_FORWARDED_PORT=True
       - SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
@@ -31,8 +30,6 @@ services:
       - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0
       - XDG_RUNTIME_DIR=/tmp
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
-    ports:
-      - "8000:8000"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media

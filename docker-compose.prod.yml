@@ -18,6 +18,12 @@ services:
       - STATIC_URL=${STATIC_URL}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE}
       - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE}
+      # PDF generation environment variables
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+      - DISPLAY=:99
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0
+      - XDG_RUNTIME_DIR=/tmp
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -29,11 +35,12 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 2G
         reservations:
-          memory: 512M
+          memory: 1G
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
+             python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 bitbio.wsgi:application"
 

@@ -17,6 +17,12 @@ services:
       - DB_PORT=${DB_PORT}
       - SECRET_KEY=${SECRET_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      # Playwright/Browser environment variables
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+      - DISPLAY=:99
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0
+      - XDG_RUNTIME_DIR=/tmp
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -24,7 +30,8 @@ services:
     networks:
       - bitbio_network
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
+             python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              python manage.py runserver 0.0.0.0:8000"
 

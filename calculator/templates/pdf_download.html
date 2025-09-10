@@ -6,11 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cell Seeding Calculator - Results</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        /* Use local fonts instead of Google Fonts for better PDF rendering */
+        @font-face {
+            font-family: 'BitBioSans';
+            src: url('/static/fonts/BitBioSans.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'AvenirNext';
+            src: url('/static/fonts/avenir-next-lt-pro.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
 
         body,
         * {
-            font-family: "Inter", sans-serif !important;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif !important;
             font-size: 12px;
             line-height: 1.1;
             margin: 0;
@@ -169,26 +182,26 @@
         }
 
         .results-box h2 {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             font-size: 18px;
             margin-bottom: 3px;
             font-weight: 600;
         }
 
         .results-box .summary {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             font-size: 12px;
             line-height: 1.1;
             margin-bottom: 6px;
         }
 
         .results-box .result-item {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             margin-bottom: 10px;
         }
 
         .results-box .result-item label {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             display: block;
             margin-bottom: 5px;
             font-weight: 700;
@@ -196,7 +209,7 @@
         }
 
         .results-box .result-value {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             font-size: 12px;
             padding: 4px 6px;
             border: 1px solid #3FD4FF;
@@ -211,7 +224,7 @@
 
         /* Footer styling */
         .footer {
-            font-family: "Inter", sans-serif;
+            font-family: "BitBioSans", "AvenirNext", Arial, sans-serif;
             font-size: 12px;
             margin-top: 10px;
             line-height: 1.0;
@@ -231,7 +244,7 @@
         }
 
         .company-name {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             font-size: 15px;
             font-weight: 600;
             color: #2c3e50;
@@ -239,7 +252,7 @@
         }
 
         .page-title {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             font-size: 20px;
             font-weight: 600;
             color: #000;
@@ -300,7 +313,7 @@
             font-size: 12px;
             font-weight: normal;
             text-align: right;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             height: 30px !important;
             min-height: 30px !important;
             box-sizing: border-box;
@@ -331,7 +344,7 @@
             font-size: 12px;
             font-weight: normal;
             text-align: left;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             height: 30px !important;
             min-height: 30px !important;
             box-sizing: border-box;
@@ -422,7 +435,7 @@
 
         /* Results Narrative Styles */
         .narrative-text {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             font-size: 12px;
             font-weight: 300 !important;
             margin-bottom: 10px;
@@ -431,16 +444,16 @@
 
         /* Result Item Styles */
         .result-item-text {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         .result-item-margin {
             margin-bottom: 3px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         .result-note {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             font-size: 12px;
             color: #000;
             margin: 2px 0 0;
@@ -448,7 +461,7 @@
         }
 
         .result-density-value {
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
             padding: 4px 6px;
             border: 1px solid #E4EAF0;
             width: 150px;
@@ -466,26 +479,26 @@
             width: 100%;
             border-collapse: separate;
             margin: auto;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         .cell-count-cell {
             padding: 4px;
             border: 1px solid #E4EAF0;
             width: 50%;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         .cell-count-label {
             margin: 0 0 2px;
             font-size: 12px;
             color: #000;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         .cell-count-value {
             font-size: 12px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'BitBioSans', 'AvenirNext', Arial, sans-serif;
         }
 
         /* Results Box Specific Styles */

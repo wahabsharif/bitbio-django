@@ -14,11 +14,12 @@ services:
       - DB_NAME=${DB_NAME:-memberbit_bitbio}
       - DB_USER=${DB_USER:-memberbit_bitbio}
       - DB_PASSWORD=${DB_PASSWORD:-7FwNC8uxK)PUx~To}
-      - DB_HOST=${DB_HOST:-localhost}
-      - DB_PORT=${DB_PORT:-3306}
+      - DB_HOST=localhost
+      - DB_PORT=3306
       - SECRET_KEY=${SECRET_KEY:-django-insecure-z45x*8#9292((t56%@@p&k7(ao!g-^w}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,localhost,127.0.0.1}
       - STATIC_URL=${STATIC_URL:-/static/}
+      - MEDIA_URL=${MEDIA_URL:-/media/}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-True}
       - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-True}
       - USE_X_FORWARDED_HOST=True

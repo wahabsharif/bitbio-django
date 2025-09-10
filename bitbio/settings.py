@@ -166,12 +166,16 @@ USE_TZ = os.getenv("USE_TZ", "True").lower() == "true"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = os.getenv("STATIC_URL", "static/")
+STATIC_URL = os.getenv("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
     BASE_DIR / "bitbio" / "static",
     BASE_DIR / "calculator" / "static",
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Media files (uploaded content)
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

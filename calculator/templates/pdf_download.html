@@ -334,6 +334,7 @@
             justify-content: flex-end;
             margin: 2px 0;
             padding: 0 6px !important;
+            box-sizing: border-box;
         }
 
         .input-field-full {
@@ -405,12 +406,13 @@
         .count-grid-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .count-cell,
         .count-cell-middle,
         .count-cell-last {
-            width: 60px;
+            width: 110px;
             padding: 0 5px;
             vertical-align: top;
         }
@@ -425,7 +427,8 @@
 
         .count-symbol-cell {
             vertical-align: bottom;
-            padding-left: 8px;
+            padding-left: 10px;
+            width: auto;
         }
 
         /* Required Field Styles */

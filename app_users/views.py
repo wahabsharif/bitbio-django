@@ -56,6 +56,10 @@ def registration_view(request):
                 user.is_active = True
                 user.save()
 
+                # Set session variables for success template
+                request.session["registration_auto_approved"] = True
+                request.session["registration_email"] = user.email
+
                 messages.success(
                     request,
                     f"Your account has been automatically approved! You can now sign in with {user.email}.",
@@ -64,6 +68,10 @@ def registration_view(request):
                 # Update the user status and save again
                 user.is_active = False  # User needs manual approval
                 user.save()
+
+                # Set session variables for success template
+                request.session["registration_auto_approved"] = False
+                request.session["registration_email"] = user.email
 
                 messages.success(
                     request,

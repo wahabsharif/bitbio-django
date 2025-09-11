@@ -51,8 +51,8 @@
   <div class="success-icon">✓</div>
   <h1 class="success-title">Registration Successful!</h1>
   <div class="success-message">
-    {% if request.session.registration_auto_approved %}
-      <p>Your account has been automatically approved! You can now sign in with {{ request.session.registration_email }}.</p>
+    {% if registration_auto_approved %}
+      <p>Your account has been automatically approved! You can now sign in with {{ registration_email }}.</p>
     {% else %}
       <p>Registration successful! Your account is pending approval. You will receive an email notification once your account is approved.</p>
     {% endif %}

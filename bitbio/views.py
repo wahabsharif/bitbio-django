@@ -159,6 +159,7 @@ def registration(request):
             # Pass registration status via session
             request.session["registration_auto_approved"] = auto_approve
             request.session["registration_email"] = user.email
+
             return redirect("registration_success")
         else:
             messages.error(request, "Please correct the errors below.")
@@ -177,13 +178,22 @@ def registration(request):
 
 def registration_success(request):
     """Display success message after registration"""
-    # Clear the session variables after displaying them
+    # Get session variables before clearing them
+    auto_approved = request.session.get("registration_auto_approved", False)
+    email = request.session.get("registration_email", "")
+
+    # Clear the session variables after getting them
     if "registration_auto_approved" in request.session:
         del request.session["registration_auto_approved"]
     if "registration_email" in request.session:
         del request.session["registration_email"]
 
-    return render(request, "registration_success.html")
+    # Pass values to template context
+    context = {
+        "registration_auto_approved": auto_approved,
+        "registration_email": email,
+    }
+    return render(request, "registration_success.html", context)
 
 
 def logout_view(request):

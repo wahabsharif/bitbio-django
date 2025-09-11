@@ -54,6 +54,11 @@ services:
              python manage.py migrate &&
              python manage.py createcachetable &&
              python manage.py collectstatic --noinput &&
+             mkdir -p /home/memberbit/public_html/static /home/memberbit/public_html/media &&
+             cp -r /app/staticfiles/* /home/memberbit/public_html/static/ 2>/dev/null || true &&
+             cp -r /app/media/* /home/memberbit/public_html/media/ 2>/dev/null || true &&
+             chown -R memberbit:memberbit /home/memberbit/public_html/static /home/memberbit/public_html/media 2>/dev/null || true &&
+             chmod -R 755 /home/memberbit/public_html/static /home/memberbit/public_html/media 2>/dev/null || true &&
              gunicorn --bind 0.0.0.0:8000 --workers 9 --worker-class sync --max-requests 1000 --max-requests-jitter 100 --timeout 120 --keep-alive 5 --worker-tmp-dir /dev/shm bitbio.wsgi:application"
 
 

@@ -45,6 +45,7 @@ if allowed_hosts_env:
 else:
     ALLOWED_HOSTS = [
         "member.bit.bio",
+        "bitbiohost.uksouth.cloudapp.azure.com",
         "rdg.capture.dev.workplaceservicing.co.uk",
         "fs.capture.dev.workplaceservicing.co.uk",
         "localhost",
@@ -227,6 +228,8 @@ CSRF_USE_SESSIONS = False  # Use cookies instead of session for CSRF tokens
 CSRF_COOKIE_AGE = 31449600  # 1 year in seconds (52 weeks * 7 days * 24 hours * 60 minutes * 60 seconds)
 CSRF_TRUSTED_ORIGINS = [
     "https://member.bit.bio",
+    "https://bitbiohost.uksouth.cloudapp.azure.com",
+    "http://bitbiohost.uksouth.cloudapp.azure.com",
     "https://fs.capture.dev.workplaceservicing.co.uk",
     "https://rdg.capture.dev.workplaceservicing.co.uk",
     "http://localhost:8000",
@@ -234,12 +237,19 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Cache configuration - using database cache instead of Redis
+# Optimized for production server with 8GB RAM
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "cache_table",
         "KEY_PREFIX": "bitbio",
-        "TIMEOUT": 300,  # 5 minutes default
+        "TIMEOUT": int(
+            os.getenv("CACHE_TIMEOUT", "600")
+        ),  # 10 minutes default for production
+        "OPTIONS": {
+            "MAX_ENTRIES": 10000,  # Increased for better performance
+            "CULL_FREQUENCY": 3,  # Remove 1/3 of entries when MAX_ENTRIES reached
+        },
     }
 }
 
@@ -260,18 +270,40 @@ LOGGING = {
             "format": "{levelname} {message}",
             "style": "{",
         },
+        "performance": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "file": {
             "level": "INFO",
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": logs_dir / "django.log",
             "formatter": "verbose",
+            "maxBytes": 50 * 1024 * 1024,  # 50MB
+            "backupCount": 5,
         },
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "simple",
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": logs_dir / "errors.log",
+            "formatter": "verbose",
+            "maxBytes": 20 * 1024 * 1024,  # 20MB
+            "backupCount": 3,
+        },
+        "performance_file": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": logs_dir / "performance.log",
+            "formatter": "performance",
+            "maxBytes": 10 * 1024 * 1024,  # 10MB
+            "backupCount": 2,
         },
     },
     "root": {
@@ -280,8 +312,18 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["file", "console"],
+            "handlers": ["file", "console", "error_file"],
             "level": "INFO",
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "handlers": ["performance_file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "gunicorn.error": {
+            "handlers": ["error_file"],
+            "level": "ERROR",
             "propagate": False,
         },
         "bitbio": {
@@ -291,3 +333,23 @@ LOGGING = {
         },
     },
 }
+
+# Performance monitoring settings for production
+# Database connection pool optimization for your server
+DATABASES["default"]["CONN_MAX_AGE"] = 3600  # Keep connections alive for 1 hour
+DATABASES["default"]["OPTIONS"].update(
+    {
+        "connect_timeout": 20,
+        "read_timeout": 30,
+        "write_timeout": 30,
+    }
+)
+
+# Security headers for production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

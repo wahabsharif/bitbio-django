@@ -17,7 +17,7 @@ services:
       - DB_HOST=localhost
       - DB_PORT=3306
       - SECRET_KEY=${SECRET_KEY:-django-insecure-z45x*8#9292((t56%@@p&k7(ao!g-^w}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,localhost,127.0.0.1}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,bitbiohost.uksouth.cloudapp.azure.com,localhost,127.0.0.1}
       - STATIC_URL=${STATIC_URL:-/static/}
       - MEDIA_URL=${MEDIA_URL:-/media/}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-True}
@@ -41,9 +41,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          memory: 6G
+          cpus: '3.5'
         reservations:
-          memory: 1G
+          memory: 2G
+          cpus: '2'
     command: >
       sh -c "pkill -f 'Xvfb.*:99' || true &&
              rm -f /tmp/.X99-lock || true &&
@@ -52,7 +54,7 @@ services:
              python manage.py migrate &&
              python manage.py createcachetable &&
              python manage.py collectstatic --noinput &&
-             gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 bitbio.wsgi:application"
+             gunicorn --bind 0.0.0.0:8000 --workers 9 --worker-class sync --max-requests 1000 --max-requests-jitter 100 --timeout 120 --keep-alive 5 --worker-tmp-dir /dev/shm bitbio.wsgi:application"
 
 
 

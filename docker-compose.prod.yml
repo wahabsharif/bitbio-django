@@ -17,7 +17,7 @@ services:
       - DB_HOST=localhost
       - DB_PORT=3306
       - SECRET_KEY=${SECRET_KEY:-django-insecure-z45x*8#9292((t56%@@p&k7(ao!g-^w}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,bitbiohost.uksouth.cloudapp.azure.com,localhost,127.0.0.1}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-member.bit.bio,bitbiohost.uksouth.cloudapp.azure.com,rdg.capture.dev.workplaceservicing.co.uk,rdg.capture.dev.workplaceservicing.co.uk.,fs.capture.dev.workplaceservicing.co.uk,fs.capture.dev.workplaceservicing.co.uk.,localhost,127.0.0.1}
       - STATIC_URL=${STATIC_URL:-/static/}
       - MEDIA_URL=${MEDIA_URL:-/media/}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-True}

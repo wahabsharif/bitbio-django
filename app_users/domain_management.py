@@ -97,6 +97,46 @@ def is_blocklisted_domain(email):
     return domain in domain_lists["blocklisted"]
 
 
+def is_blocklisted_domain_direct(email):
+    """
+    Check if email domain is in the blocklist by reading directly from database
+
+    Args:
+        email (str): Email address to check
+
+    Returns:
+        bool: True if domain is blocklisted, False otherwise
+    """
+    domain = get_email_domain(email)
+    try:
+        domain_obj = Domain.get_or_create_domain_management()
+        blocklisted_domains = domain_obj.blocklisted_domains or []
+        return domain in blocklisted_domains
+    except Exception:
+        # Fallback to empty list if database is not available
+        return False
+
+
+def is_whitelisted_domain_direct(email):
+    """
+    Check if email domain is in the whitelist by reading directly from database
+
+    Args:
+        email (str): Email address to check
+
+    Returns:
+        bool: True if domain is whitelisted, False otherwise
+    """
+    domain = get_email_domain(email)
+    try:
+        domain_obj = Domain.get_or_create_domain_management()
+        whitelisted_domains = domain_obj.whitelisted_domains or []
+        return domain in whitelisted_domains
+    except Exception:
+        # Fallback to empty list if database is not available
+        return False
+
+
 def get_domain_status(email):
     """
     Get the status of an email domain
@@ -115,6 +155,24 @@ def get_domain_status(email):
         return "neutral"
 
 
+def get_domain_status_direct(email):
+    """
+    Get the status of an email domain by reading directly from database
+
+    Args:
+        email (str): Email address to check
+
+    Returns:
+        str: 'whitelisted', 'blocklisted', or 'neutral'
+    """
+    if is_blocklisted_domain_direct(email):
+        return "blocklisted"
+    elif is_whitelisted_domain_direct(email):
+        return "whitelisted"
+    else:
+        return "neutral"
+
+
 def should_auto_approve(email):
     """
     Determine if a user with this email should be auto-approved
@@ -125,7 +183,7 @@ def should_auto_approve(email):
     Returns:
         bool: True if user should be auto-approved, False otherwise
     """
-    return is_whitelisted_domain(email)
+    return is_whitelisted_domain_direct(email)
 
 
 def should_block_registration(email):
@@ -138,7 +196,7 @@ def should_block_registration(email):
     Returns:
         bool: True if registration should be blocked, False otherwise
     """
-    return is_blocklisted_domain(email)
+    return is_blocklisted_domain_direct(email)
 
 
 def update_domain_lists(whitelisted_domains=None, blocklisted_domains=None):

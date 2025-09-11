@@ -35,11 +35,8 @@ urlpatterns = [
     path("health/", views.health_check, name="health_check"),
 ]
 
-# Serve static files during development and as fallback in production
+# Serve static files during development
+# In production, WhiteNoise middleware handles static files
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    # In production, add static URL patterns for Django fallback
-    # (Apache should serve these directly, but this provides fallback)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

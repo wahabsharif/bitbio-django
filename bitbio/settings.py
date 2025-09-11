@@ -68,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add WhiteNoise for static file serving
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -173,6 +174,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "calculator" / "static",
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise configuration for efficient static file serving in production
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
 
 # Media files (uploaded content)
 MEDIA_URL = os.getenv("MEDIA_URL", "/media/")

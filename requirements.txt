@@ -32,3 +32,6 @@ python-dotenv>=1.0.1
 
 # Production WSGI server
 gunicorn>=21.2.0
+
+# Static file serving middleware for production
+whitenoise>=6.6.0

@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
 from django.core.validators import EmailValidator
 from django.utils import timezone
 import json
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -30,6 +31,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("status", "approved")
+        extra_fields.setdefault("is_email_verified", True)  # Auto-verify admin emails
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
@@ -74,6 +76,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     status = models.CharField(
         max_length=20, choices=APPROVAL_CHOICES, default="pending"
     )
+
+    # Email verification fields
+    is_email_verified = models.BooleanField(default=False)
+    email_verification_token = models.UUIDField(null=True, blank=True, unique=True)
+    email_verification_sent_at = models.DateTimeField(null=True, blank=True)
 
     # Django auth fields
     is_staff = models.BooleanField(default=False)
@@ -145,6 +152,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_rejected(self):
         """Check if user is rejected"""
         return self.status == "rejected"
+
+    def generate_verification_token(self):
+        """Generate a new email verification token"""
+        # Generate a unique token
+        while True:
+            new_token = uuid.uuid4()
+            if not User.objects.filter(email_verification_token=new_token).exists():
+                break
+
+        self.email_verification_token = new_token
+        self.email_verification_sent_at = timezone.now()
+        self.save(
+            update_fields=["email_verification_token", "email_verification_sent_at"]
+        )
+
+    def verify_email(self):
+        """Mark email as verified"""
+        self.is_email_verified = True
+        self.save(update_fields=["is_email_verified"])
+
+    @property
+    def can_login(self):
+        """Check if user can login (email verified and active)"""
+        return self.is_email_verified and self.is_active
 
 
 class Domain(models.Model):

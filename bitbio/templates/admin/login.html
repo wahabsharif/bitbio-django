@@ -262,6 +262,35 @@
         outline: 2px solid #667eea;
         outline-offset: 2px;
     }
+
+    /* Hide all messages on login page */
+    .messagelist,
+    .messages,
+    .message,
+    .success,
+    .info,
+    .warning,
+    .error,
+    .errornote,
+    .successnote,
+    .infonote,
+    .warningnote,
+    .alert,
+    .alert-success,
+    .alert-info,
+    .alert-warning,
+    .alert-danger,
+    .notification,
+    .toast,
+    .flash-message {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
 </style>
 {% endblock %}
 
@@ -318,8 +347,38 @@
 </div>
 
 <script>
-// Scroll to the first field with an error when the page loads
+// Remove all messages from the page
 document.addEventListener('DOMContentLoaded', function() {
+    // Remove all messages from the page
+    const messageSelectors = [
+        '.messagelist',
+        '.messages',
+        '.message',
+        '.success',
+        '.info',
+        '.warning',
+        '.error',
+        '.errornote',
+        '.successnote',
+        '.infonote',
+        '.warningnote',
+        '.alert',
+        '.alert-success',
+        '.alert-info',
+        '.alert-warning',
+        '.alert-danger',
+        '.notification',
+        '.toast',
+        '.flash-message'
+    ];
+    
+    messageSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.remove();
+        });
+    });
+
     // Check if there are any field errors
     const fieldErrors = document.querySelectorAll('.errorlist');
     if (fieldErrors.length > 0) {
@@ -344,6 +403,55 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+});
+
+// Also remove messages that might be added dynamically
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) { // Element node
+                    const messageSelectors = [
+                        '.messagelist',
+                        '.messages',
+                        '.message',
+                        '.success',
+                        '.info',
+                        '.warning',
+                        '.error',
+                        '.errornote',
+                        '.successnote',
+                        '.infonote',
+                        '.warningnote',
+                        '.alert',
+                        '.alert-success',
+                        '.alert-info',
+                        '.alert-warning',
+                        '.alert-danger',
+                        '.notification',
+                        '.toast',
+                        '.flash-message'
+                    ];
+                    
+                    messageSelectors.forEach(selector => {
+                        if (node.matches && node.matches(selector)) {
+                            node.remove();
+                        }
+                        const childMessages = node.querySelectorAll && node.querySelectorAll(selector);
+                        if (childMessages) {
+                            childMessages.forEach(msg => msg.remove());
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+
+// Start observing
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
 });
 </script>
 

@@ -239,9 +239,9 @@ bit.bio{% endblock %} {% block content %}
     border-radius: 4px;
     border-left: 4px solid #e91b0d;
     width: 50%;
-
   }
 
+  /* Email verification specific styling */
   .account-status-info h4 {
     margin: 0 0 8px 0;
     color: #333;
@@ -250,10 +250,14 @@ bit.bio{% endblock %} {% block content %}
   }
 
   .account-status-info p {
-    margin: 0;
+    margin: 0 0 8px 0;
     color: #666;
     font-size: 13px;
     line-height: 1.4;
+  }
+
+  .account-status-info p:last-child {
+    margin-bottom: 0;
   }
 
   .account-status-info a {
@@ -313,7 +317,7 @@ bit.bio{% endblock %} {% block content %}
           <a href="/registration" class="create-account-button">Create an account</a>
         </div>
       </div>
-      <!-- Account Status Information - Only show when there are pending messages -->
+      <!-- Account Status Information - Show for pending approval or email verification messages -->
       {% for message in messages %}
       {% if message.tags == 'warning' and 'pending approval' in message|lower %}
       <div class="account-status-info">
@@ -321,6 +325,22 @@ bit.bio{% endblock %} {% block content %}
         <p>
           New accounts require approval before access. If your account is pending, you'll receive an email notification
           once approved.
+          For immediate assistance, contact <a href="mailto:orders@bit.bio">orders@bit.bio</a>
+        </p>
+      </div>
+      {% elif message.tags == 'error' and 'verify your email' in message|lower %}
+      <div class="account-status-info">
+        <h4>Email Verification Required</h4>
+        <p>
+          You must verify your email address before signing in. 
+          We sent a verification email to your registered email address. Please check your inbox and spam folder.
+        </p>
+        <p>
+          <a href="{% url 'app_users:resend_verification' %}" style="color: #e91b0d; text-decoration: underline; font-weight: 500;">
+            Click here to resend verification email
+          </a>
+        </p>
+        <p>
           For immediate assistance, contact <a href="mailto:orders@bit.bio">orders@bit.bio</a>
         </p>
       </div>

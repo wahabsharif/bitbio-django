@@ -366,7 +366,7 @@ admin_site = BitBioAdminSite(name="admin")
 # Register models with custom admin site
 @admin.register(CustomUser, site=admin_site)
 class CustomUserAdmin(admin.ModelAdmin):
-    change_list_template = "admin/change_list.html"
+    change_list_template = "admin/app_users/user/change_list.html"
     change_form_template = "admin/app_users/user/change_form.html"
     list_display = (
         "email",
@@ -386,6 +386,9 @@ class CustomUserAdmin(admin.ModelAdmin):
         "date_joined",
         "billing_info_display",
         "shipping_info_display",
+        "is_email_verified",
+        "email_verification_sent_at",
+        "email_verification_token",
         "created_at",
         "updated_at",
     )
@@ -406,7 +409,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
     list_per_page = 25
 
-    actions = ["approve_users", "reject_users"]
+    actions = ["approve_users", "reject_users", "apply_queued_changes"]
 
     fieldsets = (
         (None, {"fields": ("email",)}),
@@ -500,7 +503,54 @@ class CustomUserAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:  # Adding new user
             return CustomUserCreationForm
-        return super().get_form(request, obj, **kwargs)
+
+        # Use a custom form for editing existing users
+        form_class = super().get_form(request, obj, **kwargs)
+
+        class CustomUserChangeForm(form_class):
+            def save(self, commit=True):
+                # Get original status before saving
+                original_status = None
+                if self.instance.pk:
+                    try:
+                        original_user = CustomUser.objects.get(pk=self.instance.pk)
+                        original_status = original_user.status
+                    except CustomUser.DoesNotExist:
+                        pass
+
+                # Save the user
+                user = super().save(commit)
+
+                # Check if status changed from pending to approved
+                if (
+                    original_status == "pending"
+                    and user.status == "approved"
+                    and commit
+                ):
+                    # Send verification email
+                    from app_users.views import send_verification_email
+                    from django.test import RequestFactory
+
+                    # Create a mock request for email sending
+                    factory = RequestFactory()
+                    request = factory.get("/admin/")
+                    request.META["HTTP_HOST"] = "localhost:8000"
+                    request.META["SERVER_PORT"] = "8000"
+                    request.META["wsgi.url_scheme"] = "http"
+
+                    try:
+                        send_verification_email(user, request)
+                    except Exception as e:
+                        import logging
+
+                        logger = logging.getLogger(__name__)
+                        logger.error(
+                            f"Failed to send verification email to {user.email}: {e}"
+                        )
+
+                return user
+
+        return CustomUserChangeForm
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -710,12 +760,48 @@ class CustomUserAdmin(admin.ModelAdmin):
     # Custom admin actions
     def approve_users(self, request, queryset):
         """Approve selected users"""
+        from app_users.views import send_verification_email
+        import logging
+
+        logger = logging.getLogger(__name__)
+        email_success_count = 0
+        email_fail_count = 0
+
+        # Get users that are currently pending before updating
+        pending_users = list(queryset.filter(status="pending"))
+
         # Update both status and is_active for approved users
         updated = queryset.update(status="approved", is_active=True)
+
+        # Send verification emails to users who were pending
+        for user in pending_users:
+            try:
+                # Refresh the user object to get the updated status
+                user.refresh_from_db()
+
+                email_sent = send_verification_email(user, request)
+                if email_sent:
+                    email_success_count += 1
+                else:
+                    email_fail_count += 1
+            except Exception as e:
+                email_fail_count += 1
+                logger.error(f"Failed to send verification email to {user.email}: {e}")
+
+        # Create success message
         if updated == 1:
             message = "1 user was successfully approved and activated."
         else:
             message = f"{updated} users were successfully approved and activated."
+
+        # Add email status to message
+        if email_success_count > 0:
+            message += f" Verification emails sent to {email_success_count} user(s)."
+        if email_fail_count > 0:
+            message += (
+                f" Failed to send verification emails to {email_fail_count} user(s)."
+            )
+
         self.message_user(request, message, messages.SUCCESS)
 
     approve_users.short_description = "Approve selected users"
@@ -730,6 +816,134 @@ class CustomUserAdmin(admin.ModelAdmin):
         self.message_user(request, message, messages.SUCCESS)
 
     reject_users.short_description = "Reject selected users"
+
+    def apply_queued_changes(self, request, queryset):
+        """Apply queued status changes"""
+        from app_users.views import send_verification_email
+        import logging
+        import json
+
+        logger = logging.getLogger(__name__)
+        applied_count = 0
+        email_count = 0
+
+        # Get changes from POST data
+        changes_data = []
+        for key, value in request.POST.items():
+            if key.startswith("changes[") and key.endswith("].userId"):
+                index = key.split("[")[1].split("]")[0]
+                changes_data.append(
+                    {
+                        "userId": value,
+                        "fromStatus": request.POST.get(
+                            f"changes[{index}].fromStatus", ""
+                        ),
+                        "toStatus": request.POST.get(f"changes[{index}].toStatus", ""),
+                    }
+                )
+
+        # Apply each change
+        for change in changes_data:
+            try:
+                user = CustomUser.objects.get(pk=change["userId"])
+                original_status = user.status
+
+                # Send verification email if status changed from pending to approved
+                if original_status == "pending" and change["toStatus"] == "approved":
+                    try:
+                        from django.test import RequestFactory
+                        from django.conf import settings
+
+                        factory = RequestFactory()
+                        mock_request = factory.get("/admin/")
+
+                        # Use settings to determine the correct host and scheme
+                        if (
+                            hasattr(settings, "ALLOWED_HOSTS")
+                            and settings.ALLOWED_HOSTS
+                        ):
+                            host = settings.ALLOWED_HOSTS[0]
+                        else:
+                            host = "localhost:8000"
+
+                        mock_request.META["HTTP_HOST"] = host
+                        mock_request.META["SERVER_PORT"] = "8000"
+                        mock_request.META["wsgi.url_scheme"] = "http"
+
+                        # Add user to the request for proper context
+                        mock_request.user = request.user
+
+                        email_sent = send_verification_email(user, mock_request)
+                        if email_sent:
+                            email_count += 1
+                            logger.info(
+                                f"Verification email sent to {user.email} via modal update"
+                            )
+                        else:
+                            logger.warning(
+                                f"Failed to send verification email to {user.email} via modal update"
+                            )
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to send verification email to {user.email}: {e}"
+                        )
+
+                # Update status
+                user.status = change["toStatus"]
+                if change["toStatus"] == "approved":
+                    user.is_active = True
+                user.save()
+
+                applied_count += 1
+
+            except CustomUser.DoesNotExist:
+                logger.error(f"User with ID {change['userId']} not found")
+            except Exception as e:
+                logger.error(f"Error applying change for user {change['userId']}: {e}")
+
+        # Return JSON response for AJAX requests
+        if request.headers.get(
+            "X-Requested-With"
+        ) == "XMLHttpRequest" or "application/json" in request.headers.get(
+            "Accept", ""
+        ):
+            from django.http import JsonResponse
+
+            # Create success message
+            if applied_count == 1:
+                message = f"1 change applied successfully. {email_count} verification emails sent."
+            else:
+                message = f"{applied_count} changes applied successfully. {email_count} verification emails sent."
+
+            return JsonResponse(
+                {
+                    "success": True,
+                    "applied_count": applied_count,
+                    "email_count": email_count,
+                    "message": message,
+                }
+            )
+
+        # Regular admin response
+        if applied_count == 1:
+            message = f"1 change applied successfully. {email_count} verification emails sent."
+        else:
+            message = f"{applied_count} changes applied successfully. {email_count} verification emails sent."
+
+        self.message_user(request, message, messages.SUCCESS)
+
+    apply_queued_changes.short_description = "Apply queued changes"
+
+    def changelist_view(self, request, extra_context=None):
+        """Override changelist_view to handle queued changes POST request"""
+        if (
+            request.method == "POST"
+            and request.POST.get("action") == "apply_queued_changes"
+        ):
+            # Handle the queued changes application
+            return self.apply_queued_changes(request, self.get_queryset(request))
+
+        return super().changelist_view(request, extra_context)
 
     def get_queryset(self, request):
         """Exclude the currently logged-in user from the queryset"""

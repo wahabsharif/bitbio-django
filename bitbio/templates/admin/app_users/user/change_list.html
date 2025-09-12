@@ -1,0 +1,935 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .status-dropdown {
+        padding: 4px 12px;
+        border: none;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        min-width: 100px;
+        height: 24px;
+        cursor: pointer;
+        text-align: center;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+        padding-right: 30px;
+    }
+    
+    .status-dropdown:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 123, 186, 0.25);
+    }
+    
+    .status-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .que-changes-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 7px 12px;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-left: 10px;
+        font-weight: 400;
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .que-changes-btn:hover {
+        background: #218838;
+    }
+    
+    .que-changes-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .que-count {
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        margin-left: 5px;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 8px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: black;
+    }
+    
+    .change-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 4px;
+        border-left: 4px solid #007cba;
+    }
+    
+    .change-info {
+        flex: 1;
+    }
+    
+    .change-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .remove-change {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .update-single {
+        background: #007cba;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .update-single:hover {
+        background: #005a8b;
+    }
+    
+    .apply-changes {
+        background: #007cba;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        width: 100%;
+    }
+    
+    .apply-changes:hover {
+        background: #005a8b;
+    }
+    
+    .remove-all-changes {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 10px;
+        width: 100%;
+    }
+    
+    .remove-all-changes:hover {
+        background: #c82333;
+    }
+    
+    .modal-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+    }
+    
+    .no-changes {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 20px;
+    }
+    
+    /* Success message styling */
+    .messagelist .success {
+        background-color: #d4edda !important;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 12px 16px;
+        margin: 10px 0;
+        border-radius: 4px;
+        list-style: none;
+        font-weight: 500;
+    }
+    
+    .messagelist .success ul {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .messagelist .success li {
+        margin: 0;
+        padding: 0;
+        font-weight: 500;
+        background: none !important;
+        font-weight: 500;
+    }
+    ul.messagelist li{
+        background: none !important;
+    }
+    
+    /* Info message styling */
+    .messagelist .info {
+        background-color: #d1ecf1 !important;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 12px 16px;
+        margin: 10px 0;
+        border-radius: 4px;
+        list-style: none;
+        font-weight: 500;
+    }
+    
+    .messagelist .info ul {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .messagelist .info li {
+        margin: 0;
+        padding: 0;
+        font-weight: 500;
+        background: none !important;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block object-tools-items %}
+{{ block.super }}
+<li>
+    <button type="button" class="que-changes-btn" id="queChangesBtn" onclick="openQueModal()">
+        Que Changes <span class="que-count" id="queCount" style="display: none;">0</span>
+    </button>
+</li>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<!-- Que Changes Modal -->
+<div id="queModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Queued Status Changes</h2>
+            <span class="close" onclick="closeQueModal()">&times;</span>
+        </div>
+        <div id="queContent">
+            <div class="no-changes">No changes queued</div>
+        </div>
+        <div class="modal-actions" style="display: none;">
+            <button type="button" class="apply-changes" id="applyChangesBtn" onclick="applyChanges()">
+                Apply All Changes
+            </button>
+            <button type="button" class="remove-all-changes" id="removeAllChangesBtn" onclick="removeAllChanges()">
+                Remove All Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Queue for storing pending changes
+let changeQueue = [];
+
+// Function to show success messages
+function showSuccessMessage(message) {
+    // Create a success message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'messagelist';
+    messageDiv.innerHTML = `
+        <li class="success">
+            <ul class="messagelist">
+                <li>${message}</li>
+            </ul>
+        </li>
+    `;
+    
+    // Insert the message at the top of the content
+    const content = document.querySelector('#content');
+    if (content) {
+        content.insertBefore(messageDiv, content.firstChild);
+        
+        // Auto-remove the message after 8 seconds
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 8000);
+    }
+}
+
+// Function to update displayed data without page reload
+function updateDisplayedData() {
+    // Get all table rows
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    
+    rows.forEach((row) => {
+        const userId = getUserIdFromRow(row);
+        if (userId) {
+            // Find the status dropdown in this row
+            const statusDropdown = row.querySelector('select.status-dropdown');
+            if (statusDropdown) {
+                // Update the original status to match current selection
+                statusDropdown.dataset.originalStatus = statusDropdown.value;
+                
+                // Update the dropdown color to match the new status
+                updateDropdownColor(statusDropdown, statusDropdown.value);
+            }
+        }
+    });
+    
+    // Update any status badges or other visual indicators
+    updateStatusBadges();
+    
+    // Optionally refresh the table data from server
+    refreshTableData();
+}
+
+// Function to refresh table data from server
+function refreshTableData() {
+    // Make an AJAX request to get the latest table data
+    fetch(window.location.href, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Parse the response to extract the table content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newTable = doc.querySelector('#result_list tbody');
+        
+        if (newTable) {
+            const currentTable = document.querySelector('#result_list tbody');
+            if (currentTable) {
+                // Update the table content
+                currentTable.innerHTML = newTable.innerHTML;
+                
+                // Re-add status dropdowns to the updated table
+                setTimeout(() => {
+                    addStatusDropdowns();
+                    restoreQueuedChangesToDropdowns();
+                }, 100);
+            }
+        }
+    })
+    .catch(error => {
+        console.log('Could not refresh table data:', error);
+        // If refresh fails, just update the visual indicators
+        updateStatusBadges();
+    });
+}
+
+// Function to update status badges in the table
+function updateStatusBadges() {
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    
+    rows.forEach((row) => {
+        const statusDropdown = row.querySelector('select.status-dropdown');
+        if (statusDropdown) {
+            const currentStatus = statusDropdown.value;
+            
+            // If there are any status badge elements, update them
+            const statusBadge = row.querySelector('.status-badge, [class*="status"]');
+            if (statusBadge) {
+                // Update the badge content based on the new status
+                if (currentStatus === 'approved') {
+                    statusBadge.innerHTML = '<span style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">✓ Approved</span>';
+                } else if (currentStatus === 'pending') {
+                    statusBadge.innerHTML = '<span style="background: #f39c12; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">⏳ Pending</span>';
+                } else if (currentStatus === 'rejected') {
+                    statusBadge.innerHTML = '<span style="background: #e74c3c; color: white; padding: 0.25rem 0.75rem; font-size: 0.8rem;">✗ Rejected</span>';
+                }
+            }
+        }
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a small delay to ensure the table is fully rendered
+    setTimeout(function() {
+        // Add status dropdowns to each row
+        addStatusDropdowns();
+        
+        // If no rows found, try again after a longer delay
+        if (document.querySelectorAll('#result_list tbody tr').length === 0) {
+            setTimeout(addStatusDropdowns, 500);
+        }
+        
+        // Load existing queue from localStorage
+        loadQueueFromStorage();
+        updateQueButton();
+        
+        // Restore queued changes to dropdowns
+        restoreQueuedChangesToDropdowns();
+    }, 100);
+});
+
+// Also try to run immediately in case DOM is already loaded
+if (document.readyState !== 'loading') {
+    addStatusDropdowns();
+}
+
+function addStatusDropdowns() {
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    
+    // First, let's check the header to find the status column index
+    const headerRow = document.querySelector('#result_list thead tr');
+    let statusColumnIndex = -1;
+    if (headerRow) {
+        const headers = headerRow.querySelectorAll('th');
+        headers.forEach((header, index) => {
+            const headerText = header.textContent.trim().toLowerCase();
+            // Only match exact "status" or "status " (with trailing space)
+            if (headerText === 'status' || headerText === 'status ') {
+                statusColumnIndex = index;
+            }
+        });
+    }
+    
+    // If we couldn't find by header, let's try to find it by looking for the status badge
+    if (statusColumnIndex === -1) {
+        if (rows.length > 0) {
+            const firstRow = rows[0];
+            const cells = firstRow.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                const cellText = cell.textContent.trim();
+                const hasStatusBadge = cell.querySelector('span[style*="background"]') || 
+                                     cell.querySelector('span[style*="color"]');
+                const hasStatusText = cellText.includes('Approved') || 
+                                    cellText.includes('Pending') || 
+                                    cellText.includes('Rejected') ||
+                                    cellText.includes('✓') ||
+                                    cellText.includes('⏳') ||
+                                    cellText.includes('✗');
+                
+                if (hasStatusBadge && hasStatusText) {
+                    statusColumnIndex = index;
+                }
+            });
+        }
+    }
+    
+    if (statusColumnIndex === -1) {
+        statusColumnIndex = 5; 
+    }
+    
+    // The table structure is different between header and data rows
+    if (statusColumnIndex >= 0) {
+        // Use the correct index based on the actual data structure
+        statusColumnIndex = 4; 
+    }
+    
+    rows.forEach((row, index) => {
+        let statusCell = null;
+        
+        if (statusColumnIndex >= 0) {
+            // Use column index if we found it
+            const cells = row.querySelectorAll('td');
+            if (cells[statusColumnIndex]) {
+                statusCell = cells[statusColumnIndex];
+            }
+        }
+        
+        if (!statusCell) {
+            statusCell = row.querySelector('td.field-status_badge') || 
+                        row.querySelector('td[class*="status"]') ||
+                        findStatusCell(row);
+        }
+        
+        if (statusCell) {
+            const cellText = statusCell.textContent.trim();
+            const isStatusColumn = cellText.includes('Approved') || 
+                                 cellText.includes('Pending') || 
+                                 cellText.includes('Rejected') ||
+                                 cellText.includes('✓') ||
+                                 cellText.includes('⏳') ||
+                                 cellText.includes('✗');
+            
+            if (isStatusColumn) {
+                const currentStatus = getCurrentStatusFromCell(statusCell);
+                
+                const dropdown = createStatusDropdown(currentStatus, row);
+                
+                dropdown.style.color = 'white';
+                dropdown.style.border = 'none';
+                dropdown.style.borderRadius = '12px';
+                dropdown.style.padding = '4px 12px';
+                dropdown.style.fontSize = '11px';
+                dropdown.style.fontWeight = 'bold';
+                dropdown.style.cursor = 'pointer';
+                dropdown.style.minWidth = '100px';
+                dropdown.style.textAlign = 'center';
+                
+                statusCell.innerHTML = '';
+                statusCell.appendChild(dropdown);
+            }
+        }
+    });
+}
+
+function findStatusCell(row) {
+    const cells = row.querySelectorAll('td');
+    for (let cell of cells) {
+        if (cell.querySelector('span[style*="background"]') || 
+            cell.querySelector('span[style*="color"]') ||
+            cell.textContent.includes('Approved') || 
+            cell.textContent.includes('Pending') || 
+            cell.textContent.includes('Rejected') ||
+            cell.textContent.includes('✓') ||
+            cell.textContent.includes('⏳') ||
+            cell.textContent.includes('✗')) {
+            return cell;
+        }
+    }
+    return null;
+}
+
+function getCurrentStatusFromCell(statusCell) {
+    const text = statusCell.textContent.trim();
+    if (text.includes('Approved')) return 'approved';
+    if (text.includes('Pending')) return 'pending';
+    if (text.includes('Rejected')) return 'rejected';
+    return 'pending'; 
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'approved':
+            return '#28a745'; 
+        case 'pending':
+            return '#ffc107'; 
+        case 'rejected':
+            return '#dc3545'; 
+        default:
+            return '#6c757d'; 
+    }
+}
+
+function createStatusDropdown(currentStatus, row) {
+    const dropdown = document.createElement('select');
+    dropdown.className = 'status-dropdown';
+    
+    updateDropdownColor(dropdown, currentStatus);
+    
+    dropdown.onchange = function() {
+        updateDropdownColor(this, this.value);
+        handleStatusChange(this, row);
+    };
+    
+    setOriginalStatus(dropdown, currentStatus);
+    
+    const options = [
+        { value: 'pending', text: '⏳ Pending' },
+        { value: 'approved', text: '✓ Approved' },
+        { value: 'rejected', text: '✗ Rejected' }
+    ];
+    
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.value;
+        optionElement.textContent = option.text;
+        if (option.value === currentStatus) {
+            optionElement.selected = true;
+        }
+        dropdown.appendChild(optionElement);
+    });
+    
+    return dropdown;
+}
+
+function updateDropdownColor(dropdown, status) {
+    const color = getStatusColor(status);
+    dropdown.style.background = color;
+}
+
+function handleStatusChange(dropdown, row) {
+    const newStatus = dropdown.value;
+    const userId = getUserIdFromRow(row);
+    const userEmail = getUserEmailFromRow(row);
+    const currentStatus = getCurrentStatusFromRow(row);
+    
+    if (newStatus === currentStatus) {  
+        removeFromQueue(userId);
+    } else {
+        addToQueue(userId, userEmail, currentStatus, newStatus);
+    }
+    
+    updateQueButton();
+    saveQueueToStorage();
+}
+
+function getUserIdFromRow(row) {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    return checkbox ? checkbox.value : null;
+}
+
+function getUserEmailFromRow(row) {
+    const firstNameCell = row.querySelector('td.field-first_name');
+    const lastNameCell = row.querySelector('td.field-last_name');
+    
+    let emailCell = row.querySelector('td.field-email');
+    
+    if (!emailCell) {
+        const cells = row.querySelectorAll('td');
+        for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            const text = cell.textContent.trim();
+            if (text.includes('@') && text.includes('.') && text.length > 5) {
+                emailCell = cell;
+                break;
+            }
+        }
+    }
+    
+    if (!emailCell) {
+        const userId = getUserIdFromRow(row);
+        if (userId) {
+            const userLink = row.querySelector('a[href*="/change/"]');
+            if (userLink) {
+                const email = userLink.textContent.trim();
+                if (email.includes('@') && email.includes('.')) {
+                    emailCell = { textContent: email };
+                }
+            }
+        }
+    }
+    
+    if (firstNameCell && lastNameCell && emailCell) {
+        const firstName = firstNameCell.textContent.trim();
+        const lastName = lastNameCell.textContent.trim();
+        const email = emailCell.textContent.trim();
+        return `${firstName} ${lastName} (${email})`;
+    }
+    
+    if (firstNameCell && lastNameCell) {
+        const firstName = firstNameCell.textContent.trim();
+        const lastName = lastNameCell.textContent.trim();
+        return `${firstName} ${lastName}`;
+    }
+    
+    return 'Unknown User';
+}
+
+function getCurrentStatusFromRow(row) {
+    const statusCell = row.querySelector('td select.status-dropdown');
+    return statusCell ? statusCell.dataset.originalStatus : 'pending';
+}
+
+function setOriginalStatus(dropdown, currentStatus) {
+    dropdown.dataset.originalStatus = currentStatus;
+}
+
+function addToQueue(userId, userEmail, fromStatus, toStatus) {
+    changeQueue = changeQueue.filter(change => change.userId !== userId);
+    
+    changeQueue.push({
+        userId: userId,
+        userEmail: userEmail,
+        fromStatus: fromStatus,
+        toStatus: toStatus,
+        timestamp: new Date().toLocaleTimeString()
+    });
+}
+
+function removeFromQueue(userId) {
+    changeQueue = changeQueue.filter(change => change.userId !== userId);
+}
+
+function updateQueButton() {
+    const queBtn = document.getElementById('queChangesBtn');
+    const queCount = document.getElementById('queCount');
+    
+    if (changeQueue.length > 0) {
+        queCount.textContent = changeQueue.length;
+        queCount.style.display = 'inline';
+        queBtn.disabled = false;
+    } else {
+        queCount.style.display = 'none';
+        queBtn.disabled = true;
+    }
+}
+
+function openQueModal() {
+    const modal = document.getElementById('queModal');
+    const content = document.getElementById('queContent');
+    const modalActions = document.querySelector('.modal-actions');
+    
+    if (changeQueue.length === 0) {
+        content.innerHTML = '<div class="no-changes">No changes queued</div>';
+        modalActions.style.display = 'none';
+    } else {
+        content.innerHTML = changeQueue.map(change => `
+            <div class="change-item">
+                <div class="change-info">
+                    <strong>${change.userEmail}</strong><br>
+                    <small>${change.fromStatus} → ${change.toStatus}</small><br>
+                    <small style="color: #6c757d;">${change.timestamp}</small>
+                </div>
+                <div class="change-actions">
+                    <button type="button" class="update-single" onclick="updateSingleChange('${change.userId}')">
+                        Update
+                    </button>
+                    <button type="button" class="remove-change" onclick="removeChange('${change.userId}')">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        modalActions.style.display = 'flex';
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeQueModal() {
+    document.getElementById('queModal').style.display = 'none';
+}
+
+function removeChange(userId) {
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    rows.forEach((row) => {
+        const rowUserId = getUserIdFromRow(row);
+        if (rowUserId === userId) {
+            const statusDropdown = row.querySelector('select.status-dropdown');
+            if (statusDropdown) {
+                const originalStatus = statusDropdown.dataset.originalStatus || 'pending';
+                statusDropdown.value = originalStatus;
+                updateDropdownColor(statusDropdown, originalStatus);
+            }
+        }
+    });
+    
+    removeFromQueue(userId);
+    updateQueButton();
+    saveQueueToStorage();
+    openQueModal(); 
+}
+
+function updateSingleChange(userId) {
+    const change = changeQueue.find(c => c.userId === userId);
+    if (!change) return;
+    
+    const updateBtn = event.target;
+    const originalText = updateBtn.textContent;
+    updateBtn.textContent = 'Updating...';
+    updateBtn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('action', 'apply_queued_changes');
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('changes[0].userId', change.userId);
+    formData.append('changes[0].fromStatus', change.fromStatus);
+    formData.append('changes[0].toStatus', change.toStatus);
+    
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showSuccessMessage(data.message || 'Status updated successfully!');
+            
+            // Update the displayed data without reloading
+            updateDisplayedData();
+            
+            removeFromQueue(userId);
+            updateQueButton();
+            saveQueueToStorage();
+            closeQueModal();
+        } else {
+            alert('Error updating status: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Error updating status: ' + error.message);
+    })
+    .finally(() => {
+        updateBtn.textContent = originalText;
+        updateBtn.disabled = false;
+    });
+}
+
+function removeAllChanges() {
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    rows.forEach((row) => {
+        const statusDropdown = row.querySelector('select.status-dropdown');
+        if (statusDropdown) {
+            const originalStatus = statusDropdown.dataset.originalStatus || 'pending';
+            statusDropdown.value = originalStatus;
+            updateDropdownColor(statusDropdown, originalStatus);
+        }
+    });
+    
+    changeQueue = [];
+    updateQueButton();
+    saveQueueToStorage();
+    closeQueModal();
+}
+
+function applyChanges() {
+    if (changeQueue.length === 0) return;
+    
+    const applyBtn = document.getElementById('applyChangesBtn');
+    const originalText = applyBtn.textContent;
+    applyBtn.textContent = 'Applying Changes...';
+    applyBtn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('action', 'apply_queued_changes');
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    changeQueue.forEach((change, index) => {
+        formData.append(`changes[${index}].userId`, change.userId);
+        formData.append(`changes[${index}].fromStatus`, change.fromStatus);
+        formData.append(`changes[${index}].toStatus`, change.toStatus);
+    });
+    
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showSuccessMessage(data.message || 'Changes applied successfully!');
+            
+            // Update the displayed data without reloading
+            updateDisplayedData();
+            
+            changeQueue = [];
+            updateQueButton();
+            saveQueueToStorage();
+            closeQueModal();
+        } else {
+            alert('Error applying changes: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Error applying changes: ' + error.message);
+    })
+    .finally(() => {
+        applyBtn.textContent = originalText;
+        applyBtn.disabled = false;
+    });
+}
+
+function saveQueueToStorage() {
+    localStorage.setItem('userStatusQueue', JSON.stringify(changeQueue));
+}
+
+function loadQueueFromStorage() {
+    const stored = localStorage.getItem('userStatusQueue');
+    if (stored) {
+        try {
+            changeQueue = JSON.parse(stored);
+        } catch (e) {
+            changeQueue = [];
+        }
+    }
+}
+
+function restoreQueuedChangesToDropdowns() {
+    if (changeQueue.length === 0) return;
+    
+    const rows = document.querySelectorAll('#result_list tbody tr');
+    rows.forEach((row) => {
+        const userId = getUserIdFromRow(row);
+        if (userId) {
+            const queuedChange = changeQueue.find(change => change.userId === userId);
+            if (queuedChange) {
+                const statusDropdown = row.querySelector('select.status-dropdown');
+                if (statusDropdown) {
+                    statusDropdown.value = queuedChange.toStatus;
+                   
+                    updateDropdownColor(statusDropdown, queuedChange.toStatus);
+                }
+            }
+        }
+    });
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('queModal');
+    if (event.target === modal) {
+        closeQueModal();
+    }
+}
+</script>
+{% endblock %}

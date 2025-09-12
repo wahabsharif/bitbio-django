@@ -9,4 +9,6 @@ urlpatterns = [
         "registration-success/", views.registration_success, name="registration_success"
     ),
     path("update-profile/", views.update_profile, name="update_profile"),
+    path("verify-email/<uuid:token>/", views.verify_email, name="verify_email"),
+    path("resend-verification/", views.resend_verification_email, name="resend_verification"),
 ]

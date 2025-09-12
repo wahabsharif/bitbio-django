@@ -1,15 +1,76 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from django.http import HttpResponseForbidden, JsonResponse
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from django.utils import timezone
 from functools import wraps
 from .forms import UserRegistrationForm, UserProfileUpdateForm
 from .models import User
 from .domain_management import should_auto_approve, get_email_domain
 from django.contrib.auth import update_session_auth_hash
+
+
+def send_verification_email(user, request):
+    """Send email verification email to user"""
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Generate a new verification token
+        user.generate_verification_token()
+
+        # Build verification URL
+        verification_url = request.build_absolute_uri(
+            f"/users/verify-email/{user.email_verification_token}/"
+        )
+
+        # Build logo URL dynamically based on current domain
+        logo_url = request.build_absolute_uri("/static/images/bitbio-logo.png")
+
+        # Prepare email context
+        context = {
+            "user": user,
+            "verification_url": verification_url,
+            "site_name": "Bit.bio",
+            "logo_url": logo_url,
+        }
+
+        # Render email templates
+        html_message = render_to_string("emails/email_verification.html", context)
+        plain_message = render_to_string("emails/email_verification.txt", context)
+
+        # Log email attempt
+        logger.info(f"Attempting to send verification email to {user.email}")
+        logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
+        logger.info(f"Email host: {settings.EMAIL_HOST}")
+        logger.info(f"From email: {settings.DEFAULT_FROM_EMAIL}")
+
+        # Send email
+        result = send_mail(
+            subject="Verify your email address - Bit.bio",
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+        logger.info(f"Email sent successfully to {user.email}. Result: {result}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send verification email to {user.email}: {e}")
+        logger.error(
+            f"Email configuration - Backend: {settings.EMAIL_BACKEND}, Host: {settings.EMAIL_HOST}, User: {settings.EMAIL_HOST_USER}"
+        )
+        return False
 
 
 def approved_user_required(view_func):
@@ -42,6 +103,27 @@ def registration_view(request):
         if form.is_valid():
             # Save the user first (this will set default values)
             user = form.save()
+            print(f"DEBUG: User created: {user.email}")
+            print(
+                f"DEBUG: User verification fields - is_email_verified: {user.is_email_verified}, token: {user.email_verification_token}, sent_at: {user.email_verification_sent_at}"
+            )
+
+            # Send email verification
+            try:
+                email_sent = send_verification_email(user, request)
+                print(f"DEBUG: Email sending result: {email_sent}")
+            except Exception as e:
+                print(f"DEBUG: Error sending verification email: {e}")
+                import traceback
+
+                traceback.print_exc()
+                email_sent = False
+
+            # Debug: Check user state after email sending
+            user.refresh_from_db()
+            print(
+                f"DEBUG: User after email sending - is_email_verified: {user.is_email_verified}, token: {user.email_verification_token}, sent_at: {user.email_verification_sent_at}"
+            )
 
             # Now check if user should be auto-approved based on email domain
             auto_approve = should_auto_approve(user.email)
@@ -59,10 +141,11 @@ def registration_view(request):
                 # Set session variables for success template
                 request.session["registration_auto_approved"] = True
                 request.session["registration_email"] = user.email
+                request.session["email_verification_sent"] = email_sent
 
                 messages.success(
                     request,
-                    f"Your account has been automatically approved! You can now sign in with {user.email}.",
+                    f"Your account has been automatically approved! Please check your email ({user.email}) to verify your email address before signing in.",
                 )
             else:
                 # Update the user status and save again
@@ -72,10 +155,11 @@ def registration_view(request):
                 # Set session variables for success template
                 request.session["registration_auto_approved"] = False
                 request.session["registration_email"] = user.email
+                request.session["email_verification_sent"] = email_sent
 
                 messages.success(
                     request,
-                    "Registration successful! Your account is pending approval. ",
+                    "Registration successful! Please check your email to verify your email address. Your account is also pending approval.",
                 )
 
             return redirect("registration_success")
@@ -96,13 +180,25 @@ def registration_view(request):
 
 def registration_success(request):
     """Display success message after registration"""
+    context = {
+        "registration_auto_approved": request.session.get(
+            "registration_auto_approved", False
+        ),
+        "registration_email": request.session.get("registration_email", ""),
+        "email_verification_sent": request.session.get(
+            "email_verification_sent", False
+        ),
+    }
+
     # Clear the session variables after displaying them
     if "registration_auto_approved" in request.session:
         del request.session["registration_auto_approved"]
     if "registration_email" in request.session:
         del request.session["registration_email"]
+    if "email_verification_sent" in request.session:
+        del request.session["email_verification_sent"]
 
-    return render(request, "registration_success.html")
+    return render(request, "registration_success.html", context)
 
 
 @login_required
@@ -180,3 +276,84 @@ class UserRegistrationView(CreateView):
     def form_invalid(self, form):
         messages.error(self.request, "Please correct the errors below.")
         return super().form_invalid(form)
+
+
+def verify_email(request, token):
+    """Verify email address using the provided token"""
+    try:
+        user = get_object_or_404(User, email_verification_token=token)
+
+        if user.is_email_verified:
+            messages.info(request, "Your email address has already been verified.")
+        else:
+            user.verify_email()
+            messages.success(
+                request, "Email address verified successfully! You can now sign in."
+            )
+
+        return redirect("account")
+
+    except User.DoesNotExist:
+        messages.error(
+            request,
+            "Invalid verification link. Please contact support if you continue to have issues.",
+        )
+        return redirect("account")
+
+
+def resend_verification_email(request):
+    """Resend verification email for logged-in users or by email"""
+    if request.user.is_authenticated:
+        # Handle logged-in users
+        if request.user.is_email_verified:
+            messages.info(request, "Your email address is already verified.")
+            return redirect("account")
+
+        if request.method == "POST":
+            email_sent = send_verification_email(request.user, request)
+            if email_sent:
+                messages.success(
+                    request, f"Verification email sent to {request.user.email}."
+                )
+            else:
+                messages.error(
+                    request,
+                    "Failed to send verification email. Please try again or contact support.",
+                )
+    else:
+        # Handle unauthenticated users - they need to provide email
+        if request.method == "POST":
+            email = request.POST.get("email", "").strip()
+            if not email:
+                messages.error(request, "Please provide your email address.")
+                return redirect("account")
+
+            try:
+                user = User.objects.get(email__iexact=email)
+                if user.is_email_verified:
+                    messages.info(request, "Your email address is already verified.")
+                    return redirect("account")
+
+                email_sent = send_verification_email(user, request)
+                if email_sent:
+                    messages.success(
+                        request, f"Verification email sent to {user.email}."
+                    )
+                    # Show success message on the resend page
+                    return render(
+                        request,
+                        "resend_verification.html",
+                        {"email_sent": True, "user_email": user.email},
+                    )
+                else:
+                    messages.error(
+                        request,
+                        "Failed to send verification email. Please try again or contact support.",
+                    )
+            except User.DoesNotExist:
+                messages.error(request, "No account found with that email address.")
+
+        # Show form for email input (GET request or after error)
+        return render(request, "resend_verification.html")
+
+    return redirect("account")

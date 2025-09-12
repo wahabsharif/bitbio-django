@@ -242,12 +242,12 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 
-# Cache configuration - using database cache instead of Redis
+# Cache configuration - using local memory cache for development
 # Optimized for production server with 8GB RAM
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "cache_table",
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
         "KEY_PREFIX": "bitbio",
         "TIMEOUT": int(
             os.getenv("CACHE_TIMEOUT", "600")
@@ -350,6 +350,23 @@ DATABASES["default"]["OPTIONS"].update(
         "write_timeout": 30,
     }
 )
+
+# Email configuration
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "member.bit.bio")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
+EMAIL_USE_TLS = (
+    os.getenv("EMAIL_USE_TLS", "False").lower() == "true"
+)  # SSL is used instead of TLS for port 465
+EMAIL_USE_SSL = (
+    os.getenv("EMAIL_USE_SSL", "True").lower() == "true"
+)  # Use SSL for port 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "dev@member.bit.bio")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "dev@member.bit.bio")
+SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
 # Security headers for production
 if not DEBUG:

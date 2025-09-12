@@ -57,8 +57,19 @@ def account(request):
 
             if user is not None:
                 if user.is_active:
+                    # Check email verification first
+                    if not user.is_email_verified:
+                        messages.error(
+                            request,
+                            f"Please verify your email address before signing in. We sent a verification email to {user.email}. Check your inbox and spam folder.",
+                        )
+                        # Add option to resend verification email
+                        messages.info(
+                            request,
+                            f'<a href="/users/resend-verification/" style="color: #0066cc; text-decoration: underline;">Click here to resend verification email</a>',
+                        )
                     # Check user status before allowing access
-                    if user.status == "approved":
+                    elif user.status == "approved":
                         login(request, user)
                         messages.success(request, f"Welcome back, {user.first_name}!")
                         return redirect("calculator:calculator")
@@ -126,10 +137,31 @@ def registration(request):
             # Save the user first (this will set default values)
             user = form.save()
 
-            # Now check if user should be auto-approved based on email domain
+            # Check if user should be auto-approved based on email domain
             auto_approve = should_auto_approve(user.email)
-
             domain = get_email_domain(user.email)
+
+            # Only send verification email for whitelisted domains
+            email_sent = False
+            if auto_approve:
+                # Send email verification for whitelisted domains
+                from app_users.views import send_verification_email
+
+                try:
+                    email_sent = send_verification_email(user, request)
+                    print(
+                        f"DEBUG: Email sending result for whitelisted domain: {email_sent}"
+                    )
+                except Exception as e:
+                    print(f"DEBUG: Error sending verification email: {e}")
+                    import traceback
+
+                    traceback.print_exc()
+                    email_sent = False
+            else:
+                print(
+                    f"DEBUG: Domain {domain} not whitelisted - skipping verification email"
+                )
 
             # Clear any existing messages before adding registration message
             storage = messages.get_messages(request)
@@ -141,10 +173,16 @@ def registration(request):
                 user.is_active = True
                 user.save()
 
-                messages.success(
-                    request,
-                    f"Your account has been automatically approved! You can now sign in with {user.email}.",
-                )
+                if email_sent:
+                    messages.success(
+                        request,
+                        f"Your account has been automatically approved! Please check your email ({user.email}) to verify your email address before signing in.",
+                    )
+                else:
+                    messages.success(
+                        request,
+                        f"Your account has been automatically approved! You can now sign in with {user.email}.",
+                    )
             else:
                 # Update the user status and save again
                 user.is_active = False  # User needs manual approval
@@ -159,6 +197,7 @@ def registration(request):
             # Pass registration status via session
             request.session["registration_auto_approved"] = auto_approve
             request.session["registration_email"] = user.email
+            request.session["email_verification_sent"] = email_sent
 
             return redirect("registration_success")
         else:
@@ -181,17 +220,21 @@ def registration_success(request):
     # Get session variables before clearing them
     auto_approved = request.session.get("registration_auto_approved", False)
     email = request.session.get("registration_email", "")
+    email_verification_sent = request.session.get("email_verification_sent", False)
 
     # Clear the session variables after getting them
     if "registration_auto_approved" in request.session:
         del request.session["registration_auto_approved"]
     if "registration_email" in request.session:
         del request.session["registration_email"]
+    if "email_verification_sent" in request.session:
+        del request.session["email_verification_sent"]
 
     # Pass values to template context
     context = {
         "registration_auto_approved": auto_approved,
         "registration_email": email,
+        "email_verification_sent": email_verification_sent,
     }
     return render(request, "registration_success.html", context)
 

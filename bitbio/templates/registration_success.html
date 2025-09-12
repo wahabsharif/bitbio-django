@@ -30,6 +30,10 @@
     color: #666;
     margin-bottom: 2rem;
   }
+  .success-message div {
+    padding: 20px;
+    margin: 20px 0;
+  }
 
   .back-link {
     display: inline-block;
@@ -52,10 +56,25 @@
   <h1 class="success-title">Registration Successful!</h1>
   <div class="success-message">
     {% if registration_auto_approved %}
-      <p>Your account has been automatically approved! You can now sign in with {{ registration_email }}.</p>
+      {% if email_verification_sent %}
+        <div>
+          <h3>Email Verification Required</h3>
+          <p>Verification email sent to <strong>{{ registration_email }}</strong></p>
+          <p>Please check your email and click the verification link before signing in. The email may take a few minutes to arrive.</p>
+          <p><small>Don't forget to check your spam folder if you don't see the email in your inbox.</small></p>
+        </div>
+      {% else %}
+        <p>Your account has been automatically approved!</p>
+        <p>You can now sign in with <strong>{{ registration_email }}</strong>.</p>
+      {% endif %}
     {% else %}
-      <p>Registration successful! Your account is pending approval. You will receive an email notification once your account is approved.</p>
+      <div>
+        <h3>Account Pending Approval</h3>
+        <p>We've received your registration for <strong>{{ registration_email }}</strong>. Your account will be reviewed and you'll receive an email notification once approved.</p>
+        <p><small>This process typically takes 1-2 business days. Thank you for your patience.</small></p>
+      </div>
     {% endif %}
+    
     <p>
       If you have any questions, please contact us at
       <a href="mailto:orders@bit.bio">orders@bit.bio</a>

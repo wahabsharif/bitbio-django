@@ -39,17 +39,82 @@ BitBio Django is a modern web application built with Django that provides:
 
 ### Prerequisites
 
+- Docker and Docker Compose
+- Git
+
+### Option 1: Docker Installation (Recommended)
+
+#### Development Environment
+
+1. **Clone the Repository**
+
+```bash
+git clone <repository-url>
+cd bitbio-django
+```
+
+2. **Create Environment File**
+
+```bash
+# Create .env file with your configuration
+cp .env.example .env
+# Edit .env with your database credentials and settings
+```
+
+3. **Build and Run Development Container**
+
+```bash
+# Build the Docker image
+docker-compose build
+
+# Run the development environment
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the development environment
+docker-compose down
+```
+
+4. **Access the Application**
+
+- Development server: `http://localhost:8000`
+- Admin interface: `http://localhost:8000/admin`
+
+#### Production Environment
+
+1. **Build and Run Production Container**
+
+```bash
+# Build the production image
+docker-compose -f docker-compose.prod.yml build
+
+# Run production environment
+docker-compose -f docker-compose.prod.yml up -d
+
+# View production logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Stop production environment
+docker-compose -f docker-compose.prod.yml down
+```
+
+### Option 2: Manual Installation
+
+#### Prerequisites
+
 - Python 3.8 or higher
 - MySQL server
 - Git
 
-### Step 1: Clone the Repository
+#### Step 1: Clone the Repository
 
 ```bash
 cd bitbio-django
 ```
 
-### Step 2: Create Virtual Environment
+#### Step 2: Create Virtual Environment
 
 ```bash
 python -m venv venv
@@ -59,7 +124,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### Step 3: Install Dependencies
+#### Step 3: Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -72,7 +137,7 @@ python -m playwright install chromium
 python -m playwright
 ```
 
-### Step 4: Database Setup
+#### Step 4: Database Setup
 
 1. Create MySQL database:
 
@@ -95,73 +160,118 @@ DATABASES = {
 }
 ```
 
-### Step 5: Run Migrations
+#### Step 5: Run Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### Step 6: Create Superuser
+#### Step 6: Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### Step 7: Run Development Server
+#### Step 7: Run Development Server
 
 ```bash
 python manage.py runserver
 ```
 
-The application will be available at `http://127.0.0.1:8000/`
+The application will be available at `http://localhost:8000/`
 
-## 🚀 Production Setup
+## 🐳 Docker Management
 
-For production deployment, follow these steps:
-
-### Step 1: Create Virtual Environment
+### Development Commands
 
 ```bash
-python -m venv venv
+# Start development environment
+docker-compose up -d
+
+# Start with logs visible
+docker-compose up
+
+# Stop development environment
+docker-compose down
+
+# Rebuild and start
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f
+
+# Execute commands in development container
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python manage.py shell
+
+# Access container shell
+docker-compose exec web bash
+
+# Remove all containers and volumes
+docker-compose down -v
 ```
 
-### Step 2: Activate Virtual Environment
+### Production Commands
 
 ```bash
-# On Windows
-venv\Scripts\activate
-# On macOS/Linux
-source venv/bin/activate
+# Start production environment
+docker-compose -f docker-compose.prod.yml up -d
+
+# Start with logs visible
+docker-compose -f docker-compose.prod.yml up
+
+# Stop production environment
+docker-compose -f docker-compose.prod.yml down
+
+# Rebuild and start production
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# View production logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Execute commands in production container
+docker-compose -f docker-compose.prod.yml exec web python manage.py migrate
+docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
+docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput
+
+# Access production container shell
+docker-compose -f docker-compose.prod.yml exec web bash
+
+# Restart production service
+docker-compose -f docker-compose.prod.yml restart web
+
+# Scale production service (if needed)
+docker-compose -f docker-compose.prod.yml up --scale web=2 -d
 ```
 
-### Step 3: Install Dependencies
+### Docker Image Management
 
 ```bash
-pip install -r requirements.txt
+# Build image without cache
+docker-compose build --no-cache
+
+# Build specific service
+docker-compose build web
+
+# Remove unused images
+docker image prune
+
+# Remove all unused Docker resources
+docker system prune -a
+
+# View running containers
+docker ps
+
+# View all containers (including stopped)
+docker ps -a
+
+# View Docker images
+docker images
+
+# Remove specific image
+docker rmi <image_id>
 ```
-
-### Step 4: Run Database Migrations
-
-```bash
-python manage.py migrate
-```
-
-### Step 5: Collect Static Files
-
-```bash
-python manage.py collectstatic --noinput
-```
-
-### Production Configuration
-
-Before deploying to production, ensure you have:
-
-1. Set `DEBUG = False` in `bitbio/settings.py`
-2. Configure production database credentials
-3. Set a secure `SECRET_KEY`
-4. Configure `ALLOWED_HOSTS` for your domain
-5. Set up proper static file serving (Apache)
-6. Configure HTTPS/SSL certificates
 
 ## 🔧 Configuration
 
@@ -218,32 +328,111 @@ The project includes several custom management commands:
 
 ## 🚀 Deployment
 
-### Production Checklist
+### Docker Deployment Checklist
 
-1. Set `DEBUG = False` in settings
-2. Configure production database
-3. Set up static file serving
-4. Configure HTTPS
-5. Set secure `SECRET_KEY`
-6. Configure `ALLOWED_HOSTS`
+1. **Pre-deployment Setup**
 
-### Static Files
+   - Set `DEBUG = False` in production environment
+   - Configure production database credentials
+   - Set secure `SECRET_KEY`
+   - Configure `ALLOWED_HOSTS` for your domain
+   - Set up SSL/HTTPS certificates
+   - Configure proper logging
+
+2. **Docker Production Deployment**
 
 ```bash
-python manage.py collectstatic
+# Build production image
+docker-compose -f docker-compose.prod.yml build
+
+# Deploy production environment
+docker-compose -f docker-compose.prod.yml up -d
+
+# Verify deployment status
+docker-compose -f docker-compose.prod.yml ps
+
+# Check application health
+curl -f http://localhost:8000/ || exit 1
 ```
 
-### Database Backup
+3. **Post-deployment Tasks**
 
 ```bash
-python manage.py dumpdata > backup.json
+# Create superuser
+docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
+
+# Run database migrations
+docker-compose -f docker-compose.prod.yml exec web python manage.py migrate
+
+# Collect static files
+docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput
+
+# Set up monitoring and logging
+docker-compose -f docker-compose.prod.yml logs -f web
+```
+
+### Static Files & Database Management
+
+```bash
+# Collect static files
+docker-compose exec web python manage.py collectstatic                    # Development
+docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput  # Production
+
+# Database backup
+docker-compose exec web python manage.py dumpdata > backup.json           # Development
+docker-compose -f docker-compose.prod.yml exec web python manage.py dumpdata > backup.json  # Production
+```
+
+### Troubleshooting Docker Deployment
+
+```bash
+# Check container status
+docker-compose -f docker-compose.prod.yml ps
+
+# View detailed logs
+docker-compose -f docker-compose.prod.yml logs --tail=100 web
+
+# Access container for debugging
+docker-compose -f docker-compose.prod.yml exec web bash
+
+# Restart specific service
+docker-compose -f docker-compose.prod.yml restart web
+
+# Rebuild and restart
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# Check resource usage
+docker stats
+
+# Clean up unused resources
+docker system prune -a
 ```
 
 ## 🧪 Testing
 
-Run the test suite:
+### Docker Testing
 
 ```bash
+# Run tests in development container
+docker-compose exec web python manage.py test
+
+# Run tests in production container
+docker-compose -f docker-compose.prod.yml exec web python manage.py test
+
+# Run specific test module
+docker-compose exec web python manage.py test app_users.tests
+
+# Run tests with verbose output
+docker-compose exec web python manage.py test --verbosity=2
+
+# Run tests with coverage
+docker-compose exec web python manage.py test --keepdb
+```
+
+### Manual Testing
+
+```bash
+# Run the test suite
 python manage.py test
 ```
 
@@ -282,6 +471,25 @@ For support and questions:
 - User management system
 - Calculator with PDF export
 - Admin interface customization
+
+## 📋 Quick Reference
+
+### Environment Files
+
+- **Development**: Use `docker-compose.yml` with `.env` file
+- **Production**: Use `docker-compose.prod.yml` with hardcoded environment variables
+
+### Ports
+
+- **Development**: `http://localhost:8000`
+- **Production**: Configured for production domains
+
+### Common Commands
+
+- **Start Development**: `docker-compose up -d`
+- **Start Production**: `docker-compose -f docker-compose.prod.yml up -d`
+- **View Logs**: `docker-compose logs -f` (dev) or `docker-compose -f docker-compose.prod.yml logs -f` (prod)
+- **Access Container**: `docker-compose exec web bash`
 
 ---
 

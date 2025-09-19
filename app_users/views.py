@@ -20,6 +20,9 @@ from django.contrib.auth import update_session_auth_hash
 def send_verification_email(user, request):
     """Send email verification email to user"""
     import logging
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
 
     logger = logging.getLogger(__name__)
 
@@ -47,13 +50,37 @@ def send_verification_email(user, request):
         html_message = render_to_string("emails/email_verification.html", context)
         plain_message = render_to_string("emails/email_verification.txt", context)
 
-        # Log email attempt
+        # Log email attempt with detailed configuration
         logger.info(f"Attempting to send verification email to {user.email}")
         logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
         logger.info(f"Email host: {settings.EMAIL_HOST}")
+        logger.info(f"Email port: {settings.EMAIL_PORT}")
+        logger.info(f"Email SSL: {settings.EMAIL_USE_SSL}")
+        logger.info(f"Email TLS: {settings.EMAIL_USE_TLS}")
         logger.info(f"From email: {settings.DEFAULT_FROM_EMAIL}")
+        logger.info(f"Verification URL: {verification_url}")
 
-        # Send email
+        # Test SMTP connection first
+        try:
+            if settings.EMAIL_USE_SSL:
+                server = smtplib.SMTP_SSL(
+                    settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=30
+                )
+            else:
+                server = smtplib.SMTP(
+                    settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=30
+                )
+                if settings.EMAIL_USE_TLS:
+                    server.starttls()
+
+            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+            server.quit()
+            logger.info("SMTP connection test successful")
+        except Exception as smtp_error:
+            logger.error(f"SMTP connection test failed: {smtp_error}")
+            return False
+
+        # Send email using Django's send_mail
         result = send_mail(
             subject="Verify your email address - Bit.bio",
             message=plain_message,
@@ -65,11 +92,26 @@ def send_verification_email(user, request):
 
         logger.info(f"Email sent successfully to {user.email}. Result: {result}")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error(f"SMTP Authentication failed for {user.email}: {e}")
+        logger.error(
+            "Check email credentials and ensure 'Less secure app access' is enabled for Gmail"
+        )
+        return False
+    except smtplib.SMTPRecipientsRefused as e:
+        logger.error(f"SMTP Recipients refused for {user.email}: {e}")
+        return False
+    except smtplib.SMTPServerDisconnected as e:
+        logger.error(f"SMTP Server disconnected for {user.email}: {e}")
+        return False
     except Exception as e:
         logger.error(f"Failed to send verification email to {user.email}: {e}")
         logger.error(
             f"Email configuration - Backend: {settings.EMAIL_BACKEND}, Host: {settings.EMAIL_HOST}, User: {settings.EMAIL_HOST_USER}"
         )
+        import traceback
+
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return False
 
 

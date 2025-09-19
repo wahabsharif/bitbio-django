@@ -368,6 +368,18 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "dev@member.bit.bio")
 SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
+# Email timeout settings for better error handling
+EMAIL_TIMEOUT = 30
+
+# Log email configuration in production for debugging
+if not DEBUG:
+    import logging
+
+    logger = logging.getLogger(__name__)
+    logger.info(
+        f"Email configuration loaded - Host: {EMAIL_HOST}, Port: {EMAIL_PORT}, User: {EMAIL_HOST_USER}, SSL: {EMAIL_USE_SSL}, TLS: {EMAIL_USE_TLS}"
+    )
+
 # Security headers for production
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True

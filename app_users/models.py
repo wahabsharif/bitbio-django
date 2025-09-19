@@ -74,17 +74,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("rejected", "Rejected"),
     ]
     status = models.CharField(
-        max_length=20, choices=APPROVAL_CHOICES, default="pending"
+        max_length=20, choices=APPROVAL_CHOICES, default="pending", db_index=True
     )
 
     # Email verification fields
     is_email_verified = models.BooleanField(default=False)
-    email_verification_token = models.UUIDField(null=True, blank=True, unique=True)
+    email_verification_token = models.UUIDField(
+        null=True, blank=True, unique=True, db_index=True
+    )
     email_verification_sent_at = models.DateTimeField(null=True, blank=True)
 
     # Django auth fields
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
     # Timestamps
@@ -101,6 +103,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = "app_users"
         verbose_name = "User"
+        indexes = [
+            models.Index(fields=["status", "is_active"], name="user_status_active_idx"),
+            models.Index(
+                fields=["email_verification_token"], name="user_verification_token_idx"
+            ),
+            models.Index(fields=["created_at"], name="user_created_at_idx"),
+        ]
         verbose_name_plural = "Users"
 
     def __str__(self):

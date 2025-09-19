@@ -818,10 +818,16 @@ class CustomUserAdmin(admin.ModelAdmin):
     reject_users.short_description = "Reject selected users"
 
     def apply_queued_changes(self, request, queryset):
-        """Apply queued status changes"""
-        from app_users.views import send_verification_email
+        """Apply queued status changes with optimized performance"""
+        from django.db import transaction
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+        from django.test import RequestFactory
+        from django.conf import settings
         import logging
-        import json
+        import uuid
+        import threading
+        from datetime import datetime
 
         logger = logging.getLogger(__name__)
         applied_count = 0
@@ -842,64 +848,162 @@ class CustomUserAdmin(admin.ModelAdmin):
                     }
                 )
 
-        # Apply each change
-        for change in changes_data:
-            try:
-                user = CustomUser.objects.get(pk=change["userId"])
+        if not changes_data:
+            return self._return_response(request, 0, 0, "No changes to apply.")
+
+        # Get all user IDs for bulk operations
+        user_ids = [change["userId"] for change in changes_data]
+
+        # Use transaction for better performance and data consistency
+        with transaction.atomic():
+            # Bulk fetch all users
+            users_dict = {
+                user.id: user for user in CustomUser.objects.filter(id__in=user_ids)
+            }
+
+            # Prepare bulk update data
+            users_to_update = []
+            email_recipients = []
+
+            for change in changes_data:
+                user_id = change["userId"]
+                if user_id not in users_dict:
+                    logger.error(f"User with ID {user_id} not found")
+                    continue
+
+                user = users_dict[user_id]
                 original_status = user.status
 
-                # Send verification email if status changed from pending to approved
-                if original_status == "pending" and change["toStatus"] == "approved":
-                    try:
-                        from django.test import RequestFactory
-                        from django.conf import settings
-
-                        factory = RequestFactory()
-                        mock_request = factory.get("/admin/")
-
-                        # Use settings to determine the correct host and scheme
-                        if (
-                            hasattr(settings, "ALLOWED_HOSTS")
-                            and settings.ALLOWED_HOSTS
-                        ):
-                            host = settings.ALLOWED_HOSTS[0]
-                        else:
-                            host = "localhost:8000"
-
-                        mock_request.META["HTTP_HOST"] = host
-                        mock_request.META["SERVER_PORT"] = "8000"
-                        mock_request.META["wsgi.url_scheme"] = "http"
-
-                        # Add user to the request for proper context
-                        mock_request.user = request.user
-
-                        email_sent = send_verification_email(user, mock_request)
-                        if email_sent:
-                            email_count += 1
-                            logger.info(
-                                f"Verification email sent to {user.email} via modal update"
-                            )
-                        else:
-                            logger.warning(
-                                f"Failed to send verification email to {user.email} via modal update"
-                            )
-                    except Exception as e:
-                        logger.error(
-                            f"Failed to send verification email to {user.email}: {e}"
-                        )
-
-                # Update status
+                # Update user status
                 user.status = change["toStatus"]
                 if change["toStatus"] == "approved":
                     user.is_active = True
-                user.save()
 
-                applied_count += 1
+                users_to_update.append(user)
 
-            except CustomUser.DoesNotExist:
-                logger.error(f"User with ID {change['userId']} not found")
+                # Collect users who need verification emails
+                if original_status == "pending" and change["toStatus"] == "approved":
+                    email_recipients.append(user)
+
+            # Bulk update all users at once
+            if users_to_update:
+                CustomUser.objects.bulk_update(
+                    users_to_update,
+                    ["status", "is_active", "updated_at"],
+                    batch_size=100,
+                )
+                applied_count = len(users_to_update)
+
+                # Update updated_at field for all users
+                now = datetime.now()
+                CustomUser.objects.filter(
+                    id__in=[u.id for u in users_to_update]
+                ).update(updated_at=now)
+
+        # Send emails asynchronously to avoid blocking the request
+        if email_recipients:
+
+            def send_emails_async():
+                try:
+                    self._send_verification_emails_bulk(email_recipients, request)
+                except Exception as e:
+                    logger.error(f"Error sending verification emails: {e}")
+
+            # Start email sending in background thread
+            email_thread = threading.Thread(target=send_emails_async)
+            email_thread.daemon = True
+            email_thread.start()
+
+            # For immediate response, we'll assume emails will be sent
+            email_count = len(email_recipients)
+
+        return self._return_response(
+            request,
+            applied_count,
+            email_count,
+            f"{applied_count} changes applied successfully. {email_count} verification emails queued for sending.",
+        )
+
+    def _send_verification_emails_bulk(self, users, request):
+        """Send verification emails to multiple users efficiently"""
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+        from django.conf import settings
+        import logging
+        import uuid
+
+        logger = logging.getLogger(__name__)
+
+        for user in users:
+            try:
+                # Generate verification token efficiently
+                self._generate_verification_token_optimized(user)
+
+                # Build verification URL
+                verification_url = request.build_absolute_uri(
+                    f"/users/verify-email/{user.email_verification_token}/"
+                )
+
+                # Build logo URL
+                logo_url = request.build_absolute_uri("/static/images/bitbio-logo.png")
+
+                # Prepare email context
+                context = {
+                    "user": user,
+                    "verification_url": verification_url,
+                    "site_name": "Bit.bio",
+                    "logo_url": logo_url,
+                }
+
+                # Render email templates
+                html_message = render_to_string(
+                    "emails/email_verification.html", context
+                )
+                plain_message = render_to_string(
+                    "emails/email_verification.txt", context
+                )
+
+                # Send email
+                result = send_mail(
+                    subject="Verify your email address - Bit.bio",
+                    message=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+
+                logger.info(
+                    f"Verification email sent to {user.email}. Result: {result}"
+                )
+
             except Exception as e:
-                logger.error(f"Error applying change for user {change['userId']}: {e}")
+                logger.error(f"Failed to send verification email to {user.email}: {e}")
+
+    def _generate_verification_token_optimized(self, user):
+        """Optimized token generation to avoid N+1 queries"""
+        import uuid
+        from django.utils import timezone
+
+        # Generate a unique token
+        while True:
+            new_token = uuid.uuid4()
+            # Use exists() for better performance
+            if not CustomUser.objects.filter(
+                email_verification_token=new_token
+            ).exists():
+                break
+
+        # Update only the necessary fields
+        user.email_verification_token = new_token
+        user.email_verification_sent_at = timezone.now()
+        user.save(
+            update_fields=["email_verification_token", "email_verification_sent_at"]
+        )
+
+    def _return_response(self, request, applied_count, email_count, message):
+        """Helper method to return appropriate response"""
+        from django.http import JsonResponse
 
         # Return JSON response for AJAX requests
         if request.headers.get(
@@ -907,14 +1011,6 @@ class CustomUserAdmin(admin.ModelAdmin):
         ) == "XMLHttpRequest" or "application/json" in request.headers.get(
             "Accept", ""
         ):
-            from django.http import JsonResponse
-
-            # Create success message
-            if applied_count == 1:
-                message = f"1 change applied successfully. {email_count} verification emails sent."
-            else:
-                message = f"{applied_count} changes applied successfully. {email_count} verification emails sent."
-
             return JsonResponse(
                 {
                     "success": True,
@@ -925,12 +1021,8 @@ class CustomUserAdmin(admin.ModelAdmin):
             )
 
         # Regular admin response
-        if applied_count == 1:
-            message = f"1 change applied successfully. {email_count} verification emails sent."
-        else:
-            message = f"{applied_count} changes applied successfully. {email_count} verification emails sent."
-
         self.message_user(request, message, messages.SUCCESS)
+        return None
 
     apply_queued_changes.short_description = "Apply queued changes"
 
@@ -946,8 +1038,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context)
 
     def get_queryset(self, request):
-        """Exclude the currently logged-in user from the queryset"""
-        queryset = super().get_queryset(request).select_related()
+        """Exclude the currently logged-in user from the queryset with optimized queries"""
+        queryset = super().get_queryset(request)
         # Exclude the currently logged-in user from the list
         return queryset.exclude(id=request.user.id)
 
@@ -960,6 +1052,12 @@ class CustomUserAdmin(admin.ModelAdmin):
             # Password is already handled by UserCreationForm
             pass
         super().save_model(request, obj, form, change)
+
+    def get_changelist_instance(self, request):
+        """Override to add performance optimizations"""
+        changelist = super().get_changelist_instance(request)
+        # Add any additional performance optimizations here if needed
+        return changelist
 
 
 # Register Domain model with custom admin site

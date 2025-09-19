@@ -1,5 +1,4 @@
-{% extends 'layout.html' %} {% load static %} {% block title %}Account -
-bit.bio{% endblock %} {% block content %}
+{% extends 'layout.html' %} {% load static %} {% block title %}Account -bit.bio{% endblock %} {% block content %}
 <style>
   section {
     padding-top: 65px;
@@ -27,7 +26,7 @@ bit.bio{% endblock %} {% block content %}
     >.form-container-wrapper>.form-container {
       flex: 1;
       display: flex;
-      gap: 40px;
+      gap: 30px;
 
       >.signin-left {
         flex: 1;
@@ -50,7 +49,7 @@ bit.bio{% endblock %} {% block content %}
 
   .title {
     font-size: 32px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0;
     line-height: 42px;
     margin: 0 0 40px 0;
@@ -60,7 +59,7 @@ bit.bio{% endblock %} {% block content %}
   .form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
   }
 
   .form-group {
@@ -101,24 +100,26 @@ bit.bio{% endblock %} {% block content %}
     align-items: center;
     gap: 8px;
     padding: 15px 0;
+    margin-top: 8px;
+    margin-bottom: -6px;
   }
 
   .checkbox {
-    width: 16px;
-    height: 16px;
+
     accent-color: #e91b0d;
     margin: 0;
 
   }
 
   .checkbox-label {
-    font-size: 14px;
-    color: #666;
+    font-size: 16px;
+    font-weight: 400;
   }
 
   .signin-button {
+    font-family: inherit;
     background: linear-gradient(90deg, #f6a11e 0%, #e91b0d 100%);
-    border: none;
+    border: 1px solid transparent;
     color: white;
     font-size: 16px;
     font-weight: 500;
@@ -138,15 +139,16 @@ bit.bio{% endblock %} {% block content %}
     line-height: 28px;
     color: #333;
     margin: 0;
-    font-weight: bold;
+    font-weight: 500;
     letter-spacing: .4px;
   }
 
   .signup-description {
     font-size: 18px;
-    color: #666;
+    font-weight: 400;
+    letter-spacing: .4px;
     margin: 0;
-    line-height: 1.4;
+    line-height: 28px;
     margin-top: 5px;
   }
 

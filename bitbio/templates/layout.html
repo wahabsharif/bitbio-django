@@ -57,12 +57,13 @@
     </div>
   </header>
   <main>{% block content %}{% endblock %}</main>
-  <div class="support-banner">
+  <div style="position: relative;">
+    <div class="support-banner">
     <div class="support-banner-content">
-      <h4><strong>
+      <h4>
           Subscribe to
           <br /> our newsletter
-        </strong></h4>
+       </h4>
       <button>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M13.692 17.308l-.707-.72l4.088-4.088H5v-1h12.073l-4.088-4.088l.707-.72L19 12z">
@@ -71,10 +72,15 @@
         Subscribe now
       </button>
     </div>
-    <img src="{% static 'images/bit.bio_office_pic0066.webp' %}" alt="Support Banner" />
+    <div>
+      <img src="{% static 'images/bit.bio_office_pic0066.webp' %}" alt="Support Banner" />
+    </div>
 
   </div>
-  <a href="https://www.bit.bio/working-at-bit.bio" class="join-team-container">
+</div>
+
+<div class="join-team-container">
+  <a href="https://www.bit.bio/working-at-bit.bio">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path fill="currentColor" fill-rule="evenodd" d="M18.5 12.214a1 1 0 0 0-1-1H5a1 1 0 1 0 0 2h12.5a1 1 0 0 0 1-1"
         clip-rule="evenodd"></path>
@@ -84,6 +90,7 @@
     </svg>
     Join our pioneering team
   </a>
+</div>
   <footer>
     <div class="footer-items">
       <div style="width: 50%;">

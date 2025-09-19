@@ -4,21 +4,67 @@
 {% block content %}
 
 <style>
+
+  @font-face {
+    font-display: swap;
+    font-family: "AvenirNext LT Pro";
+    font-style: normal;
+    font-variant-ligatures: none;
+    font-weight: 300;
+    src: url("/static/fonts/AvenirNextLTPro-Light.woff2") format("woff2"),
+      url("/static/fonts/AvenirNextLTPro-Light.woff") format("woff"),
+      url("/static/fonts/AvenirNextLTPro-Light.ttf") format("truetype"),
+      url("/static/fonts/AvenirNextLTPro-Light.svg") format("svg");
+  }
+  
+  @font-face {
+    font-display: swap;
+    font-family: "AvenirNext LT Pro";
+    font-style: normal;
+    font-variant-ligatures: none;
+    font-weight: 400;
+    src: url("/static/fonts/AvenirNextLTPro-Regular.woff2") format("woff2"),
+      url("/static/fonts/AvenirNextLTPro-Regular.woff") format("woff"),
+      url("/static/fonts/AvenirNextLTPro-Regular.ttf") format("truetype"),
+      url("/static/fonts/AvenirNextLTPro-Regular.svg") format("svg");
+  }
+  
+  @font-face {
+    font-display: swap;
+    font-family: "AvenirNext LT Pro";
+    font-style: normal;
+    font-variant-ligatures: none;
+    font-weight: 500;
+    src: url("/static/fonts/AvenirNextLTPro-Medium.woff2") format("woff2"),
+      url("/static/fonts/AvenirNextLTPro-Medium.woff") format("woff"),
+      url("/static/fonts/AvenirNextLTPro-Medium.ttf") format("truetype"),
+      url("/static/fonts/AvenirNextLTPro-Medium.svg") format("svg");
+  }
+  
+  @font-face {
+    font-display: swap;
+    font-family: "AvenirNext LT Pro";
+    font-style: normal;
+    font-variant-ligatures: none;
+    font-weight: 700;
+    src: url("/static/fonts/AvenirNextLTPro-Demi.woff2") format("woff2"),
+      url("/static/fonts/AvenirNextLTPro-Demi.woff") format("woff"),
+      url("/static/fonts/AvenirNextLTPro-Demi.ttf") format("truetype"),
+      url("/static/fonts/AvenirNextLTPro-Demi.svg") format("svg");
+  }
   section {
     border-top: solid 1px #d2d3d5;
   }
 
   h1,
   h3 {
+    font-family: "AvenirNext LT Pro", sans-serif !important;
     font-size: 32px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 42px;
     margin: 0;
   }
 
-.reg-container p{
-  margin-bottom: 15px !important;
-}
 
   .reg-container :nth-child(2) p>a {
     padding-bottom: 2px;
@@ -35,7 +81,7 @@
     font-size: 18px;
     line-height: 28px;
     letter-spacing: 0.4px;
-    margin-bottom: 15px;
+    margin-bottom: 20px !important;
     margin-top: 0;
     font-weight: 350;
     -webkit-font-smoothing: antialiased;
@@ -49,10 +95,13 @@
     justify-content: space-between;
     gap: 20px;
     border-bottom: 1px solid #d2d3d5;
-    padding-bottom: 2.5rem;
     padding-top: 65px;
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+  .reg-container:last-child {
+    margin-bottom: 70px;
+    border-bottom: none;
   }
 
   .reg-container>* {
@@ -68,8 +117,6 @@
     font-weight: 400;
     letter-spacing: 0;
     line-height: 26px;
-    margin-bottom: 7px;
-    color: #4a5157;
   }
 
   .checkbox-wrapper span {
@@ -121,6 +168,7 @@
     display: flex;
     align-items: start;
     gap: 8px;
+    margin: 20px 0 35px;
   }
 
   .custom-checkbox {
@@ -136,8 +184,8 @@
 
   .custom-checkbox input[type="checkbox"] {
     opacity: 0;
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     margin: 0;
     position: absolute;
     left: 0;
@@ -209,7 +257,7 @@
 </style>
 
 <section>
-  <div class="reg-container">
+  <div class="reg-container" style="padding-bottom: 2.5rem;">
     <div>
       <h1>Register for an account</h1>
     </div>
@@ -407,25 +455,23 @@
       </div>
       <div>
         <label for="use_intent">How will you use our products?*</label>
-        <div class="checkbox-wrapper">
+        <div class="checkbox-wrapper" style="margin: 10px 0;">
           <label class="custom-checkbox">
             {{ form.in_vitro }}
             <span class="checkmark"></span>
           </label>
-          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only
-            (RUO): in vitro</span>
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only (RUO): in vitro</span>
         </div>
         {% if form.in_vitro.errors %}
         <div class="field-error">{{ form.in_vitro.errors.0 }}</div>
         {% endif %}
 
-        <div class="checkbox-wrapper">
+        <div class="checkbox-wrapper" style="margin: 10px 0;">
           <label class="custom-checkbox">
             {{ form.in_vivo }}
             <span class="checkmark"></span>
           </label>
-          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only
-            (RUO): in vivo</span>
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">Research use only (RUO): in vivo</span>
         </div>
         {% if form.in_vivo.errors %}
         <div class="field-error">{{ form.in_vivo.errors.0 }}</div>
@@ -444,13 +490,12 @@
           services, as well as other content that may be of interest to you. If
           you consent to us contacting you for this purpose, please tick below
           to say how you would like us to contact you:</p>
-        <div class="checkbox-wrapper">
+        <div class="checkbox-wrapper" style="margin: 10px 0;">
           <label class="custom-checkbox">
             {{ form.communications_agreement }}
             <span class="checkmark"></span>
           </label>
-          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">I agree to receive
-            other communications from Bit Bio.</span>
+          <span onclick="this.previousElementSibling.querySelector('input[type=checkbox]').click()">I agree to receive other communications from Bit Bio.</span>
         </div>
         {% if form.communications_agreement.errors %}
         <div class="field-error">

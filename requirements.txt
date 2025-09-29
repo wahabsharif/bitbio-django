@@ -35,3 +35,26 @@ gunicorn>=21.2.0
 
 # Static file serving middleware for production
 whitenoise>=6.6.0
+
+# ======================================================
+#             Bulk RNA Analysis Dependencies
+# ======================================================
+
+# Data analysis and visualization
+pandas>=2.0.0
+
+scikit-learn>=1.3.0
+
+plotly>=5.15.0
+
+numpy>=1.24.0
+
+# Django extensions for bulk-rna
+django-tables2>=2.6.0
+
+crispy-bootstrap5>=0.7
+
+django-crispy-forms>=2.0
+
+# AWS S3 integration
+boto3>=1.26.0

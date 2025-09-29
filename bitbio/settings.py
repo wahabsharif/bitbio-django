@@ -62,8 +62,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "django_tables2",
     "app_users",
     "calculator",
+    "bitbio_nucleus_bulk_rna",
 ]
 
 MIDDLEWARE = [
@@ -191,6 +195,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom user model
 AUTH_USER_MODEL = "app_users.User"
+
+# Crispy Forms settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Custom authentication backends
 AUTHENTICATION_BACKENDS = [

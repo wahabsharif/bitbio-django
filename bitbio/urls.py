@@ -32,6 +32,7 @@ urlpatterns = [
     ),
     path("users/", include("app_users.urls")),
     path("calculator/", include("calculator.urls")),
+    path("bulk-rna/", include("bitbio_nucleus_bulk_rna.urls")),
     path("health/", views.health_check, name="health_check"),
 ]
 

@@ -6,47 +6,55 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bitbio_nucleus_bulk_rna', '0001_initial'),
+        ("bitbio_nucleus_bulk_rna", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Gene',
+            name="Gene",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('gene_name', models.CharField(max_length=100)),
-                ('ensembl_id', models.CharField(max_length=100)),
-                ('long_name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("gene_name", models.CharField(max_length=100)),
+                ("ensembl_id", models.CharField(max_length=100)),
+                ("long_name", models.CharField(max_length=255)),
             ],
         ),
         migrations.AddField(
-            model_name='analysisoutput',
-            name='added_by',
+            model_name="analysisoutput",
+            name="added_by",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='analysisoutput',
-            name='conditions',
+            model_name="analysisoutput",
+            name="conditions",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='analysisoutput',
-            name='origin',
+            model_name="analysisoutput",
+            name="origin",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='analysisoutput',
-            name='product',
+            model_name="analysisoutput",
+            name="product",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='analysisoutput',
-            name='project',
+            model_name="analysisoutput",
+            name="project",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='analysisoutput',
-            name='description',
+            model_name="analysisoutput",
+            name="description",
             field=models.TextField(blank=True, null=True),
         ),
     ]

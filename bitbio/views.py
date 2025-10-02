@@ -6,7 +6,6 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.utils import timezone
 from app_users.forms import UserRegistrationForm, UserLoginForm
-from app_users.models import User
 from app_users.views import approved_user_required
 from app_users.domain_management import should_auto_approve, get_email_domain
 
@@ -72,7 +71,7 @@ def account(request):
                     elif user.status == "approved":
                         login(request, user)
                         messages.success(request, f"Welcome back, {user.first_name}!")
-                        return redirect("calculator:calculator")
+                        return redirect("bulk_rna:bulk_rna_analysis_list")
                     elif user.status == "pending":
                         messages.warning(
                             request,
@@ -93,31 +92,24 @@ def account(request):
                         request, "Your account is not active. Please contact support."
                     )
             else:
-                # Check if user exists but authentication failed
-                try:
-                    user = User.objects.get(email__iexact=email)
-                    if user.check_password(password):
-                        # Password is correct but user might not be approved
-                        if user.status == "pending":
-                            messages.warning(
-                                request,
-                                "Your account is pending approval. Please wait for admin approval before you can log in. You will receive an email notification once your account is approved.",
-                            )
-                        elif user.status == "rejected":
-                            messages.error(
-                                request,
-                                "Your account has been rejected. Please contact support for more information.",
-                            )
-                        else:
-                            messages.error(request, "Invalid email or password.")
-                    else:
-                        # Incorrect password for existing account
-                        messages.error(request, "Incorrect password.")
-                        form.add_error("password", "Incorrect password.")
-                except User.DoesNotExist:
-                    # Email not found
-                    messages.error(request, "No account found with that email.")
-                    form.add_error("email", "No account found with that email.")
+                # Authentication failed - get error message from backend
+                from app_users.backends import ShopifyBackend
+
+                # Get the last authentication error from the backend
+                auth_backend = ShopifyBackend()
+                error_message = getattr(auth_backend, "_last_auth_error", None)
+
+                if error_message:
+                    messages.error(request, error_message)
+                    # Add error to form for better UX
+                    form.add_error("password", error_message)
+                else:
+                    # Fallback error message
+                    messages.error(
+                        request,
+                        "Authentication failed. Please check your Shopify account credentials and try again.",
+                    )
+                    form.add_error("password", "Invalid credentials")
     else:
         form = UserLoginForm()
 

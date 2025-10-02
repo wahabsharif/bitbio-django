@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Domain
+from .models import User, Domain, ShopifyUserSession
 
 
 @admin.register(Domain)
@@ -102,6 +102,56 @@ class UserAdmin(admin.ModelAdmin):
             "Timestamps",
             {
                 "fields": ("date_joined", "created_at", "updated_at"),
+                "classes": ("collapse",),
+            },
+        ),
+    )
+
+
+@admin.register(ShopifyUserSession)
+class ShopifyUserSessionAdmin(admin.ModelAdmin):
+    """
+    Admin interface for ShopifyUserSession model
+    """
+
+    list_display = (
+        "shopify_customer_id",
+        "shopify_email",
+        "shopify_verified_email",
+        "last_sync_at",
+        "created_at",
+    )
+    list_filter = (
+        "shopify_verified_email",
+        "created_at",
+        "last_sync_at",
+    )
+    search_fields = (
+        "shopify_email",
+        "shopify_customer_id",
+        "shopify_first_name",
+        "shopify_last_name",
+    )
+    readonly_fields = ("created_at", "last_sync_at")
+
+    fieldsets = (
+        (
+            "Shopify Customer Data",
+            {
+                "fields": (
+                    "shopify_customer_id",
+                    "shopify_access_token",
+                    "shopify_email",
+                    "shopify_first_name",
+                    "shopify_last_name",
+                    "shopify_verified_email",
+                )
+            },
+        ),
+        (
+            "Timestamps",
+            {
+                "fields": ("created_at", "last_sync_at"),
                 "classes": ("collapse",),
             },
         ),

@@ -133,20 +133,39 @@ def explore_analysis(request, analysis_id):
         user
     )
 
+    # Get the ShopifyUserSession for filtering gene collections
+    from app_users.models import ShopifyUserSession
+
+    try:
+        shopify_session = ShopifyUserSession.objects.get(pk=user.pk)
+    except ShopifyUserSession.DoesNotExist:
+        try:
+            shopify_session = ShopifyUserSession.objects.get(shopify_email=user.email)
+        except ShopifyUserSession.DoesNotExist:
+            shopify_session = None
+
     applied_normalisation = {}
 
     # Retrieve the analysis object
     selected_dataset = get_object_or_404(AnalysisOutput, id=analysis_id)
 
     # Retrieve all individual genes and gene sets (gene collections)
-    gene_collections = GeneCollection.objects.filter(
-        (Q(linked_analyses=selected_dataset) & Q(created_by=request.user))
-        | (
+    if shopify_session:
+        gene_collections = GeneCollection.objects.filter(
+            (Q(linked_analyses=selected_dataset) & Q(created_by=shopify_session))
+            | (
+                Q(linked_analyses=selected_dataset)
+                & Q(private_collection=False)
+                & Q(customer_visible=True)
+            )
+        ).distinct()
+    else:
+        # If no shopify session, only show public collections
+        gene_collections = GeneCollection.objects.filter(
             Q(linked_analyses=selected_dataset)
             & Q(private_collection=False)
             & Q(customer_visible=True)
-        )
-    ).distinct()
+        ).distinct()
 
     # Load the TSV file into a DataFrame for testing
     path_to_tsv = selected_dataset.file_path
@@ -223,6 +242,14 @@ def explore_analysis(request, analysis_id):
 
         print(selected_gene_objects)
 
+        # Validate that genes were selected
+        if not selected_gene_objects:
+            messages.warning(
+                request,
+                "Please select at least one gene or gene set before plotting.",
+            )
+            return redirect("bulk_rna:explore_analysis", analysis_id=analysis_id)
+
         # Do some filtering based on the user tier
         if user_tier.tier.name == "Free":
             free_gene_collection = GeneCollection.objects.get(
@@ -282,8 +309,10 @@ def explore_analysis(request, analysis_id):
                 )
 
                 # Bar plot for one gene
+                # Use gene_name to match the TSV file row identifiers
+                gene_identifier = accessible_genes[0].gene_name
                 plot_data = processed_tsv_df.loc[
-                    accessible_genes[0].df_string, selected_conditions_for_plot
+                    gene_identifier, selected_conditions_for_plot
                 ].to_dict()
                 plot_type = bar_or_box_plot
             else:
@@ -312,10 +341,11 @@ def explore_analysis(request, analysis_id):
                     scale=applied_normalisation["scale"],
                 )
 
-                gene_df_ids = [gene.df_string for gene in accessible_genes]
+                # Use gene_name to match the TSV file row identifiers
+                gene_identifiers = [gene.gene_name for gene in accessible_genes]
                 print(processed_tsv_df)
                 plot_data = processed_tsv_df.loc[
-                    gene_df_ids, selected_conditions_for_plot
+                    gene_identifiers, selected_conditions_for_plot
                 ].values.tolist()
                 print(plot_data)
                 plot_type = "heatmap"
@@ -455,10 +485,29 @@ def pca_view(request, analysis_id, plot_3d=True):
 @login_required
 def gene_collection_list(request, analysis_id=0):
     # Get all GeneCollections and render them in the table
-    filtered_collection_objects = GeneCollection.objects.filter(
-        Q(created_by=request.user)
-        | (Q(private_collection=False) & Q(customer_visible=True))
-    ).distinct()
+    from app_users.models import ShopifyUserSession
+
+    # Get ShopifyUserSession for the current user
+    try:
+        shopify_session = ShopifyUserSession.objects.get(pk=request.user.pk)
+    except ShopifyUserSession.DoesNotExist:
+        try:
+            shopify_session = ShopifyUserSession.objects.get(
+                shopify_email=request.user.email
+            )
+        except ShopifyUserSession.DoesNotExist:
+            shopify_session = None
+
+    if shopify_session:
+        filtered_collection_objects = GeneCollection.objects.filter(
+            Q(created_by=shopify_session)
+            | (Q(private_collection=False) & Q(customer_visible=True))
+        ).distinct()
+    else:
+        # If no shopify session, only show public collections
+        filtered_collection_objects = GeneCollection.objects.filter(
+            Q(private_collection=False) & Q(customer_visible=True)
+        ).distinct()
 
     table = GeneCollectionTable(filtered_collection_objects, request=request)
 
@@ -496,15 +545,24 @@ def view_gene_collection(request, collection_id):
 
 @login_required
 def create_gene_collection(request, analysis_id):
+    from app_users.models import ShopifyUserSession
 
     analysis = get_object_or_404(AnalysisOutput, id=analysis_id)
 
     if request.method == "POST":
         form = GeneCollectionForm(request.POST, analysis_id=analysis_id)
         if form.is_valid():
-            # Save the GeneCollection with the user as the creator
+            # Get ShopifyUserSession for the current user
+            try:
+                shopify_session = ShopifyUserSession.objects.get(pk=request.user.pk)
+            except ShopifyUserSession.DoesNotExist:
+                shopify_session = ShopifyUserSession.objects.get(
+                    shopify_email=request.user.email
+                )
+
+            # Save the GeneCollection with the shopify session as the creator
             collection = form.save(commit=False)
-            collection.created_by = request.user
+            collection.created_by = shopify_session
             collection.save()
 
             # Add valid genes to the collection
@@ -525,8 +583,18 @@ def create_gene_collection(request, analysis_id):
 
 @login_required
 def edit_gene_collection(request, collection_id):
+    from app_users.models import ShopifyUserSession
+
+    # Get ShopifyUserSession for the current user
+    try:
+        shopify_session = ShopifyUserSession.objects.get(pk=request.user.pk)
+    except ShopifyUserSession.DoesNotExist:
+        shopify_session = ShopifyUserSession.objects.get(
+            shopify_email=request.user.email
+        )
+
     collection = get_object_or_404(
-        GeneCollection, id=collection_id, created_by=request.user
+        GeneCollection, id=collection_id, created_by=shopify_session
     )
 
     if request.method == "POST":
@@ -557,8 +625,18 @@ def edit_gene_collection(request, collection_id):
 
 @login_required
 def delete_gene_collection(request, collection_id):
+    from app_users.models import ShopifyUserSession
+
+    # Get ShopifyUserSession for the current user
+    try:
+        shopify_session = ShopifyUserSession.objects.get(pk=request.user.pk)
+    except ShopifyUserSession.DoesNotExist:
+        shopify_session = ShopifyUserSession.objects.get(
+            shopify_email=request.user.email
+        )
+
     collection = get_object_or_404(
-        GeneCollection, id=collection_id, created_by=request.user
+        GeneCollection, id=collection_id, created_by=shopify_session
     )
 
     if request.method == "POST":
@@ -683,7 +761,6 @@ def download_csv(request, analysis_id):
 
     selected_genes = request.POST.get("genes").split(",")
     print(">>>>>>>", selected_genes)
-    print(user_tier)
 
     selected_conditions_raw = request.POST.getlist("conditions")[0].split(",")
     print("selected_conditions_raw", selected_conditions_raw)
@@ -751,8 +828,9 @@ def download_csv(request, analysis_id):
     print("Conditions", selected_conditions)
 
     # Filter data for selected genes and conditions
-    gene_df_ids = [gene.df_string for gene in accessible_genes]
-    filtered_df = processed_tsv_df.loc[gene_df_ids, selected_conditions]
+    # Use gene_name to match the TSV file row identifiers
+    gene_identifiers = [gene.gene_name for gene in accessible_genes]
+    filtered_df = processed_tsv_df.loc[gene_identifiers, selected_conditions]
 
     # Calculate the average expression values across replicates
     # Assuming replicate names end with _R1, _R2, etc.
@@ -780,7 +858,10 @@ def view_user_genes(request):
     """
     Displays the genes assigned to the logged-in user in their UserGeneRequest.
     """
-    user_request = get_object_or_404(UserGeneRequest, user=request.user)
+    user = request.user
+    user_tier, user_request, usage_percentage = get_or_create_user_tier_and_request(
+        user
+    )
     assigned_genes = user_request.genes.all()
 
     return render(
@@ -789,5 +870,7 @@ def view_user_genes(request):
         {
             "assigned_genes": assigned_genes,
             "user_request": user_request,
+            "user_tier": user_tier,
+            "usage_percentage": usage_percentage,
         },
     )

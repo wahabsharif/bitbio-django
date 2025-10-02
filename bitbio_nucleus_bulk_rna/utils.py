@@ -70,7 +70,9 @@ def find_genes_in_collection(user_genes, gene_collection):
                - The second list contains genes from user_genes not found in gene_collection.
     """
     # Convert the collection's included_genes queryset to a set of IDs for quick lookup
-    collection_gene_ids = set(gene_collection.included_genes.values_list('id', flat=True))
+    collection_gene_ids = set(
+        gene_collection.included_genes.values_list("id", flat=True)
+    )
 
     # Separate the user genes into found and not found lists
     found_genes = []
@@ -130,7 +132,6 @@ def transform_tpm_data(df, center=False, scale=False, replace_nan=True):
     return df
 
 
-
 def update_user_gene_request(user, new_genes):
     """
     Updates the UserGeneRequest for a given user with new genes.
@@ -144,9 +145,19 @@ def update_user_gene_request(user, new_genes):
             - added_genes: A list of Gene objects that were successfully added.
             - skipped_genes: A list of Gene objects that were already in the request.
     """
+    from app_users.models import ShopifyUserSession
+
     try:
+        # Get the ShopifyUserSession for the user
+        try:
+            shopify_session = ShopifyUserSession.objects.get(pk=user.pk)
+        except ShopifyUserSession.DoesNotExist:
+            shopify_session = ShopifyUserSession.objects.get(shopify_email=user.email)
+
         # Retrieve or create the UserGeneRequest object
-        user_request, created = UserGeneRequest.objects.get_or_create(user=user)
+        user_request, created = UserGeneRequest.objects.get_or_create(
+            shopify_session=shopify_session
+        )
 
         # Get the set of genes already in the request
         existing_genes = set(user_request.genes.all())
@@ -179,25 +190,49 @@ def get_or_create_user_tier_and_request(user):
     Automatically assign the 'Free' tier if the user has no tier.
 
     Args:
-        user (User): The user object.
+        user (User): The user object (for Shopify users, this is an in-memory object with pk=shopify_session.pk)
 
     Returns:
         tuple: (UserTier, UserGeneRequest, usage_percentage)
     """
+    from app_users.models import ShopifyUserSession
+
+    # For Shopify-only users, user.pk is actually the ShopifyUserSession.pk
+    # Get the actual ShopifyUserSession object
+    try:
+        shopify_session = ShopifyUserSession.objects.get(pk=user.pk)
+    except ShopifyUserSession.DoesNotExist:
+        # Fallback: try to find by email
+        try:
+            shopify_session = ShopifyUserSession.objects.get(shopify_email=user.email)
+        except ShopifyUserSession.DoesNotExist:
+            # If no ShopifyUserSession exists, create one for this user
+            shopify_session = ShopifyUserSession.objects.create(
+                shopify_customer_id=user.pk,  # Use user pk as customer ID
+                shopify_email=user.email,
+                shopify_first_name=getattr(user, "first_name", ""),
+                shopify_last_name=getattr(user, "last_name", ""),
+                shopify_verified_email=getattr(user, "is_email_verified", False),
+            )
+
     try:
         # Get the user's tier and gene request
-        user_tier = UserTier.objects.get(user=user)
+        user_tier = UserTier.objects.get(shopify_session=shopify_session)
     except UserTier.DoesNotExist:
         # Assign the user to the default 'Free' tier if they don't have one
-        free_tier, _ = Tier.objects.get_or_create(name="Free", defaults={"max_genes": 100})
-        user_tier = UserTier.objects.create(user=user, tier=free_tier)
+        free_tier, _ = Tier.objects.get_or_create(
+            name="Free", defaults={"max_genes": 100}
+        )
+        user_tier = UserTier.objects.create(
+            shopify_session=shopify_session, tier=free_tier
+        )
 
     try:
         # Get the user's gene request object
-        user_request = UserGeneRequest.objects.get(user=user)
+        user_request = UserGeneRequest.objects.get(shopify_session=shopify_session)
     except UserGeneRequest.DoesNotExist:
         # Create a new UserGeneRequest for the user if it doesn't exist
-        user_request = UserGeneRequest.objects.create(user=user)
+        user_request = UserGeneRequest.objects.create(shopify_session=shopify_session)
 
     # Calculate usage percentage
     usage_percentage = (user_request.genes.count() / user_tier.tier.max_genes) * 100

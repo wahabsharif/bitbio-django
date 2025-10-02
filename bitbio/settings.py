@@ -200,11 +200,40 @@ AUTH_USER_MODEL = "app_users.User"
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Custom authentication backends
+# Custom authentication backends - Shopify only
 AUTHENTICATION_BACKENDS = [
-    "app_users.backends.EmailBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    "app_users.backends.ShopifyBackend",
 ]
+
+# Shopify Authentication Settings
+# NOTE: All Shopify credentials must be set via environment variables
+SHOPIFY_API_KEY = os.getenv("SHOPIFY_API_KEY", "")
+SHOPIFY_API_SECRET = os.getenv("SHOPIFY_API_SECRET", "")
+SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN", "")
+SHOPIFY_STOREFRONT_ACCESS_TOKEN = os.getenv("SHOPIFY_STOREFRONT_ACCESS_TOKEN", "")
+SHOPIFY_SHOP_DOMAIN = os.getenv(
+    "SHOPIFY_SHOP_DOMAIN", "bit-bio.myshopify.com"
+)  # For API calls
+SHOPIFY_PRIMARY_DOMAIN = os.getenv(
+    "SHOPIFY_PRIMARY_DOMAIN", "shop.bit.bio"
+)  # Primary customer-facing domain
+SHOPIFY_SCOPES = os.getenv(
+    "SHOPIFY_SCOPES", "read_customers,write_customers,read_orders"
+)
+# Dynamic redirect URI based on current host
+import socket
+
+try:
+    # Try to get the actual hostname
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    SHOPIFY_REDIRECT_URI = os.getenv(
+        "SHOPIFY_REDIRECT_URI", f"http://{local_ip}:8000/auth/shopify/callback/"
+    )
+except:
+    SHOPIFY_REDIRECT_URI = os.getenv(
+        "SHOPIFY_REDIRECT_URI", "http://localhost:8000/auth/shopify/callback/"
+    )
 
 # Login URL for @login_required decorator
 LOGIN_URL = os.getenv("LOGIN_URL", "/")
@@ -217,6 +246,10 @@ ADMIN_INDEX_TITLE = os.getenv("ADMIN_INDEX_TITLE", "Welcome to BitBio Administra
 # Security settings for admin access
 ADMIN_LOGIN_REDIRECT_URL = os.getenv("ADMIN_LOGIN_REDIRECT_URL", "/admin/")
 ADMIN_LOGOUT_REDIRECT_URL = os.getenv("ADMIN_LOGOUT_REDIRECT_URL", "/")
+
+# Login redirect settings
+LOGIN_REDIRECT_URL = "/bulk-rna/"
+LOGIN_URL = "/"
 
 # Session security for admin users
 SESSION_COOKIE_SECURE = (

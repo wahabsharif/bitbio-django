@@ -225,3 +225,52 @@ class Domain(models.Model):
                 whitelisted_domains=[], blocklisted_domains=[]
             )
         return domain_obj
+
+
+class ShopifyUserSession(models.Model):
+    """
+    Model to store Shopify-specific user session data and customer information.
+    This is now independent and does not require a User record.
+    """
+
+    # Shopify customer information
+    shopify_customer_id = models.BigIntegerField(unique=True, db_index=True)
+    shopify_access_token = models.TextField(null=True, blank=True)
+
+    # Shopify customer data cache (email is now unique identifier)
+    shopify_first_name = models.CharField(max_length=100, blank=True)
+    shopify_last_name = models.CharField(max_length=100, blank=True)
+    shopify_email = models.EmailField(unique=True, db_index=True)
+    shopify_verified_email = models.BooleanField(default=False)
+
+    # Session tracking
+    last_sync_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "shopify_user_session"
+        verbose_name = "Shopify User Session"
+        verbose_name_plural = "Shopify User Sessions"
+        indexes = [
+            models.Index(
+                fields=["shopify_customer_id"], name="shopify_customer_id_idx"
+            ),
+            models.Index(fields=["last_sync_at"], name="shopify_last_sync_idx"),
+            models.Index(fields=["shopify_email"], name="shopify_email_idx"),
+        ]
+
+    def __str__(self):
+        return f"Shopify Session for {self.shopify_email} (Customer ID: {self.shopify_customer_id})"
+
+    @property
+    def is_shopify_user(self):
+        """Check if this user has a valid Shopify customer ID"""
+        return self.shopify_customer_id is not None
+
+    def update_shopify_data(self, customer_data):
+        """Update Shopify customer data from API response"""
+        self.shopify_first_name = customer_data.get("first_name", "")
+        self.shopify_last_name = customer_data.get("last_name", "")
+        self.shopify_email = customer_data.get("email", "")
+        self.shopify_verified_email = customer_data.get("verified_email", False)
+        self.save()

@@ -2,9 +2,11 @@
 {% load bulk_rna_filters %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-4">
+<div class="mt-5"
+style="max-width: 90vw; margin: 0 auto;">
+    
+    <div class="row w-100">
+        <div class="col-4 max-height">
             <div class="card mb-4 shadow">
                 <div class="card-body">
                     <h4 class="card-title">Explore: {{ analysis.product }}</h4>
@@ -36,8 +38,9 @@
 
                         <!-- Individual Genes Selection (Gene Search) -->
                         <div id="individual-genes-section" class="form-group mt-4">
-                            <label for="gene-search">Search and Add Genes</label>
-                            <input type="text" id="gene-search" class="form-control" placeholder="Type gene name or Ensembl ID" autocomplete="off">
+                            <label for="gene-search">Search and Add Genes <span class="text-danger">*Required</span></label>
+                            <input type="text" id="gene-search" class="form-control" placeholder="Type gene name or Ensembl ID (e.g., GENE_0001)" autocomplete="off">
+                            <small class="form-text text-muted">Start typing to see suggestions, then click to add.</small>
 
                             <!-- Display the selected genes -->
                             <ul id="selected-genes-list" class="list-group mt-2">
@@ -53,7 +56,7 @@
 
                         <!-- Gene Set Selection -->
                         <div id="gene-set-section" class="form-group mt-4" style="display: none;">
-                            <label for="gene-sets">Select Gene Set</label>
+                            <label for="gene-sets">Select Gene Set <span class="text-danger">*Required</span></label>
                             <select name="gene_set" id="gene-sets" class="form-control" onchange="showGeneSetInfo()">
                                 <option value="">-- Select a Gene Set --</option>
                                 {% for collection in gene_collections %}
@@ -118,8 +121,11 @@
                         {% endif %}
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary mt-4">Plot Expression</button>
+                        <button type="submit" class="btn btn-primary mt-4" onclick="return validateForm()">Plot Expression</button>
                     </form>
+                    
+                    <!-- Error message div -->
+                    <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
 
                     {% if user_tier.tier.name == "Researcher" %}
                         <!-- Button to view PCA -->
@@ -132,10 +138,83 @@
             </div>
 
         </div>
+<div class="col-4">
+    
+    {% if plot_type %}
+    <!-- Parameters Display Section -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Plot Parameters</h5>
+        <table class="table table-borderless">
+            <tbody>
+                <!-- Selected Genes -->
+                <tr>
+                    <td style="width: 30%;"><strong>Selected Genes:</strong></td>
+                    <td>
+                    <div class="d-flex flex-wrap">
+                        {% for a_gene in selected_gene_objects %}
+                            <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ a_gene.ensembl_id }}"
+                               target="_blank"
+                               class="custom-badge badge-color-{{ forloop.counter|divisibleby:4|add:1 }}">
+                                {{ a_gene }}
+                                <i class="bi bi-box-arrow-up-right ms-1"></i>
+                            </a>
+                        {% endfor %}
+                </div>
+                    </td>
+                </tr>
+
+                <!-- Conditions -->
+                <tr>
+                    <td style="width: 30%;"><strong>Conditions:</strong></td>
+                    <td>
+                        <div class="d-flex flex-wrap">
+                            {% for a_cond in selected_conditions %}
+                                <span class="custom-badge badge-color-{{ forloop.counter|divisibleby:4|add:1 }}">{{ a_cond }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Display Gene Identifier -->
+                <tr>
+                    <td style="width: 30%;"><strong>Display Gene Identifier:</strong></td>
+                    <td>
+                        <span class="custom-badge badge-color-1">{{ display_field|title }}</span>
+                    </td>
+                </tr>
+
+                <!-- Applied Normalisations -->
+                <tr>
+                    <td style="width: 30%;"><strong>Applied Normalisations:</strong></td>
+                    <td>
+                        {% for key, value in applied_normalisation.items %}
+                            <span class="custom-badge {% if value %}bg-primary{% else %}bg-danger{% endif %} text-white me-2">
+                                {{ key|capfirst }}: {{ value|yesno:"True,False" }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
 
+            <div class="mt-4">
+                <h5 class="mb-4">Download raw mean TPM values</h5>
+                <form method="POST" action="{% url 'bulk_rna:download_csv' analysis_id=analysis.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="normalisation" value="{{ applied_normalisation|join:',' }}">
+                    <input type="hidden" name="genes" value="{{ selected_gene_objects | extract_df_strings | join:',' }}">
+                    <input type="hidden" name="conditions" value="{{ selected_conditions | join:',' }}">
+                    <button type="submit" class="btn btn-primary">Download as CSV</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
         <!-- Right Column: Parameters and Plot Outputs -->
-        <div class="col-md-8">
+        <div class="col-4">
 
             {% if non_accessible_genes %}
             <div class="card shadow mb-4">
@@ -306,79 +385,6 @@
                     </div>
                 </div>
 
-                {% if plot_type %}
-                <!-- Parameters Display Section -->
-                <div class="card shadow mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Plot Parameters</h5>
-                    <table class="table table-borderless">
-                        <tbody>
-                            <!-- Selected Genes -->
-                            <tr>
-                                <td style="width: 30%;"><strong>Selected Genes:</strong></td>
-                                <td>
-                                <div class="d-flex flex-wrap">
-                                    {% for a_gene in selected_gene_objects %}
-                                        <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ a_gene.ensembl_id }}"
-                                           target="_blank"
-                                           class="custom-badge badge-color-{{ forloop.counter|divisibleby:4|add:1 }}">
-                                            {{ a_gene }}
-                                            <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                        </a>
-                                    {% endfor %}
-                            </div>
-                                </td>
-                            </tr>
-
-                            <!-- Conditions -->
-                            <tr>
-                                <td style="width: 30%;"><strong>Conditions:</strong></td>
-                                <td>
-                                    <div class="d-flex flex-wrap">
-                                        {% for a_cond in selected_conditions %}
-                                            <span class="custom-badge badge-color-{{ forloop.counter|divisibleby:4|add:1 }}">{{ a_cond }}</span>
-                                        {% endfor %}
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Display Gene Identifier -->
-                            <tr>
-                                <td style="width: 30%;"><strong>Display Gene Identifier:</strong></td>
-                                <td>
-                                    <span class="custom-badge badge-color-1">{{ display_field|title }}</span>
-                                </td>
-                            </tr>
-
-                            <!-- Applied Normalisations -->
-                            <tr>
-                                <td style="width: 30%;"><strong>Applied Normalisations:</strong></td>
-                                <td>
-                                    {% for key, value in applied_normalisation.items %}
-                                        <span class="custom-badge {% if value %}bg-primary{% else %}bg-danger{% endif %} text-white me-2">
-                                            {{ key|capfirst }}: {{ value|yesno:"True,False" }}
-                                        </span>
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-
-                        <div class="mt-4">
-                            <h5 class="mb-4">Download raw mean TPM values</h5>
-                            <form method="POST" action="{% url 'bulk_rna:download_csv' analysis_id=analysis.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="normalisation" value="{{ applied_normalisation|join:',' }}">
-                                <input type="hidden" name="genes" value="{{ selected_gene_objects | extract_df_strings | join:',' }}">
-                                <input type="hidden" name="conditions" value="{{ selected_conditions | join:',' }}">
-                                <button type="submit" class="btn btn-primary">Download as CSV</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-
             </div>
         </div>
     </div>
@@ -423,6 +429,41 @@
 
     // Initialize the selection type on page load
     toggleSelectionType();
+
+    // Form validation function
+    function validateForm() {
+        const selectionType = document.querySelector('input[name="selection_type"]:checked').value;
+        const errorDiv = document.getElementById('error-message');
+        let hasGenes = false;
+        let errorMessage = '';
+
+        if (selectionType === 'individual') {
+            // Check if any genes are in the selected genes list
+            hasGenes = document.querySelectorAll('#selected-genes-list li').length > 0;
+            if (!hasGenes) {
+                errorMessage = 'Please select at least one gene before plotting.';
+            }
+        } else if (selectionType === 'gene_set') {
+            // Check if a gene set is selected
+            const geneSetSelect = document.getElementById('gene-sets');
+            hasGenes = geneSetSelect.value !== '';
+            if (!hasGenes) {
+                errorMessage = 'Please select a gene set before plotting.';
+            }
+        }
+
+        if (!hasGenes) {
+            errorDiv.textContent = errorMessage;
+            errorDiv.style.display = 'block';
+            // Scroll to the error message
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false; // Prevent form submission
+        }
+
+        // Hide error message if validation passes
+        errorDiv.style.display = 'none';
+        return true; // Allow form submission
+    }
 
     // Set progress bar width dynamically
     document.addEventListener('DOMContentLoaded', function() {

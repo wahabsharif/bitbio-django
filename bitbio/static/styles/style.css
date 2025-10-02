@@ -199,6 +199,10 @@ textarea {
 /* Profile dropdown */
 .profile-dropdown {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 .profile-trigger {
   background: transparent;
@@ -236,14 +240,6 @@ textarea {
 .profile-menu a:hover {
   background: #f3f4f6;
 }
-.profile-menu .profile-header {
-  padding: 8px 12px;
-  font-weight: 600;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 4px;
-}
-
 /* Modal */
 .modal-overlay {
   position: fixed;
@@ -536,4 +532,9 @@ footer {
   font-size: 12px !important;
   font-weight: 300 !important;
   line-height: 20px !important;
+}
+
+.custom-badge {
+  padding: 2px 5px;
+  border-radius: 10px;
 }

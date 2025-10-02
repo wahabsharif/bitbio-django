@@ -40,7 +40,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 20px;">
       <a
         class="navbar-brand d-flex flex-column align-items-start"
-        href="{% url 'home' %}"
+        href="{% url 'bulk_rna:bulk_rna_analysis_list' %}"
       >
         <img
           src="{% static 'images/bit_bio_nucleus_logo.png' %}"
@@ -86,12 +86,14 @@
         </ul>
         <ul class="navbar-nav ms-auto">
           {% if user.is_authenticated %}
+          {% if user.is_staff %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link" href=""
-              >Hello, {{ user.username|default:'Guest' }}!</a
+              >Hello, {{ user.get_full_name|default:user.email|default:'Guest' }}!</a
             >
           </li>
           <li class="nav-item">
@@ -106,7 +108,7 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-bottom: 50px;">
       {% block header %} {% endblock %} {% block content %} {% endblock %}
     </div>
 
@@ -119,5 +121,5 @@
     crossorigin="anonymous"
   ></script>
 
-  <footer style="height: 100px"></footer>
+  <!-- <footer style="height: 100px"></footer> -->
 </html>

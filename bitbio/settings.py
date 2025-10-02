@@ -207,10 +207,10 @@ AUTHENTICATION_BACKENDS = [
 
 # Shopify Authentication Settings
 # NOTE: All Shopify credentials must be set via environment variables
-SHOPIFY_API_KEY = os.getenv("SHOPIFY_API_KEY", "")
-SHOPIFY_API_SECRET = os.getenv("SHOPIFY_API_SECRET", "")
-SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN", "")
-SHOPIFY_STOREFRONT_ACCESS_TOKEN = os.getenv("SHOPIFY_STOREFRONT_ACCESS_TOKEN", "")
+SHOPIFY_API_KEY = os.getenv("SHOPIFY_API_KEY")
+SHOPIFY_API_SECRET = os.getenv("SHOPIFY_API_SECRET")
+SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")
+SHOPIFY_STOREFRONT_ACCESS_TOKEN = os.getenv("SHOPIFY_STOREFRONT_ACCESS_TOKEN")
 SHOPIFY_SHOP_DOMAIN = os.getenv(
     "SHOPIFY_SHOP_DOMAIN", "bit-bio.myshopify.com"
 )  # For API calls

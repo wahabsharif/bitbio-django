@@ -18,17 +18,19 @@
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
         <img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo"
             style="width: full; height: 55px; flex-shrink: 0;" />
-        <div class="profile-dropdown">
-            <!-- <button class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false">
-                <img src="{% static 'images/user-icon.svg' %}" alt="Profile" />
-            </button> -->
-            {% if request.user.is_authenticated %}
-            <p style="font-weight: bolder; font-size: 14px; color: #374151; margin-bottom: 4px;">Welcome, <span style="text-transform: uppercase;">{{ request.user.first_name }} {{ request.user.last_name }}</span></p>
-            <!-- <a href="#" id="openSettings" role="menuitem">Settings</a> -->
-            <a href="{% url 'logout' %}" style="text-decoration: none; color: #ffffff; padding: 5px 10px; background-color: red; border-radius: 5px;">Logout</a>
-            {% else %}
-            <a href="{% url 'account' %}" style="text-decoration: none; color: #ffffff; padding: 5px 10px; background-color: #000; border-radius: 5px;">Sign in</a>
-            {% endif %}
+        <div class="profile-dropdown" id="profileDropdown">
+            <button class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false">
+               <span>Welcome, {{ request.user.first_name }} {{ request.user.last_name }}</span>
+               <img src="{% static 'images/down-arrow.png' %}" alt="Profile" />
+            </button>
+            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                {% if request.user.is_authenticated %}
+                <a class="dropdown-item" href="{% url 'bulk_rna:bulk_rna_analysis_list' %}">Bulk-RNAseq Analysis</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a class="dropdown-item" href="{% url 'account' %}">Sign in</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div style="

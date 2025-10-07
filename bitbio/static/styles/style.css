@@ -527,4 +527,9 @@ footer {
   .footer-items {
     padding: 40px 1rem;
   }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 30px 1rem;
+  }
 }

@@ -1,6 +1,6 @@
-/* Header and Navigation Styles */
-
-/* Overlay for dropdown menus */
+/* ==========================================
+   DROPDOWN OVERLAY
+   ========================================== */
 .dropdown-overlay {
   position: fixed;
   top: 0;
@@ -18,7 +18,49 @@
   visibility: visible;
 }
 
-/* Main Navigation Links */
+/* ==========================================
+   MAIN HEADER STRUCTURE
+   ========================================== */
+header {
+  box-sizing: border-box;
+  line-height: 0;
+}
+
+.main-header {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  width: 100%;
+  padding: 20px 0;
+  border-top: 4px solid;
+  border-image: linear-gradient(
+      116.38deg,
+      #fcb71d,
+      #e9500d 29.69%,
+      #d32a78 66%,
+      #47b8ed
+    )
+    1;
+}
+
+.main-header.dropdown-active {
+  background: #f8f9fb;
+}
+
+.container > .nav-items {
+  display: flex;
+  align-items: center;
+  color: #000;
+  text-align: center;
+  gap: 3em;
+}
+
+/* ==========================================
+   NAVIGATION LINKS
+   ========================================== */
 .nav-links {
   font-family: "AvenirNext LT Pro", sans-serif;
   list-style: none;
@@ -60,9 +102,9 @@
   color: #000;
 }
 
-/* Simple overlay - removed for now to focus on CSS hover */
-
-/* Dropdown Menu - CSS Hover Approach */
+/* ==========================================
+   DROPDOWN MENU
+   ========================================== */
 .dropdown-menu {
   font-family: "AvenirNext LT Pro", sans-serif;
   position: fixed;
@@ -111,7 +153,9 @@
   pointer-events: auto;
 }
 
-/* Dropdown Container - Grid Layout */
+/* ==========================================
+   DROPDOWN CONTAINER & COLUMNS
+   ========================================== */
 .dropdown-container {
   font-family: "AvenirNext LT Pro", sans-serif;
   display: grid;
@@ -154,7 +198,24 @@
   min-width: 0; /* Prevents grid overflow */
 }
 
-/* Dropdown Title (Main Category) - now inside dropdown-list */
+/* ==========================================
+   DROPDOWN CONTENT STYLES
+   ========================================== */
+.dropdown-list {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 20px !important;
+  width: 100%;
+}
+
+.dropdown-list li.has-gap-after {
+  margin-bottom: 20px;
+}
+
 .dropdown-title {
   font-family: "AvenirNext LT Pro", sans-serif;
   font-weight: 700;
@@ -168,22 +229,9 @@
   width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  padding: 0.5rem 0 0.25rem 0; /* Add some padding to separate from sub-items */
+  padding: 0.5rem 0 0.25rem 0;
 }
 
-/* Dropdown List */
-.dropdown-list {
-  font-family: "AvenirNext LT Pro", sans-serif;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  font-size: 20px !important;
-  width: 100%;
-}
-
-/* Dropdown Links */
 .dropdown-link {
   font-family: "AvenirNext LT Pro", sans-serif;
   color: #131d29;
@@ -205,298 +253,42 @@
   font-weight: 500 !important;
 }
 
-/* Ensure highlighted color applies to bold text as well */
-.dropdown-container
-  .dropdown-column
-  .dropdown-list
-  .dropdown-link.highlighted
-  strong {
+/* Highlighted items - consolidated all duplicate rules */
+.dropdown-link.highlighted,
+.dropdown-title.highlighted,
+.dropdown-link.highlighted strong,
+.dropdown-title.highlighted strong {
   color: #ff512a !important;
   margin-bottom: 50px !important;
 }
 
-.dropdown-container
-  .dropdown-column
-  .dropdown-list
-  .dropdown-title.highlighted
-  strong {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-/* Header Icons */
+/* ==========================================
+   HEADER ICONS
+   ========================================== */
 .icons {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  justify-content: center;
 }
 
-.icons .btn {
+.icons .btn,
+.icons > a {
   padding: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.icons .btn img {
-  width: 20px;
-  height: 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 1400px) {
-  .dropdown-container[data-columns="5"],
-  .dropdown-container[data-columns="6"] {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 60px;
-    max-width: 1200px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .dropdown-container[data-columns="4"],
-  .dropdown-container[data-columns="5"],
-  .dropdown-container[data-columns="6"] {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    max-width: 1000px;
-  }
-
-  .dropdown-container[data-columns="3"] {
-    gap: 40px;
-  }
-}
-
-@media (max-width: 992px) {
-  .nav-links {
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-  }
-
-  .nav-item {
-    width: 100%;
-  }
-
-  .nav-link {
-    padding: 1rem;
-    width: 100%;
-  }
-
-  .dropdown-menu {
-    position: static;
-    opacity: 1;
-    visibility: visible;
-    box-shadow: none;
-    padding: 1rem 0 1rem 2rem;
-    min-width: auto;
-    display: none;
-    background: #f8f9fa;
-    border-radius: 0;
-  }
-
-  .nav-item.has-dropdown.active .dropdown-menu {
-    display: block;
-  }
-
-  .dropdown-container,
-  .dropdown-container[data-columns="1"],
-  .dropdown-container[data-columns="2"],
-  .dropdown-container[data-columns="3"],
-  .dropdown-container[data-columns="4"],
-  .dropdown-container[data-columns="5"],
-  .dropdown-container[data-columns="6"] {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    max-width: 100%;
-  }
-
-  .dropdown-menu {
-    margin-top: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .nav-items {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .dropdown-menu {
-    min-width: 100%;
-  }
-}
-
-/* Accessibility improvements */
-.nav-link:focus,
-.dropdown-title:focus,
-.dropdown-link:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
-}
-
-/* Mobile active state */
-@media (max-width: 992px) {
-  .nav-item.active .dropdown-menu {
-    display: block !important;
-  }
-}
-
-/* Header styles */
-.main-header {
-  font-family: "AvenirNext LT Pro", sans-serif;
-  position: relative;
-  z-index: 1001;
-  opacity: 1;
-  background: white;
-}
-
-.main-header.dropdown-active {
-  background: #f8f9fb;
-}
-
-.dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  .dropdown-link.highlighted,
-.dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  .dropdown-title.highlighted {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-.dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  .dropdown-link.highlighted
-  strong,
-.dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  .dropdown-title.highlighted
-  strong {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-header
-  .dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  a.dropdown-link.highlighted,
-header
-  .dropdown-menu
-  .dropdown-container
-  .dropdown-column
-  .dropdown-list
-  li
-  a.dropdown-title.highlighted {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-.dropdown-link.highlighted {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-.dropdown-link.highlighted strong {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-/* Apply highlighted styles to dropdown-title as well */
-.dropdown-title.highlighted {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-.dropdown-title.highlighted strong {
-  color: #ff512a !important;
-  margin-bottom: 50px !important;
-}
-
-.dropdown-list li.has-gap-after {
-  margin-bottom: 20px;
-}
-
-/* Main Header Structure */
-header {
-  box-sizing: border-box;
-  line-height: 0;
-}
-
-.main-header {
-  display: block;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #fff;
-  width: 100%;
-  padding: 20px 0;
-  border-top: 4px solid;
-  border-image: linear-gradient(
-      116.38deg,
-      #fcb71d,
-      #e9500d 29.69%,
-      #d32a78 66%,
-      #47b8ed
-    )
-    1;
-}
-
-.container > .nav-items {
-  display: flex;
-  align-items: center;
-  color: #000;
-  text-align: center;
-  gap: 3em;
-}
-
-nav > ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  gap: 1.5em;
-}
-
-.nav-links > li > a {
-  color: #000;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
-  font-family: "AvenirNext LT Pro", sans-serif;
-}
-
-.icons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2.5em;
-}
-
+.icons .btn img,
 .icons > a > img {
   width: 20px;
   height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* Profile dropdown */
+/* ==========================================
+   PROFILE DROPDOWN
+   ========================================== */
 .profile-dropdown {
   position: relative;
 }
@@ -555,7 +347,9 @@ nav > ul {
   margin-bottom: 4px;
 }
 
-/* Modal */
+/* ==========================================
+   MODAL
+   ========================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -609,12 +403,6 @@ nav > ul {
   overflow-y: auto;
 }
 
-.form-row textarea:focus,
-.form-row select:focus {
-  outline: none;
-  border-color: #9ca3af;
-}
-
 .form-row {
   display: flex;
   flex-direction: column;
@@ -626,6 +414,12 @@ nav > ul {
   color: #374151;
 }
 
+.form-row textarea:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #9ca3af;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -633,7 +427,92 @@ nav > ul {
   margin-top: 8px;
 }
 
-/* Responsive Header - Mobile */
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+.nav-link:focus,
+.dropdown-title:focus,
+.dropdown-link:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN - DESKTOP
+   ========================================== */
+@media (max-width: 1400px) {
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 60px;
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dropdown-container[data-columns="4"],
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1000px;
+  }
+
+  .dropdown-container[data-columns="3"] {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-link {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+    padding: 1rem 0 1rem 2rem;
+    min-width: auto;
+    display: none;
+    background: #f8f9fa;
+    border-radius: 0;
+    margin-top: 0;
+  }
+
+  .nav-item.has-dropdown.active .dropdown-menu,
+  .nav-item.active .dropdown-menu {
+    display: block !important;
+  }
+
+  .dropdown-container,
+  .dropdown-container[data-columns="1"],
+  .dropdown-container[data-columns="2"],
+  .dropdown-container[data-columns="3"],
+  .dropdown-container[data-columns="4"],
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 100%;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE HEADER - MOBILE (<768px)
+   ========================================== */
 .responsive-header {
   display: none;
 }
@@ -695,6 +574,7 @@ nav > ul {
     display: block;
   }
 
+  /* Hamburger Menu */
   .hamburger {
     background: none;
     border: none;
@@ -723,6 +603,7 @@ nav > ul {
     transform: rotate(-45deg) translate(6px, -6px);
   }
 
+  /* Mobile Dropdown */
   .dropdown {
     position: absolute;
     top: 100%;
@@ -754,10 +635,7 @@ nav > ul {
     overflow: hidden;
   }
 
-  .responsive-header {
-    position: relative;
-  }
-
+  /* Search Input */
   .search-input {
     border-bottom: 1px solid rgba(74, 81, 87, 0.3);
     padding: 30px;
@@ -799,6 +677,7 @@ nav > ul {
     color: #1d252d;
   }
 
+  /* Mobile Navigation Links */
   .nav-links {
     list-style: none;
     flex-direction: column;
@@ -828,7 +707,6 @@ nav > ul {
     line-height: 26px !important;
   }
 
-  /* Mobile Navigation Enhancements */
   .nav-item-mobile {
     position: relative;
   }
@@ -959,6 +837,7 @@ nav > ul {
     gap: 10px;
     padding: 20px 0;
   }
+
   .submenu-title-wrapper a {
     font-size: 16px;
   }
@@ -981,6 +860,16 @@ nav > ul {
     color: #1d252d !important;
     font-weight: 600 !important;
     padding: 10px 0;
+  }
+
+  .submenu-title strong {
+    font-weight: 500;
+  }
+
+  .submenu-title.highlighted strong {
+    color: #1d252d !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
   }
 
   .submenu-expand-toggle {
@@ -1048,6 +937,10 @@ nav > ul {
     padding-bottom: 20px;
   }
 
+  .submenu-list li.has-gap-after:last-child {
+    border-bottom: none;
+  }
+
   .submenu-link {
     display: block;
     color: #374151;
@@ -1061,19 +954,15 @@ nav > ul {
     color: #1d252d;
   }
 
+  .submenu-link strong {
+    font-weight: 600 !important;
+  }
+
   .submenu-link.highlighted {
     color: #1d252d !important;
     font-weight: 600 !important;
     padding: 10px 0;
     display: inline-block;
-  }
-
-  .submenu-link strong {
-    font-weight: 600 !important;
-  }
-
-  .submenu-title strong {
-    font-weight: 500;
   }
 
   .submenu-link.highlighted strong {
@@ -1082,17 +971,5 @@ nav > ul {
     font-size: 16px !important;
     padding: 20px 0;
     display: inline-block;
-  }
-  .nav-links a {
-    line-height: 26px !important;
-  }
-  .submenu-title.highlighted strong {
-    color: #1d252d !important;
-    font-weight: 600 !important;
-    font-size: 16px !important;
-  }
-
-  .submenu-list li.has-gap-after:last-child {
-    border-bottom: none;
   }
 }

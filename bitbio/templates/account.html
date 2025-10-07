@@ -317,10 +317,8 @@
             </p>
           </div>
           <a href="https://www.bit.bio/registration" class="create-account-button">Create an account</a>
-          <!-- <a href="/registration" class="create-account-button">Create an account</a> -->
         </div>
       </div>
-      <!-- Account Status Information - Show for pending approval or email verification messages -->
       {% for message in messages %}
       {% if message.tags == 'warning' and 'pending approval' in message|lower %}
       <div class="account-status-info">

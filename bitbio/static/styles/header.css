@@ -1,0 +1,433 @@
+/* Header and Navigation Styles */
+
+/* Overlay for dropdown menus */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999;
+}
+
+.dropdown-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Main Navigation Links */
+.nav-links {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  list-style: none;
+  display: flex;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-item {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  position: relative;
+  z-index: 1001;
+}
+
+.nav-item.has-dropdown {
+  position: relative;
+}
+
+.nav-link {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  display: block;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+/* When hovering over nav links, gray out others */
+.nav-links:hover .nav-link {
+  color: #999;
+}
+
+/* Make the hovered link black */
+.nav-links:hover .nav-link:hover {
+  color: #000;
+}
+
+/* Simple overlay - removed for now to focus on CSS hover */
+
+/* Dropdown Menu - CSS Hover Approach */
+.dropdown-menu {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  position: fixed;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  background: #f8f9fb;
+  border-radius: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+  min-height: 50vh;
+  pointer-events: none;
+  text-align: left;
+  margin-top: -20px;
+}
+
+/* CSS Hover - Show dropdown on hover */
+@media (min-width: 993px) {
+  .nav-item.has-dropdown:hover .dropdown-menu,
+  .nav-item.has-dropdown.keep-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Create invisible bridge between nav item and dropdown */
+  .nav-item.has-dropdown:hover::after,
+  .nav-item.has-dropdown.keep-open::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: transparent;
+    z-index: 1001;
+  }
+}
+
+/* JavaScript control for mobile */
+.nav-item.has-dropdown.active .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Dropdown Container - Grid Layout */
+.dropdown-container {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  display: grid;
+  gap: 100px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 50px 12px;
+  width: 100%;
+}
+
+/* Dynamic column layouts based on number of columns */
+.dropdown-container[data-columns="1"] {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.dropdown-container[data-columns="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.dropdown-container[data-columns="3"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.dropdown-container[data-columns="4"] {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.dropdown-container[data-columns="5"] {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.dropdown-container[data-columns="6"] {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.dropdown-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0; /* Prevents grid overflow */
+}
+
+/* Dropdown Title (Main Category) - now inside dropdown-list */
+.dropdown-title {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  font-weight: 700;
+  color: #1d252d;
+  text-decoration: none;
+  margin-bottom: 15px;
+  line-height: 26px;
+  display: block;
+  font-size: 20px;
+  transition: color 0.2s ease;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 0.5rem 0 0.25rem 0; /* Add some padding to separate from sub-items */
+}
+
+/* Dropdown List */
+.dropdown-list {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 20px !important;
+  width: 100%;
+}
+
+/* Dropdown Links */
+.dropdown-link {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  color: #131d29;
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0;
+  line-height: 26px;
+  transition: color 0.25s ease;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Special styling for bold/italic items */
+.dropdown-link strong,
+.dropdown-title strong {
+  font-weight: 500 !important;
+}
+
+/* Ensure highlighted color applies to bold text as well */
+.dropdown-container
+  .dropdown-column
+  .dropdown-list
+  .dropdown-link.highlighted
+  strong {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-container
+  .dropdown-column
+  .dropdown-list
+  .dropdown-title.highlighted
+  strong {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+/* Header Icons */
+.icons {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.icons .btn {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icons .btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 60px;
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dropdown-container[data-columns="4"],
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1000px;
+  }
+
+  .dropdown-container[data-columns="3"] {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-link {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+    padding: 1rem 0 1rem 2rem;
+    min-width: auto;
+    display: none;
+    background: #f8f9fa;
+    border-radius: 0;
+  }
+
+  .nav-item.has-dropdown.active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-container,
+  .dropdown-container[data-columns="1"],
+  .dropdown-container[data-columns="2"],
+  .dropdown-container[data-columns="3"],
+  .dropdown-container[data-columns="4"],
+  .dropdown-container[data-columns="5"],
+  .dropdown-container[data-columns="6"] {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 100%;
+  }
+
+  .dropdown-menu {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-items {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    min-width: 100%;
+  }
+}
+
+/* Accessibility improvements */
+.nav-link:focus,
+.dropdown-title:focus,
+.dropdown-link:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Mobile active state */
+@media (max-width: 992px) {
+  .nav-item.active .dropdown-menu {
+    display: block !important;
+  }
+}
+
+/* Header styles */
+.main-header {
+  font-family: "AvenirNext LT Pro", sans-serif;
+  position: relative;
+  z-index: 1001;
+  opacity: 1;
+  background: white;
+}
+
+.main-header.dropdown-active {
+  background: #f8f9fb;
+}
+
+.dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  .dropdown-link.highlighted,
+.dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  .dropdown-title.highlighted {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  .dropdown-link.highlighted
+  strong,
+.dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  .dropdown-title.highlighted
+  strong {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+header
+  .dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  a.dropdown-link.highlighted,
+header
+  .dropdown-menu
+  .dropdown-container
+  .dropdown-column
+  .dropdown-list
+  li
+  a.dropdown-title.highlighted {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-link.highlighted {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-link.highlighted strong {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+/* Apply highlighted styles to dropdown-title as well */
+.dropdown-title.highlighted {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-title.highlighted strong {
+  color: #ff512a !important;
+  margin-bottom: 50px !important;
+}
+
+.dropdown-list li.has-gap-after {
+  margin-bottom: 20px;
+}

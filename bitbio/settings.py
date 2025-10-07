@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_tables2",
+    "bitbio",  # Add this to enable template tags
     "app_users",
     "calculator",
     "bitbio_nucleus_bulk_rna",
@@ -97,6 +98,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csrf",
+                "bitbio.context_processors.header_data",
             ],
         },
     },

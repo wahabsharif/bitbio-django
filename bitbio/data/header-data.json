@@ -1,0 +1,522 @@
+{
+  "main_menu": [
+    {
+      "id": "products",
+      "label": "Products",
+      "url": "#",
+      "has_children": true,
+      "children": [
+        {
+          "label": "Discover ioCells",
+          "url": "https://www.bit.bio/discover-iocells",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "All products >",
+              "url": "https://www.bit.bio/products",
+              "is_bold": true,
+              "is_highlighted": true
+            },
+            {
+              "label": "All protocols >",
+              "url": "https://www.bit.bio/resources/protocols",
+              "is_bold": true,
+              "is_highlighted": true
+            },
+            {
+              "label": "Promotions >",
+              "url": "https://www.bit.bio/support/promotions",
+              "is_bold": true,
+              "is_highlighted": true
+            }
+          ]
+        },
+        {
+          "label": "ioWild Type Cells",
+          "url": "https://www.bit.bio/products/wild-type-cells",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Glial cells",
+              "url": "https://www.bit.bio/products/glial-cells",
+              "is_bold": true
+            },
+            {
+              "label": "ioAstrocytes",
+              "url": "https://www.bit.bio/products/glial-cells/astrocytes-wild-type-ioea1093"
+            },
+            {
+              "label": "ioMicroglia | Female",
+              "url": "https://www.bit.bio/products/glial-cells/microglia-wild-type-io1029"
+            },
+            {
+              "label": "ioMicroglia | Male",
+              "url": "https://www.bit.bio/products/glial-cells/microglia-wild-type-io1021"
+            },
+            {
+              "label": "ioOligodendrocyte-like cells",
+              "url": "https://www.bit.bio/products/glial-cells/oligodendrocyte-like-cells-wild-type-io1028",
+              "has_gap_after": true
+            },
+            {
+              "label": "Muscle cells",
+              "url": "https://www.bit.bio/products/muscle-cells",
+              "is_bold": true
+            },
+            {
+              "label": "ioSkeletal Myocytes",
+              "url": "https://www.bit.bio/products/muscle-cells/skeletal-myocytes-wild-type-io1002",
+              "has_gap_after": true
+            },
+            {
+              "label": "Nerve cells",
+              "url": "https://www.bit.bio/products/nerve-cells",
+              "is_bold": true
+            },
+            {
+              "label": "ioGABAergic Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/gabaergic-neurons-wild-type-io1003"
+            },
+            {
+              "label": "ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/glutamatergic-neurons-wild-type-io1001"
+            },
+            {
+              "label": "ioMotor Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/motor-neurons-wild-type/ioea1027"
+            },
+            {
+              "label": "ioSensory Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/sensory-neurons-wild-type-io1024",
+              "has_gap_after": true
+            },
+            {
+              "label": "Custom ioCells Development",
+              "url": "https://www.bit.bio/products/custom-cell-development",
+              "is_bold": true
+            }
+          ]
+        },
+        {
+          "label": "ioDisease Model Cells",
+          "url": "https://www.bit.bio/products/disease-models-cells",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "ALS and FTD",
+              "url": "https://www.bit.bio/modelling-disease/amyotrophic-lateral-sclerosis-and-frontotemporal-dementia"
+            },
+            {
+              "label": "Alzheimer's disease",
+              "url": "https://www.bit.bio/modelling-disease/alzheimers-disease"
+            },
+            {
+              "label": "Duchenne muscular dystrophy",
+              "url": "https://www.bit.bio/modelling-disease/duchenne-muscular-dystrophy"
+            },
+            {
+              "label": "Huntington's disease",
+              "url": "https://www.bit.bio/modelling-disease/huntingtons-disease"
+            },
+            {
+              "label": "Parkinson's and Gaucher disease",
+              "url": "https://www.bit.bio/modelling-disease/parkinsons-disease-and-gaucher-disease",
+              "has_gap_after": true
+            },
+            {
+              "label": "Custom ioDisease Model Cells",
+              "url": "https://www.bit.bio/products/disease-models-cells",
+              "is_bold": true
+            }
+          ]
+        },
+        {
+          "label": "CRISPR-Ready ioCells",
+          "url": "https://www.bit.bio/products/crispr-ready-cells",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "CRISPRa-Ready ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/crispr-activation-ready-glutamatergic-neurons-io1099"
+            },
+            {
+              "label": "CRISPRi-Ready ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/crispr-interference-ready-glutamatergic-neurons-io1098"
+            },
+            {
+              "label": "CRISPRko-Ready ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/crispr-ready-glutamatergic-neurons-io1090"
+            },
+            {
+              "label": "CRISPRko-Ready ioMicroglia | Male",
+              "url": "https://www.bit.bio/products/glial-cells/crispr-ready-microglia-io1094"
+            },
+            {
+              "label": "CRISPRko-Ready ioMotor Neurons",
+              "url": "https://www.bit.bio/products/nerve-cells/crispr-knockout-ready-motor-neurons-io1101"
+            },
+            {
+              "label": "CRISPRko-Ready ioOligodendrocyte-like cells",
+              "url": "https://www.bit.bio/products/nerve-cells/crispr-knockout-ready-oligodendrocyte-like-cells-io1095"
+            }
+          ]
+        },
+        {
+          "label": "CRISPR Screening",
+          "url": "https://www.bit.bio/crispr-screens",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "ioTracker Cells",
+              "url": "#",
+              "is_bold": true
+            },
+            {
+              "label": "GFP ioMicroglia",
+              "url": "https://www.bit.bio/products/glial-cells/gfp-microglia-male-io1096"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform",
+      "label": "Platform",
+      "url": "https://www.bit.bio/platform",
+      "has_children": false
+    },
+    {
+      "id": "therapeutics",
+      "label": "Therapeutics",
+      "url": "https://www.bit.bio/therapeutics",
+      "has_children": true,
+      "children": [
+        {
+          "label": "",
+          "url": "#",
+          "is_bold": false,
+          "sub_items": [
+            {
+              "label": "Cell therapies",
+              "url": "https://www.bit.bio/therapeutics-pipeline"
+            },
+            {
+              "label": "Partnerships",
+              "url": "https://www.bit.bio/therapeutics-pipeline#Therapeutic-Partnerships"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "label": "Resources",
+      "url": "#",
+      "has_children": true,
+      "children": [
+        {
+          "label": "Product information",
+          "url": "#",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Brochures",
+              "url": "https://www.bit.bio/resources?type=brochure"
+            },
+            {
+              "label": "User manuals",
+              "url": "https://www.bit.bio/resources?type=user+manual",
+              "has_gap_after": true
+            },
+
+            {
+              "label": "General resources",
+              "url": "#",
+              "is_bold": true
+            },
+            {
+              "label": "Application notes",
+              "url": "https://www.bit.bio/resources?type=application+note"
+            },
+            {
+              "label": "Case studies",
+              "url": "https://www.bit.bio/resources/case-studies"
+            },
+            {
+              "label": "Bits of Bio",
+              "url": "https://www.bit.bio/resources?type=bits+of+bio"
+            },
+            {
+              "label": "Infographics",
+              "url": "https://www.bit.bio/resources?type=infographic"
+            },
+            {
+              "label": "Posters",
+              "url": "https://www.bit.bio/resources?type=poster"
+            },
+            {
+              "label": "Talks",
+              "url": "https://www.bit.bio/resources?type=talk"
+            },
+            {
+              "label": "Videos",
+              "url": "https://www.bit.bio/resources?type=video"
+            },
+            {
+              "label": "Video tutorials",
+              "url": "https://www.bit.bio/resources?type=video+tutorial"
+            },
+            {
+              "label": "Webinars",
+              "url": "https://www.bit.bio/resources?type=webinar"
+            }
+          ]
+        },
+        {
+          "label": "Protocol library",
+          "url": "https://www.bit.bio/protocol-library",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Multi-cell culture",
+              "url": "#",
+              "is_bold": true
+            },
+            {
+              "label": "ioGlutamatergic Neurons | ioAstrocytes",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-astrocytes-glutamatergic-co-culture-protocol-preview"
+            },
+            {
+              "label": "ioGlutamatergic Neurons | ioMicroglia",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-microglia-glutamatergic-co-culture-protocol"
+            },
+            {
+              "label": "MEA | Glutamatergic Neurons | astrocytes",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-glutamatergic-neurons-rat-astrocytes-mea-co-culture-protocol"
+            },
+            {
+              "label": "MEA | ioGlutamatergic Neurons | ioGABAergic Neurons | astrocytes",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-glutamatergic-gabaergic-astrocyte-triculture-mea-axion-protocol"
+            },
+            {
+              "label": "MEA | ioMotor Neurons | astrocytes",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-motor-neurons-rat-astrocytes-mea-co-culture-protocol",
+              "has_gap_after": true
+            },
+            {
+              "label": "Cell Transfections",
+              "url": "#",
+              "is_bold": true
+            },
+            {
+              "label": "mRNA transfection | ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-glutamatergic-neurons-mrna-transfection-protocol"
+            }
+          ]
+        },
+        {
+          "label": "Cell culture, characterisation and assays",
+          "url": "#",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Cell counting | ioCells",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-cell-counting-protocol"
+            },
+            {
+              "label": "Cell detachment | ioMicroglia",
+              "url": "https://www.bit.bio/human-ipsc-derived-microglia-detachment-protocol"
+            },
+            {
+              "label": "Cytokine release | ioMicroglia",
+              "url": "https://www.bit.bio/human-ipsc-derived-microglia-cytokine-release-protocol"
+            },
+            {
+              "label": "ICC | ioGABAergic Neurons",
+              "url": "https://www.bit.bio/human-ipsc-derived-gabaergic-neurons-immunocytochemistry-protocol"
+            },
+            {
+              "label": "ICC | ioGlutamatergic Neurons",
+              "url": "https://www.bit.bio/human-ipsc-derived-glutamatergic-neurons-immunocytochemistry-protocol"
+            },
+            {
+              "label": "ICC | ioMotor Neurons",
+              "url": "https://www.bit.bio/resources/protocols/human-ipsc-derived-motor-neurons-immunocytochemistry-protocol"
+            },
+            {
+              "label": "ICC | ioOligodendrocyte-like cells",
+              "url": "https://www.bit.bio/resources/protocols/oligodendrocyte-like-cells-immunocytochemistry-protocol"
+            },
+            {
+              "label": "ICC | ioSkeletal Myocytes",
+              "url": "https://www.bit.bio/human-ipsc-derived-skeletal-myocytes-immunocytochemistry-protocol"
+            }
+          ]
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.bit.bio/blog",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Browse topics",
+              "url": "#",
+              "is_bold": true
+            },
+            {
+              "label": "Culture",
+              "url": "https://www.bit.bio/blog/tag/culture"
+            },
+            {
+              "label": "Expert opinion",
+              "url": "https://www.bit.bio/blog/tag/expert-opinion"
+            },
+            {
+              "label": "Science",
+              "url": "https://www.bit.bio/blog/tag/science"
+            },
+            {
+              "label": "Technology",
+              "url": "https://www.bit.bio/blog/tag/technology"
+            },
+            {
+              "label": "Sustainability",
+              "url": "https://www.bit.bio/blog/tag/sustainability",
+              "has_gap_after": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "label": "Support",
+      "url": "#",
+      "has_children": true,
+      "children": [
+        {
+          "label": "Support hub",
+          "url": "https://www.bit.bio/support-hub",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Order support",
+              "url": "https://www.bit.bio/support/order-support"
+            },
+            {
+              "label": "Shipping & storage FAQs",
+              "url": "https://www.bit.bio/support/shipping-and-storage",
+              "has_gap_after": true
+            }
+          ]
+        },
+        {
+          "label": "Academic hub",
+          "url": "https://www.bit.bio/support/academic-hub",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Data exchange program",
+              "url": "https://www.bit.bio/support/data-exchange-program"
+            },
+            {
+              "label": "New lab discount",
+              "url": "https://www.bit.bio/new-lab-discount"
+            },
+            {
+              "label": "Travel grant",
+              "url": "https://www.bit.bio/travel-grant-application-form",
+              "has_gap_after": true
+            }
+          ]
+        },
+        {
+          "label": "Promotions >",
+          "url": "https://www.bit.bio/support/promotions",
+          "is_bold": true,
+          "is_highlighted": true
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "label": "About us",
+      "url": "#",
+      "has_children": true,
+      "children": [
+        {
+          "label": "Our company",
+          "url": "#",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "About us",
+              "url": "https://www.bit.bio/about-us"
+            },
+            {
+              "label": "Leadership",
+              "url": "https://www.bit.bio/about-us#leadership"
+            },
+            {
+              "label": "Boards",
+              "url": "https://www.bit.bio/about-us#board"
+            },
+            {
+              "label": "Sustainability",
+              "url": "https://www.bit.bio/sustainability-2023"
+            },
+            {
+              "label": "News",
+              "url": "https://www.bit.bio/news"
+            },
+            {
+              "label": "Events",
+              "url": "https://www.bit.bio/events",
+              "has_gap_after": true
+            }
+          ]
+        },
+        {
+          "label": "Careers",
+          "url": "#",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Working at bit.bio",
+              "url": "https://www.bit.bio/working-at-bit.bio"
+            },
+            {
+              "label": "Open roles",
+              "url": "https://www.bit.bio/open-roles"
+            },
+            {
+              "label": "How we hire",
+              "url": "https://www.bit.bio/how-we-hire"
+            }
+          ]
+        },
+        {
+          "label": "Work with us",
+          "url": "#",
+          "is_bold": true,
+          "sub_items": [
+            {
+              "label": "Partners",
+              "url": "https://www.bit.bio/partners"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "label": "Contact us",
+      "url": "https://www.bit.bio/contact-us",
+      "has_children": false
+    }
+  ],
+  "secondary_links": {
+    "account": "https://shop.bit.bio/account",
+    "basket": "https://bit.bio/basket"
+  }
+}

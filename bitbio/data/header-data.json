@@ -516,7 +516,7 @@
     }
   ],
   "secondary_links": {
-    "account": "https://shop.bit.bio/account",
+    "account": "#",
     "basket": "https://bit.bio/basket"
   }
 }

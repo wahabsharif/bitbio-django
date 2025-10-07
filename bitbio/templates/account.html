@@ -270,9 +270,52 @@
   .account-status-info a:hover {
     text-decoration: underline;
   }
+
+  @media (max-width: 768px) {
+    section {
+      padding: 43px 10px 0;
+      height: auto;
+
+    }
+    .title {
+      font-size: 25px;
+    }
+    .signin-container {
+      gap: 100px;
+    }
+
+    .form-container-wrapper > .form-container {
+      flex-direction: column;
+      gap: 20px !important;
+    }
+  }
+
+  @media (max-width: 431px) {
+    section {
+      padding: 43px 5px 0;
+      height: auto;
+    }
+    .title {
+      font-size: 22px;
+      margin: 0 0 20px 0;
+    }
+    .signin-container {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .form-container-wrapper > .form-container {
+      flex-direction: column;
+      gap: 30px !important;
+    }
+
+    .divider {
+      display: none;
+    }
+  }
 </style>
 
-<section class=" font-avenir">
+<section class="font-avenir">
   <div class="signin-container">
     <h1 class="title font-avenir">Sign in to your account</h1>
     <div class="form-container-wrapper">

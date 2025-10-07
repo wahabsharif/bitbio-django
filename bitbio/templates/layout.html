@@ -15,7 +15,7 @@
 <body>
   {% include 'components/header.html' %}
   {% include 'components/responsive-header.html' %}
-  <!--
+  
   <main>{% block content %}{% endblock %}</main>
   <div style="position: relative;">
     <div class="support-banner">
@@ -59,8 +59,8 @@
       <div style="display: flex; gap: 2em; width: 50%;">
 
         <div class="footer-links-container">
-          <div>
-            <label>Discover ioCells™</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Discover ioCells™<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="#">ioWild Type Cells</a>
@@ -80,16 +80,16 @@
             </ul>
           </div>
 
-          <div>
+          <div class="footer-accordion-item footer-single-link">
             <a href="#">Platform</a>
           </div>
 
-          <div>
+          <div class="footer-accordion-item footer-single-link">
             <a href="#">Therapeutics</a>
           </div>
 
-          <div>
-            <label>Product Information</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Product Information<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/resources/brochures" class="text-decoration-none">Brochures</a>
@@ -105,8 +105,8 @@
         </div>
 
         <div class="footer-links-container">
-          <div>
-            <label>Resources</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Resources<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/resources/application-notes" class="text-decoration-none">Application
@@ -139,8 +139,8 @@
             </ul>
           </div>
 
-          <div>
-            <label>About us</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">About us<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/about-us" class="text-decoration-none">About us</a>
@@ -155,8 +155,8 @@
             </ul>
           </div>
 
-          <div>
-            <label>Careers</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Careers<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/open-roles" class="text-decoration-none">Open Roles</a>
@@ -167,8 +167,8 @@
             </ul>
           </div>
 
-          <div>
-            <label>News and Events</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">News and Events<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/news" class="text-decoration-none">News</a>
@@ -182,8 +182,8 @@
         </div>
 
         <div class="footer-links-container">
-          <div>
-            <label>Contact</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Contact<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="tel:+441223787297" class="text-decoration-none">Tel: +44 (0) 1223 787297</a>
@@ -194,8 +194,8 @@
             </ul>
           </div>
 
-          <div>
-            <label>Follow us</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Follow us<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.linkedin.com/company/bitbioltd/" class="text-decoration-none">LinkedIn</a>
@@ -206,8 +206,8 @@
             </ul>
           </div>
 
-          <div>
-            <label>Policies</label>
+          <div class="footer-accordion-item">
+            <label class="footer-accordion-label">Policies<span class="footer-toggle-icon">+</span></label>
             <ul>
               <li>
                 <a href="https://www.bit.bio/cookies" class="text-decoration-none">Cookie notice</a>
@@ -251,8 +251,41 @@
       </div>
     </div>
   </footer>
--->
+
 {% endif %}
+<script>
+  // Footer accordion functionality for mobile
+  document.addEventListener('DOMContentLoaded', function() {
+    const footerLabels = document.querySelectorAll('.footer-accordion-label');
+    
+    footerLabels.forEach(label => {
+      label.addEventListener('click', function() {
+        const parent = this.parentElement;
+        const isActive = parent.classList.contains('active');
+        
+        // Close all other accordion items
+        document.querySelectorAll('.footer-accordion-item').forEach(item => {
+          if (item !== parent && item.classList.contains('active')) {
+            item.classList.remove('active');
+            const otherIcon = item.querySelector('.footer-toggle-icon');
+            if (otherIcon) {
+              otherIcon.textContent = '+';
+            }
+          }
+        });
+        
+        // Toggle current accordion item
+        parent.classList.toggle('active');
+        
+        // Toggle icon
+        const icon = this.querySelector('.footer-toggle-icon');
+        if (icon) {
+          icon.textContent = isActive ? '+' : '−';
+        }
+      });
+    });
+  });
+</script>
 </body>
 
 </html>

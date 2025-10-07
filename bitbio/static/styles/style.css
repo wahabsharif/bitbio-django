@@ -372,6 +372,27 @@ footer {
   border-radius: 10px;
 }
 
+/* Footer accordion styles */
+.footer-accordion-item {
+  position: relative;
+}
+
+.footer-accordion-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.footer-toggle-icon {
+  display: none;
+  font-size: 20px;
+  font-weight: 400;
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .support-banner {
     flex-direction: column;
@@ -393,6 +414,87 @@ footer {
     height: 300px;
     position: relative;
     right: auto;
+  }
+  .join-team-container a {
+    font-size: 25px !important;
+  }
+
+  .footer-items {
+    flex-direction: column-reverse;
+    padding: 40px 30px;
+  }
+
+  .footer-items > div:first-child {
+    width: 100% !important;
+    margin-bottom: 0;
+    margin-top: 2em;
+  }
+  .footer-items > div:first-child span {
+    font-size: 25px !important;
+    line-height: 30px;
+    font-weight: 500;
+  }
+  .footer-items > div:nth-child(2) {
+    width: 100% !important;
+    flex-direction: column;
+    gap: 0 !important;
+  }
+
+  .footer-links-container {
+    width: 100% !important;
+    border-bottom: 1px solid #ffffff33;
+    gap: 0 !important;
+  }
+
+  .footer-accordion-item {
+    border-top: 1px solid #ffffff33;
+    padding: 1em 0;
+    width: 100%;
+  }
+
+  .footer-links-container > .footer-accordion-item:first-child {
+    border-top: none;
+  }
+
+  .footer-toggle-icon {
+    display: inline-block;
+  }
+
+  .footer-accordion-label {
+    width: 100%;
+    padding: 0;
+  }
+
+  .footer-accordion-item ul {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 0 !important;
+  }
+
+  .footer-accordion-item.active ul {
+    max-height: 500px;
+  }
+
+  .footer-accordion-item.footer-single-link {
+    border-top: 1px solid #ffffff33;
+    padding: 1em 0;
+  }
+
+  .footer-accordion-item.footer-single-link a {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 30px 30px;
+  }
+
+  .footer-bottom > div:first-child,
+  .footer-bottom > div:nth-child(2) {
+    width: 100% !important;
   }
 }
 @media (max-width: 431px) {
@@ -416,5 +518,13 @@ footer {
     height: 300px;
     position: relative;
     right: auto;
+  }
+  .join-team-container a {
+    font-size: 22px !important;
+  }
+
+  /* Footer responsive styles for small mobile */
+  .footer-items {
+    padding: 40px 1rem;
   }
 }

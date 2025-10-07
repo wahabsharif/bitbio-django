@@ -1,0 +1,223 @@
+{% load static %}
+<header class="responsive-header">
+    <div class="responsive-header-container">
+        <div class="responsive-header-main">
+            <a href="/">
+                <img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo" style="max-width: 85px; width: 100%;" />
+            </a>
+            <div class="header-icons">
+                <a href="{{ header_data.secondary_links.account }}" class="btn btn-primary">
+                    <img src="{% static 'images/user-icon.svg' %}" alt="User Icon" />
+                  </a>
+                  <a href="{{ header_data.secondary_links.basket }}" class="btn btn-primary">
+                    <img src="{% static 'images/cart-icon.svg' %}" alt="Cart Icon" />
+                  </a>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dropdown" id="navMenu">
+        <div class="search-input">
+            <img src="{% static 'images/search-icon.svg' %}" alt="Search Icon" class="search-icon" />
+            <input type="text" placeholder="Search bit.bio"/>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                {% for item in header_data.main_menu %}
+                <li class="nav-item-mobile {% if item.has_children %}has-submenu{% endif %}" data-menu-id="{{ item.id }}">
+                    {% if item.has_children %}
+                        <div class="nav-link-wrapper">
+                            <a href="{{ item.url }}" class="nav-link-mobile">{{ item.label }}</a>
+                            <button class="submenu-toggle" aria-label="Open submenu for {{ item.label }}">
+                              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="8px" height="12px" viewBox="0 0 8 12" version="1.1">
+                                <g id="Pages" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <g id="Home/Desktop" transform="translate(-1491.000000, -8212.000000)" stroke="#1d252d">
+                                        <g id="Link/Arrow2/Orange" transform="translate(1492.000000, 8212.661019)">
+                                            <polyline id="Path-6-Copy-2" transform="translate(3.000000, 5.000000) rotate(-90.000000) translate(-3.000000, -5.000000) " points="-2 2 3 8 8 2"/>
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Submenu Panel -->
+                        <div class="submenu-panel" data-submenu="{{ item.id }}">
+                            <div class="submenu-header">
+                                <button class="back-button" aria-label="Back to main menu">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg></button>
+                                <h3>{{ item.label }}</h3>
+                            </div>
+                            <div class="submenu-content">
+                                {% for child in item.children %}
+                                    <div class="submenu-section {% if child.sub_items %}has-children{% endif %} {% if not child.label %}no-label{% endif %}">
+                                        {% if child.label %}
+                                            <div class="submenu-title-wrapper">
+                                                <a href="{{ child.url }}" class="submenu-title {% if child.is_highlighted %}highlighted{% endif %}">
+                                                    {% if child.is_bold %}<strong>{{ child.label }}</strong>{% else %}{{ child.label }}{% endif %}
+                                                </a>
+                                                {% if child.sub_items %}
+                                                <button class="submenu-expand-toggle" aria-label="Expand {{ child.label }}">
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path class="horizontal-line" d="M0 6H12" stroke="currentColor" stroke-width="1"/>
+                                                        <path class="vertical-line" d="M6 0V12" stroke="currentColor" stroke-width="1"/>
+                                                    </svg>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if child.sub_items %}
+                                            <ul class="submenu-list {% if not child.label %}expanded-by-default{% endif %}">
+                                                {% for sub_item in child.sub_items %}
+                                                <li {% if sub_item.has_gap_after %}class="has-gap-after"{% endif %}>
+                                                    <a href="{{ sub_item.url }}" class="submenu-link {% if sub_item.is_highlighted %}highlighted{% endif %}">
+                                                        {% if sub_item.is_bold %}<strong>{{ sub_item.label }}</strong>{% else %}{{ sub_item.label }}{% endif %}
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ item.url }}" class="nav-link-mobile">{{ item.label }}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+
+    hamburger.addEventListener('click', function() {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        
+        // Prevent body scroll when menu is open
+        if (navMenu.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+            
+            // Close all submenu panels when closing main menu
+            document.querySelectorAll('.submenu-panel.active').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Collapse all expanded sections
+            document.querySelectorAll('.submenu-section.expanded').forEach(section => {
+                section.classList.remove('expanded');
+            });
+            
+            // Reset navMenu overflow
+            navMenu.style.overflow = '';
+        }
+    });
+
+    // Handle submenu toggles
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    submenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const navItem = this.closest('.nav-item-mobile');
+            const menuId = navItem.dataset.menuId;
+            const submenuPanel = document.querySelector(`[data-submenu="${menuId}"]`);
+            
+            if (submenuPanel) {
+                // Calculate the top position based on nav element (below search input)
+                const navElement = navMenu.querySelector('nav');
+                const navRect = navElement.getBoundingClientRect();
+                submenuPanel.style.top = navRect.top + 'px';
+                submenuPanel.style.height = 'calc(100vh - ' + navRect.top + 'px)';
+                
+                submenuPanel.classList.add('active');
+                navMenu.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    // Handle back buttons
+    const backButtons = document.querySelectorAll('.back-button');
+    backButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const submenuPanel = this.closest('.submenu-panel');
+            submenuPanel.classList.remove('active');
+            navMenu.style.overflow = 'auto';
+        });
+    });
+
+    // Close menu when clicking on a nav link (mobile)
+    const navLinks = document.querySelectorAll('.nav-link-mobile');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Don't close if it's a link with submenu
+            if (!link.closest('.has-submenu')) {
+                if (window.innerWidth < 768) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    });
+
+    // Handle submenu section expand/collapse - only one at a time
+    const submenuExpandToggles = document.querySelectorAll('.submenu-expand-toggle');
+    submenuExpandToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const submenuSection = this.closest('.submenu-section');
+            const submenuPanel = this.closest('.submenu-panel');
+            const isCurrentlyExpanded = submenuSection.classList.contains('expanded');
+            
+            // Close all expanded sections in this submenu panel
+            submenuPanel.querySelectorAll('.submenu-section.expanded').forEach(section => {
+                section.classList.remove('expanded');
+            });
+            
+            // If this section wasn't expanded, expand it
+            if (!isCurrentlyExpanded) {
+                submenuSection.classList.add('expanded');
+            }
+        });
+    });
+
+    // Close submenu links
+    const submenuLinks = document.querySelectorAll('.submenu-link, .submenu-title');
+    submenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                // Close submenu first
+                document.querySelectorAll('.submenu-panel.active').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                // Then close main menu
+                setTimeout(() => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        });
+    });
+</script>
+

@@ -8,54 +8,14 @@
   {% load static %}
   <link rel="icon" type="image/x-icon" href="{% static 'images/account-favicon-32x32.webp' %}" />
   <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-  <header>
-    <div class="container">
-      <div class="nav-items">
-        <a href="/"><img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo"
-            style="max-width: 85px; width: 100%;" /></a>
-        <nav>
-          <ul class="nav-links">
-            <li>
-              <a href="#">Products</a>
-            </li>
-            <li>
-              <a href="#">Platform</a>
-            </li>
-            <li>
-              <a href="#">Therapeutics</a>
-            </li>
-            <li>
-              <a href="#">Resources</a>
-            </li>
-            <li>
-              <a href="#">Support</a>
-            </li>
-            <li>
-              <a href="#">About us</a>
-            </li>
-            <li>
-              <a href="#">Contact us</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div class="icons">
-        <a href="/" class="btn btn-primary">
-          <img src="{% static 'images/user-icon.svg' %}" alt="User Icon" />
-        </a>
-        <a href="#" class="btn btn-primary">
-          <img src="{% static 'images/cart-icon.svg' %}" alt="Cart Icon" />
-        </a>
-        <a href="#" class="btn btn-primary">
-          <img src="{% static 'images/search-icon.svg' %}" alt="Search Icon" />
-        </a>
-      </div>
-    </div>
-  </header>
+  {% include 'components/header.html' %}
+  {% include 'components/responsive-header.html' %}
+  <!--
   <main>{% block content %}{% endblock %}</main>
   <div style="position: relative;">
     <div class="support-banner">
@@ -77,9 +37,9 @@
     </div>
 
   </div>
-</div>
-
-<div class="join-team-container">
+  </div>
+{% if not request.user.is_authenticated %}
+  <div class="join-team-container">
   <a href="https://www.bit.bio/working-at-bit.bio">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path fill="currentColor" fill-rule="evenodd" d="M18.5 12.214a1 1 0 0 0-1-1H5a1 1 0 1 0 0 2h12.5a1 1 0 0 0 1-1"
@@ -90,7 +50,7 @@
     </svg>
     Join our pioneering team
   </a>
-</div>
+  </div>
   <footer>
     <div class="footer-items">
       <div style="width: 50%;">
@@ -291,6 +251,8 @@
       </div>
     </div>
   </footer>
+-->
+{% endif %}
 </body>
 
 </html>

@@ -55,7 +55,7 @@ header {
   align-items: center;
   color: #000;
   text-align: center;
-  gap: 3em;
+  gap: 1em;
 }
 
 /* ==========================================
@@ -69,6 +69,7 @@ header {
   margin: 0;
   align-items: center;
   padding: 12px 30px;
+  font-size: 14px;
 }
 
 .nav-item {

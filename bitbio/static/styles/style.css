@@ -93,7 +93,7 @@ html {
 }
 
 body {
-  font-family: "BitBioSans", "Segoe UI", Arial, sans-serif;
+  font-family: "AvenirNext LT Pro" !important;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -117,11 +117,11 @@ ul,
 li {
   font-optical-sizing: auto;
   font-style: normal;
-  font-family: "BitBioSans" !important;
+  font-family: "AvenirNext LT Pro" !important;
 }
 p {
   margin: 0 !important;
-  font-family: "BitBioSans" !important;
+  font-family: "AvenirNext LT Pro" !important;
 }
 .container {
   max-width: 1320px;

@@ -20,10 +20,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 from .admin import admin_site
+from app_users import views as app_users_views
 
 urlpatterns = [
     path("admin/", admin_site.urls),
     path("", views.account, name="account"),
+    path(
+        "account/reset/<uuid:token>/",
+        app_users_views.reset_password_with_token,
+        name="account_reset_password",
+    ),
     path("home/", views.home, name="home"),
     path("logout/", views.logout_view, name="logout"),
     path("registration/", views.registration, name="registration"),

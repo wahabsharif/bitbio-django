@@ -84,6 +84,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email_verification_sent_at = models.DateTimeField(null=True, blank=True)
 
+    # Password reset fields
+    password_reset_token = models.UUIDField(
+        null=True, blank=True, unique=True, db_index=True
+    )
+    password_reset_sent_at = models.DateTimeField(null=True, blank=True)
+
     # Django auth fields
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True, db_index=True)
@@ -180,6 +186,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Mark email as verified"""
         self.is_email_verified = True
         self.save(update_fields=["is_email_verified"])
+
+    def generate_password_reset_token(self):
+        """Generate a new password reset token"""
+        # Generate a unique token
+        while True:
+            new_token = uuid.uuid4()
+            if not User.objects.filter(password_reset_token=new_token).exists():
+                break
+
+        self.password_reset_token = new_token
+        self.password_reset_sent_at = timezone.now()
+        self.save(update_fields=["password_reset_token", "password_reset_sent_at"])
 
     @property
     def can_login(self):

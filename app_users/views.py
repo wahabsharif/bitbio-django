@@ -11,20 +11,18 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
 from functools import wraps
-from .forms import UserRegistrationForm, UserProfileUpdateForm
+from .forms import UserRegistrationForm, UserProfileUpdateForm, PasswordResetForm
 from .models import User
 from .domain_management import should_auto_approve, get_email_domain
 from django.contrib.auth import update_session_auth_hash
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def send_verification_email(user, request):
     """Send email verification email to user"""
-    import logging
     import smtplib
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
-
-    logger = logging.getLogger(__name__)
 
     try:
         # Generate a new verification token
@@ -35,8 +33,18 @@ def send_verification_email(user, request):
             f"/users/verify-email/{user.email_verification_token}/"
         )
 
-        # Build logo URL dynamically based on current domain
-        logo_url = request.build_absolute_uri("/static/images/bitbio-logo.png")
+        # Build logo URL - use production domain for emails since localhost won't work
+        # Email clients can't access localhost URLs
+        is_localhost = (
+            "localhost" in request.get_host() or "127.0.0.1" in request.get_host()
+        )
+
+        if is_localhost:
+            # Use production domain so emails display properly
+            logo_url = "https://member.bit.bio/static/images/bitbio-logo.png"
+        else:
+            # Use current domain
+            logo_url = request.build_absolute_uri("/static/images/bitbio-logo.png")
 
         # Prepare email context
         context = {
@@ -49,16 +57,6 @@ def send_verification_email(user, request):
         # Render email templates
         html_message = render_to_string("emails/email_verification.html", context)
         plain_message = render_to_string("emails/email_verification.txt", context)
-
-        # Log email attempt with detailed configuration
-        logger.info(f"Attempting to send verification email to {user.email}")
-        logger.info(f"Email backend: {settings.EMAIL_BACKEND}")
-        logger.info(f"Email host: {settings.EMAIL_HOST}")
-        logger.info(f"Email port: {settings.EMAIL_PORT}")
-        logger.info(f"Email SSL: {settings.EMAIL_USE_SSL}")
-        logger.info(f"Email TLS: {settings.EMAIL_USE_TLS}")
-        logger.info(f"From email: {settings.DEFAULT_FROM_EMAIL}")
-        logger.info(f"Verification URL: {verification_url}")
 
         # Test SMTP connection first
         try:
@@ -75,9 +73,7 @@ def send_verification_email(user, request):
 
             server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
             server.quit()
-            logger.info("SMTP connection test successful")
         except Exception as smtp_error:
-            logger.error(f"SMTP connection test failed: {smtp_error}")
             return False
 
         # Send email using Django's send_mail
@@ -90,28 +86,14 @@ def send_verification_email(user, request):
             fail_silently=False,
         )
 
-        logger.info(f"Email sent successfully to {user.email}. Result: {result}")
         return True
     except smtplib.SMTPAuthenticationError as e:
-        logger.error(f"SMTP Authentication failed for {user.email}: {e}")
-        logger.error(
-            "Check email credentials and ensure 'Less secure app access' is enabled for Gmail"
-        )
         return False
     except smtplib.SMTPRecipientsRefused as e:
-        logger.error(f"SMTP Recipients refused for {user.email}: {e}")
         return False
     except smtplib.SMTPServerDisconnected as e:
-        logger.error(f"SMTP Server disconnected for {user.email}: {e}")
         return False
     except Exception as e:
-        logger.error(f"Failed to send verification email to {user.email}: {e}")
-        logger.error(
-            f"Email configuration - Backend: {settings.EMAIL_BACKEND}, Host: {settings.EMAIL_HOST}, User: {settings.EMAIL_HOST_USER}"
-        )
-        import traceback
-
-        logger.error(f"Traceback: {traceback.format_exc()}")
         return False
 
 
@@ -399,3 +381,335 @@ def resend_verification_email(request):
         return render(request, "resend_verification.html")
 
     return redirect("account")
+
+
+def send_password_reset_email(user, request):
+    """Send password reset email to user"""
+    try:
+        # Generate a new password reset token
+        user.generate_password_reset_token()
+
+        # Build reset URL
+        reset_url = request.build_absolute_uri(
+            f"/account/reset/{user.password_reset_token}/"
+        )
+
+        # Build logo URL - use production domain for emails since localhost won't work
+        # Email clients can't access localhost URLs
+        is_localhost = (
+            "localhost" in request.get_host() or "127.0.0.1" in request.get_host()
+        )
+
+        if is_localhost:
+            # Use production domain so emails display properly
+            logo_url = "https://member.bit.bio/static/images/bitbio-logo.png"
+        else:
+            # Use current domain
+            logo_url = request.build_absolute_uri("/static/images/bitbio-logo.png")
+
+        # Prepare email context
+        context = {
+            "user": user,
+            "reset_url": reset_url,
+            "site_name": "Bit.bio",
+            "logo_url": logo_url,
+        }
+
+        # Render email templates
+        html_message = render_to_string("emails/password_reset.html", context)
+        plain_message = render_to_string("emails/password_reset.txt", context)
+
+        # Send email using Django's send_mail
+        result = send_mail(
+            subject="Customer account password reset",
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+        return True
+    except Exception as e:
+        return False
+
+
+def password_reset_request(request):
+    """Handle password reset request - checks Shopify instead of Django database"""
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        if not email:
+            messages.error(request, "Please provide your email address.")
+            return redirect("account")
+
+        # Check if customer exists in Shopify
+        shopify_customer = check_shopify_customer_exists(email)
+
+        if shopify_customer:
+            # Customer exists in Shopify
+            # Create or get Django user
+            user = create_django_user_from_shopify(shopify_customer)
+
+            if user:
+                # Send password reset email
+                email_sent = send_password_reset_email(user, request)
+                if email_sent:
+                    messages.success(
+                        request,
+                        f"We've sent you an email with a link to update your password.",
+                    )
+                else:
+                    messages.error(
+                        request,
+                        "Failed to send password reset email. Please try again or contact support.",
+                    )
+            else:
+                messages.error(
+                    request,
+                    "Failed to process password reset request. Please contact support.",
+                )
+        else:
+            # Customer doesn't exist in Shopify
+            # Don't reveal if email exists or not for security reasons
+            messages.success(
+                request,
+                "If an account with that email exists, password reset instructions have been sent.",
+            )
+
+    return redirect("account")
+
+
+@ensure_csrf_cookie
+def reset_password_with_token(request, token):
+    """Handle password reset with token"""
+    try:
+        # Find user with the token
+        user = User.objects.get(password_reset_token=token)
+
+        # Check if token is not too old (24 hours)
+        if user.password_reset_sent_at:
+            from datetime import timedelta
+
+            token_age = timezone.now() - user.password_reset_sent_at
+            if token_age > timedelta(hours=24):
+                user.password_reset_token = None
+                user.password_reset_sent_at = None
+                user.save()
+                messages.error(
+                    request,
+                    "Password reset link has expired. Please request a new one.",
+                )
+                return render(request, "reset_password.html", {"token_valid": False})
+
+        token_valid = True
+
+    except User.DoesNotExist:
+        token_valid = False
+        messages.error(request, "Invalid password reset link.")
+        return render(request, "reset_password.html", {"token_valid": False})
+
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            # Update password
+            new_password = form.cleaned_data["password1"]
+            user.set_password(new_password)
+
+            # Clear the reset token
+            user.password_reset_token = None
+            user.password_reset_sent_at = None
+            user.save()
+
+            # Update password in Shopify if user has Shopify account
+            shopify_update_success = False
+            try:
+                from .models import ShopifyUserSession
+
+                shopify_session = ShopifyUserSession.objects.get(
+                    shopify_email__iexact=user.email
+                )
+
+                # Update Shopify customer password
+                shopify_update_success = update_shopify_customer_password(
+                    shopify_session.shopify_customer_id, new_password
+                )
+
+            except ShopifyUserSession.DoesNotExist:
+                # User doesn't have Shopify account, just update local password
+                pass
+            except Exception as e:
+                # Shopify update failed, but local password was updated
+                pass
+
+            # Display appropriate success message based on Shopify update result
+            try:
+                from .models import ShopifyUserSession
+
+                has_shopify = ShopifyUserSession.objects.filter(
+                    shopify_email__iexact=user.email
+                ).exists()
+
+                if has_shopify:
+                    if shopify_update_success:
+                        messages.success(
+                            request,
+                            "Password updated successfully!",
+                        )
+                    else:
+                        messages.warning(
+                            request,
+                            "Password updated successfully for your account. However, we couldn't sync it to your Shopify store. Please update your Shopify password separately if needed.",
+                        )
+                else:
+                    messages.success(request, "Password updated successfully!")
+            except Exception:
+                messages.success(request, "Password updated successfully!")
+
+            return redirect("account")
+    else:
+        form = PasswordResetForm()
+
+    context = {
+        "form": form,
+        "token_valid": token_valid,
+    }
+    return render(request, "reset_password.html", context)
+
+
+def check_shopify_customer_exists(email):
+    """Check if a customer exists in Shopify by email"""
+    import requests  # pyright: ignore[reportMissingModuleSource]
+    from django.conf import settings
+
+    try:
+        # Get Shopify credentials from settings
+        shopify_domain = getattr(settings, "SHOPIFY_DOMAIN", "bit-bio.myshopify.com")
+        shopify_token = getattr(settings, "SHOPIFY_ACCESS_TOKEN", "")
+
+        if not shopify_token:
+            return None
+
+        # Shopify API endpoint for searching customers by email
+        url = f"https://{shopify_domain}/admin/api/2023-10/customers/search.json"
+
+        headers = {
+            "X-Shopify-Access-Token": shopify_token,
+            "Content-Type": "application/json",
+        }
+
+        params = {"query": f"email:{email}"}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            data = response.json()
+            customers = data.get("customers", [])
+
+            if customers:
+                # Return the first matching customer
+                customer = customers[0]
+                return customer
+            else:
+                return None
+        else:
+            return None
+
+    except Exception as e:
+        return None
+
+
+def update_shopify_customer_password(customer_id, new_password):
+    """Update customer password in Shopify using REST API"""
+    import requests  # pyright: ignore[reportMissingModuleSource]
+    from django.conf import settings
+
+    try:
+        # Get Shopify credentials from settings
+        shopify_domain = getattr(settings, "SHOPIFY_DOMAIN", "bit-bio.myshopify.com")
+        shopify_token = getattr(settings, "SHOPIFY_ACCESS_TOKEN", "")
+
+        if not shopify_token:
+            return False
+
+        # Shopify REST API endpoint for updating customer
+        # Use the latest stable API version
+        url = f"https://{shopify_domain}/admin/api/2024-01/customers/{customer_id}.json"
+
+        headers = {
+            "X-Shopify-Access-Token": shopify_token,
+            "Content-Type": "application/json",
+        }
+
+        # Prepare the data for password update
+        data = {
+            "customer": {
+                "id": customer_id,
+                "password": new_password,
+                "password_confirmation": new_password,
+            }
+        }
+
+        response = requests.put(url, json=data, headers=headers)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        return False
+
+
+def create_django_user_from_shopify(shopify_customer):
+    """Create or update Django user from Shopify customer data"""
+    try:
+        email = shopify_customer["email"]
+        first_name = shopify_customer.get("first_name", "")
+        last_name = shopify_customer.get("last_name", "")
+
+        # Check if Django user already exists
+        try:
+            user = User.objects.get(email=email)
+            return user
+        except User.DoesNotExist:
+            # Create new Django user
+            user = User.objects.create_user(
+                email=email,
+                password="temp_password_123",  # Temporary password, will be reset
+                first_name=first_name,
+                last_name=last_name,
+                job_title="Customer",  # Default job title
+                is_active=True,
+                is_email_verified=True,
+                status="approved",
+            )
+
+            # Create or update ShopifyUserSession
+            from .models import ShopifyUserSession
+
+            shopify_session, created = ShopifyUserSession.objects.get_or_create(
+                shopify_email=email,
+                defaults={
+                    "shopify_customer_id": shopify_customer["id"],
+                    "shopify_first_name": first_name,
+                    "shopify_last_name": last_name,
+                    "shopify_verified_email": shopify_customer.get(
+                        "verified_email", False
+                    ),
+                },
+            )
+
+            if not created:
+                # Update existing session
+                shopify_session.shopify_customer_id = shopify_customer["id"]
+                shopify_session.shopify_first_name = first_name
+                shopify_session.shopify_last_name = last_name
+                shopify_session.shopify_verified_email = shopify_customer.get(
+                    "verified_email", False
+                )
+                shopify_session.save()
+
+            return user
+
+    except Exception as e:
+        return None

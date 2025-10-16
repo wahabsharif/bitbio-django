@@ -234,6 +234,9 @@ def registration_success(request):
 def logout_view(request):
     """Handle user logout"""
     logout(request)
+    # Clear any existing messages before adding logout message
+    storage = messages.get_messages(request)
+    storage.used = True
     messages.success(request, "You have been successfully logged out.")
     return redirect("account")
 

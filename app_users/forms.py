@@ -499,3 +499,44 @@ class UserProfileUpdateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class PasswordResetForm(forms.Form):
+    """Form for resetting password with token validation"""
+
+    password1 = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={"class": "form-input"}),
+        label="Password",
+    )
+    password2 = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={"class": "form-input"}),
+        label="Confirm Password",
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match.")
+
+        # Validate password strength
+        if password1:
+            from django.contrib.auth.password_validation import validate_password
+            from django.core.exceptions import ValidationError
+
+            try:
+                # Create a temporary user object for password validation
+                temp_user = User(email="temp@example.com")
+                validate_password(password1, temp_user)
+            except ValidationError as ve:
+                raise forms.ValidationError(
+                    ve.messages[0]
+                    if ve.messages
+                    else "Password doesn't meet requirements."
+                )
+
+        return cleaned_data

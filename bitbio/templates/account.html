@@ -271,6 +271,69 @@
     text-decoration: underline;
   }
 
+  /* Forgot password specific styling */
+  .forgot-password-container {
+    display: none;
+    flex: 1;
+  }
+
+  .signin-container.active .signin-left {
+    display: none;
+  }
+
+  .signin-container.active .forgot-password-container {
+    display: block;
+  }
+
+  .return-link {
+    color: #1d252d;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+    letter-spacing: 0;
+    display: inline-block;
+  }
+
+  .return-link span {
+    margin-left: 7px;
+  }
+
+
+  .forgot-title {
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+
+  .forgot-description {
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 400;
+    letter-spacing: .4px;
+    margin-bottom: 52px !important;
+  }
+
+  .reset-button {
+    font-family: inherit;
+    background: linear-gradient(90deg, #f6a11e 0%, #e91b0d 100%);
+    border: 1px solid transparent;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 19px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .reset-button:hover {
+    background: white;
+    border: 1px solid #e91b0d;
+    color: #e91b0d;
+  }
+
   @media (max-width: 768px) {
     section {
       padding: 43px 10px 0;
@@ -340,7 +403,7 @@
               {% endif %}
             </div>
 
-            <a href="#" class="forgot-link">Forgot your password?</a>
+            <a href="#" class="forgot-link" id="forgot-password-link">Forgot your password?</a>
 
             <div class="remember-section">
               <input type="checkbox" id="remember-me" name="remember" class="checkbox" />
@@ -349,7 +412,29 @@
 
             <button type="submit" class="signin-button">Sign in</button>
           </form>
+        </div>
 
+        <!-- Forgot Password Form - moved outside signin-left -->
+        <div class="forgot-password-container">
+          <a href="#" class="return-link" id="return-to-signin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="5" height="8" viewBox="0 0 5 8" fill="none">
+              <path d="M4.39648 7.43359L1.07363 4.37953C1.05041 4.35819 1.03199 4.33286 1.01943 4.30498C1.00686 4.2771 1.00039 4.24722 1.00039 4.21704C1.00039 4.18687 1.00686 4.15698 1.01943 4.1291C1.03199 4.10122 1.05041 4.07589 1.07363 4.05456L4.39648 0.999834" stroke="#707070" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>Return to sign in</span>
+          </a>
+          <h4 class="forgot-title">Forgot your password?</h4>
+          <p class="forgot-description">Enter your email below and we will send you an email to create a new password</p>
+          
+          <form class="form" method="post" id="forgot-password-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+              <label for="forgot-email" class="form-label">Email address</label>
+              <input type="email" id="forgot-email" name="email" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="reset-button">Reset your password</button>
+          </form>
         </div>
         <div class="divider"></div>
         <div class="signup-section">
@@ -393,5 +478,51 @@
     </div>
   </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const forgotPasswordLink = document.getElementById('forgot-password-link');
+  const returnToSigninLink = document.getElementById('return-to-signin');
+  const forgotPasswordContainer = document.querySelector('.forgot-password-container');
+  const signinContainer = document.querySelector('.signin-container');
+  const forgotPasswordForm = document.getElementById('forgot-password-form');
+
+  // Debug: Log if elements are found
+  console.log('Elements found:', {
+    forgotPasswordLink: !!forgotPasswordLink,
+    returnToSigninLink: !!returnToSigninLink,
+    forgotPasswordContainer: !!forgotPasswordContainer,
+    signinContainer: !!signinContainer,
+    forgotPasswordForm: !!forgotPasswordForm
+  });
+
+  // Show forgot password form
+  forgotPasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Forgot password link clicked');
+    signinContainer.classList.add('active');
+    console.log('Added active class to signin container');
+  });
+
+  // Return to sign in form
+  returnToSigninLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    console.log('Return to signin link clicked');
+    signinContainer.classList.remove('active');
+    console.log('Removed active class from signin container');
+  });
+
+  // Handle forgot password form submission
+  forgotPasswordForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value;
+    
+    if (email) {
+      alert('Password reset functionality is coming soon! We would send a reset link to: ' + email);
+      // For now, just show an alert. Later this can be connected to a real password reset backend
+    }
+  });
+});
+</script>
 
 {% endblock %}

@@ -271,6 +271,30 @@
     text-decoration: underline;
   }
 
+  /* Success message with icon styling */
+  .success-message-container {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .success-message-with-icon {
+    display: flex;
+    text-align: left;
+    gap: 12px;
+    margin-bottom: 14px;
+    border-radius: 8px;
+    color: #1d252d;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 20px;
+  }
+
+  .success-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
   /* Forgot password specific styling */
   .forgot-password-container {
     display: none;
@@ -381,12 +405,29 @@
 <section class="font-avenir">
   <div class="signin-container">
     <h1 class="title font-avenir">Sign in to your account</h1>
+
     <div class="form-container-wrapper">
       <div class="form-container">
         <div class="signin-left">
+    
+    <!-- Success messages with icon at top level -->
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class="success-message-container">
+      <div class="success-message-with-icon">
+        <svg aria-hidden="true" focusable="false" role="presentation" viewBox="0 0 13 13" class="success-icon">
+          <path d="M6.5 12.35C9.73087 12.35 12.35 9.73086 12.35 6.5C12.35 3.26913 9.73087 0.65 6.5 0.65C3.26913 0.65 0.65 3.26913 0.65 6.5C0.65 9.73086 3.26913 12.35 6.5 12.35Z" fill="#428445" stroke="white" stroke-width="0.7"></path>
+          <path d="M5.53271 8.66357L9.25213 4.68197" stroke="white"></path>
+          <path d="M4.10645 6.7688L6.13766 8.62553" stroke="white"></path>
+        </svg>
+        <span>{{ message }}</span>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
           <form class="form" method="post">
             {% csrf_token %}
-
             <div class="form-group">
               <label for="{{ form.email.id_for_label }}" class="form-label">Username</label>
               {{ form.email }}
@@ -425,7 +466,7 @@
           <h4 class="forgot-title">Forgot your password?</h4>
           <p class="forgot-description">Enter your email below and we will send you an email to create a new password</p>
           
-          <form class="form" method="post" id="forgot-password-form">
+          <form class="form" method="post" action="{% url 'app_users:password_reset' %}" id="forgot-password-form">
             {% csrf_token %}
             
             <div class="form-group">
@@ -512,16 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Removed active class from signin container');
   });
 
-  // Handle forgot password form submission
-  forgotPasswordForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = document.getElementById('forgot-email').value;
-    
-    if (email) {
-      alert('Password reset functionality is coming soon! We would send a reset link to: ' + email);
-      // For now, just show an alert. Later this can be connected to a real password reset backend
-    }
-  });
+  // Form will now submit normally to the backend
 });
 </script>
 

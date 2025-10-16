@@ -14,6 +14,32 @@
 <body>
 <!-- Calculator Page -->
 <div class="grad-bg no-print w-full h-4 top-0 left-0 z-50"></div>
+
+<!-- Django Messages -->
+{% if messages %}
+<div style="max-width: 1320px; margin: 1rem auto; padding: 0 1rem;">
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div style="padding: 12px 16px; margin-bottom: 10px; border-radius: 4px; background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #27ae60;">
+        {{ message|safe }}
+    </div>
+    {% elif message.tags == 'error' %}
+    <div style="padding: 12px 16px; margin-bottom: 10px; border-radius: 4px; background-color: #fdf2f2; border: 1px solid #fecaca; color: #e74c3c;">
+        {{ message|safe }}
+    </div>
+    {% elif message.tags == 'warning' %}
+    <div style="padding: 12px 16px; margin-bottom: 10px; border-radius: 4px; background-color: #fffbeb; border: 1px solid #fed7aa; color: #f39c12;">
+        {{ message|safe }}
+    </div>
+    {% else %}
+    <div style="padding: 12px 16px; margin-bottom: 10px; border-radius: 4px; background-color: #eff6ff; border: 1px solid #bfdbfe; color: #3b82f6;">
+        {{ message|safe }}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
 <!-- Banner Text -->
 <div class="calculator-container" style="margin-top: 3rem; display: flex; flex-direction: column; align-items: start;">
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">

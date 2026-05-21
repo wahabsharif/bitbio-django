@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib import messages
@@ -48,6 +49,8 @@ class EmailAuthenticationForm(AuthenticationForm):
 
         # Superusers may always log in; staff must be approved
         if user.is_superuser or user.status == "approved":
+            # Required when multiple AUTHENTICATION_BACKENDS are configured
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
             return user
 
         return None
@@ -60,9 +63,13 @@ class EmailAuthenticationForm(AuthenticationForm):
             # Admin users: local DB first (Shopify backend cannot validate them)
             user = self._authenticate_admin_user(email, password)
             if user is None:
-                user = authenticate(
-                    self.request, username=email, password=password
-                )
+                request = getattr(self, "request", None)
+                if request is not None:
+                    user = authenticate(
+                        request, username=email, password=password
+                    )
+                else:
+                    user = authenticate(username=email, password=password)
             if user is None:
                 # Add error to the email field instead of general form error
                 self.add_error(

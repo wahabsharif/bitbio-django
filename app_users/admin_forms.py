@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
@@ -32,13 +32,37 @@ class EmailAuthenticationForm(AuthenticationForm):
         ),
     )
 
+    def _authenticate_admin_user(self, email, password):
+        """Authenticate staff/superuser against the local database (not Shopify)."""
+        User = get_user_model()
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return None
+
+        if not user.check_password(password) or not user.is_active:
+            return None
+
+        if not (user.is_staff or user.is_superuser):
+            return None
+
+        # Superusers may always log in; staff must be approved
+        if user.is_superuser or user.status == "approved":
+            return user
+
+        return None
+
     def clean(self):
         email = self.cleaned_data.get("username")
         password = self.cleaned_data.get("password")
 
         if email and password:
-            # Try to authenticate with email
-            user = authenticate(username=email, password=password)
+            # Admin users: local DB first (Shopify backend cannot validate them)
+            user = self._authenticate_admin_user(email, password)
+            if user is None:
+                user = authenticate(
+                    self.request, username=email, password=password
+                )
             if user is None:
                 # Add error to the email field instead of general form error
                 self.add_error(

@@ -36,35 +36,28 @@ class EmailBackend(ModelBackend):
         except User.DoesNotExist:
             return None
 
-        # Check if user can authenticate and has approved status
-        if user.check_password(password) and self.user_can_authenticate(user):
-            # Only allow users with approved status to log in
-            if user.status == "approved":
-                return user
-            else:
-                # Return None for non-approved users (this will cause authentication to fail)
-                return None
+        if not user.check_password(password) or not self.user_can_authenticate(user):
+            return None
+
+        # Staff/superusers use local credentials; clients must be approved
+        if user.is_staff or user.is_superuser:
+            return user
+        if user.status == "approved":
+            return user
+        return None
 
     def user_can_authenticate(self, user):
-        """
-        Override to check both Django's default conditions and our approval status
-        """
-        # First check Django's default authentication conditions
         if not super().user_can_authenticate(user):
             return False
-
-        # Then check our custom approval status
+        if user.is_staff or user.is_superuser:
+            return True
         return user.status == "approved"
 
     def get_user(self, user_id):
-        """
-        For Shopify-only authentication, we don't store users in the database.
-        This method returns None to force re-authentication on each request,
-        ensuring we always validate with Shopify API.
-        """
-        # Return None to force re-authentication with Shopify API
-        # This ensures we always validate credentials with Shopify, not local database
-        return None
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
 
 
 class ShopifyBackend(ModelBackend):

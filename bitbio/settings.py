@@ -202,8 +202,9 @@ AUTH_USER_MODEL = "app_users.User"
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Custom authentication backends - Shopify only
+# Local email/password first (admin + DB users), then Shopify for storefront logins
 AUTHENTICATION_BACKENDS = [
+    "app_users.backends.EmailBackend",
     "app_users.backends.ShopifyBackend",
 ]
 

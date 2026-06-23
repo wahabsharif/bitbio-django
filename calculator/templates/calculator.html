@@ -41,7 +41,7 @@
 {% endif %}
 
 <!-- Banner Text -->
-<div class="calculator-container" style="margin-top: 3rem; display: flex; flex-direction: column; align-items: start;">
+<div class="calculator-container" style="margin-top: 3rem; display: flex; flex-direction: column; align-items: start; gap: 0;">
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
         <img src="{% static 'images/bitbio-logo.png' %}" alt="BitBio Logo"
             style="width: full; height: 55px; flex-shrink: 0;" />
@@ -67,8 +67,8 @@
     flex-direction: column;
     justify-content: space-between;">
         <div style="display: flex; flex-direction: column; align-items: start; width: 75%;">
-            <h1 style="font-size: 2rem; font-weight: 600; margin-bottom: 5px !important;">Cell seeding calculator</h1>
-            <p style="margin-bottom: 20px; font-size: 1rem; margin-top: 0px !important;">
+            <h1 style="font-size: 32px; font-weight: 500; margin-bottom: 5px !important;">Cell seeding calculator</h1>
+            <p style="margin-bottom: 20px; font-size: 16px; margin-top: 0px !important;">
                 This calculator helps scientists to quickly determine how much cell stock solution and culture media
                 is needed for seeding cells in a variety of different culture vessels. By following this simple
                 step-by-step guide, you can get your results instantly!
@@ -240,7 +240,9 @@
                 <div class="input-container-full">
                     <div class="ui fluid search selection dropdown searchable-input" id="cell_type_dropdown">
                         <input type="hidden" id="cell_type">
-                        <i class="dropdown icon"></i>
+                        <svg id="Dropdown" class="dropdown icon" xmlns="http://www.w3.org/2000/svg" width="9.4" height="6.1" viewBox="0 0 9.4 6.1">
+                            <path id="Path_36" data-name="Path 36" d="M6.7,8.1,2,3.4,3.4,2,6.7,5.3,10,2l1.4,1.4Z" transform="translate(-2 -2)" fill="#c9ced7"/>
+                        </svg>
                         <div class="default text">- - Select your cell type - -</div>
                         <div class="menu">
                             <!-- Options will be populated by JS -->
@@ -328,7 +330,9 @@
                 <div class="input-container-full">
                     <div class="ui fluid search selection dropdown" id="culture_vessel_dropdown">
                         <input type="hidden" id="culture_vessel">
-                        <i class="dropdown icon"></i>
+                        <svg id="CultureVesselDropdown" class="dropdown icon" xmlns="http://www.w3.org/2000/svg" width="9.4" height="6.1" viewBox="0 0 9.4 6.1">
+                            <path id="CultureVesselDropdownPath" data-name="Path 36" d="M6.7,8.1,2,3.4,3.4,2,6.7,5.3,10,2l1.4,1.4Z" transform="translate(-2 -2)" fill="#c9ced7"/>
+                        </svg>
                         <div class="default text">- - Select your culture vessel - -</div>
                         <div class="menu">
                             <!-- Options will be populated by JS -->
@@ -365,7 +369,23 @@
                     Number of wells to seed <span class="required-field">*</span>
                 </label>
                 <div class="input-container">
-                    <input id="num_wells" type="number" min="1" step="1" value="" class="form-input-number">
+                    <div class="number-input-wrapper">
+                        <input id="num_wells" type="number" min="1" step="1" value="" class="form-input-number">
+                        <div class="number-input-arrows" aria-hidden="false">
+                            <button type="button" class="number-input-arrow number-input-arrow-up" aria-label="Increase number of wells" onclick="stepNumberInput('num_wells', 1)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="9.4" height="6.1" viewBox="0 0 9.4 6.1">
+                                    <g transform="translate(9.4 6.1) rotate(180)">
+                                        <path d="M6.7,8.1,2,3.4,3.4,2,6.7,5.3,10,2l1.4,1.4Z" transform="translate(-2 -2)" fill="#c9ced7"/>
+                                    </g>
+                                </svg>
+                            </button>
+                            <button type="button" class="number-input-arrow number-input-arrow-down" aria-label="Decrease number of wells" onclick="stepNumberInput('num_wells', -1)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="9.4" height="6.1" viewBox="0 0 9.4 6.1">
+                                    <path d="M6.7,8.1,2,3.4,3.4,2,6.7,5.3,10,2l1.4,1.4Z" transform="translate(-2 -2)" fill="#c9ced7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                     <span class="unit-label">wells</span>
                 </div>
             </div>
@@ -485,6 +505,7 @@
     <script src="{% static 'js/calculator.js' %}"></script>
     <script src="{% static 'js/ui-handlers.js' %}"></script>
     <script src="{% static 'js/export.js' %}"></script>
+    <script src="{% static 'js/tooltip.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 <script>
 // Format numbers with thousands separators while preserving decimal precision
@@ -521,6 +542,18 @@ function showMissingFieldsPopup(missingFields) {
 function hideMissingFieldsPopup() {
     var popup = document.getElementById('missingFieldsPopup');
     if (popup) popup.style.display = 'none';
+}
+
+function stepNumberInput(inputId, direction) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    if (direction > 0) {
+        input.stepUp();
+    } else {
+        input.stepDown();
+    }
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 // Map human-readable names to input IDs for highlighting
@@ -743,6 +776,7 @@ window.performCalculation = async function () {
     try {
         const helpContent = document.getElementById('helpContent');
         const resultsContent = document.getElementById('resultsContent');
+        const resultsSection = document.querySelector('.results-section');
         const calculateBtn = document.getElementById('calculateBtn');
         const actionButtons = document.getElementById('actionButtons');
         const downloadOptions = document.getElementById('downloadOptions');
@@ -801,6 +835,7 @@ window.performCalculation = async function () {
         // Show results panel
         if (helpContent) helpContent.style.display = 'none';
         if (resultsContent) resultsContent.style.display = 'block';
+        if (resultsSection) resultsSection.classList.add('results-visible');
         if (calculateBtn) calculateBtn.style.display = 'none';
         if (actionButtons) actionButtons.classList.add('visible');
         if (downloadOptions) downloadOptions.style.display = 'block';

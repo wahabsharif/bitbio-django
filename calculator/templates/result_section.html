@@ -2,8 +2,8 @@
     <div id="results">
         <!-- Initial help content shown before calculation -->
         <div id="helpContent" style="max-width: 205px;">
-            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 1.25rem;">How to get started?</h3>
-            <ul style="list-style-type: disc; padding-left: 1.25rem; margin-top: 0.75rem; font-size: 0.875rem; font-weight: 300;">
+            <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 1.25rem;">How to get started?</h3>
+            <ul style="list-style-type: disc; padding-left: 1rem; margin-top: 0.75rem; font-size: 14px; font-weight: 300;">
                 <li style="margin-bottom: 0.75rem;">Start by entering your cell stock volume.</li>
                 <li style="margin-bottom: 0.75rem;">Add live cell count and viability, ideally perform your count three times.</li>
                 <li style="margin-bottom: 0.75rem;">Select your cell type and adjust the seeding density as needed. The default values are optimised for monocultures.</li>
@@ -14,7 +14,7 @@
 
         <!-- Results content hidden initially, shown after calculation -->
         <div id="resultsContent" style="display: none;">
-            <h2 style="font-weight: 600; font-size: 20px; margin-bottom: 0.5rem;">Results</h2>
+            <h2 style="font-weight: 500; font-size: 20px; margin-bottom: 0.5rem;">Results</h2>
             <div id="narrativeText" style="font-size: 14px; padding: 0.5rem; cursor: pointer; transition: colors 0.2s; position: relative;" title="Click to copy to clipboard">
                 Your results for seeding <span id="narrativeWellCount">XYZ</span> wells, prepare a dilution by combining <span id="narrativeVolumeSeed">0</span> mL of cell stock with <span id="narrativeVolumeDilute">0</span> mL of media. Add <span id="narrativeVolumePerWell">0</span> μL of the final dilution to each well for a density of <span id="narrativeCellDensity">0</span> cells/mL, resulting in <span id="narrativeCellsPerWell">0</span> cells per well.
                 <span id="copyIndicator" style="display: none; position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.75rem; color: #059669; background-color: #d1fae5; padding: 0.25rem 0.5rem;">Copied!</span>
